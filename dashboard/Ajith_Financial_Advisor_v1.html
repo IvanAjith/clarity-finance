@@ -1,0 +1,1531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ajith's Financial Advisor</title>
+<style>
+:root {
+  --bg: #0d1117;
+  --surface: #161b22;
+  --surface2: #21262d;
+  --surface3: #30363d;
+  --border: #30363d;
+  --text: #e6edf3;
+  --text-muted: #8b949e;
+  --accent: #58a6ff;
+  --accent2: #3fb950;
+  --warn: #f85149;
+  --gold: #e3b341;
+  --purple: #bc8cff;
+  --teal: #39d353;
+  --radius: 12px;
+  --radius-sm: 8px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 14px; line-height: 1.5; }
+.app { display: flex; flex-direction: column; min-height: 100vh; }
+
+/* Header */
+.header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 12px 20px; display: flex; align-items: center; gap: 12px; position: sticky; top: 0; z-index: 100; }
+.header-logo { width: 36px; height: 36px; background: linear-gradient(135deg, #58a6ff, #3fb950); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+.header-info h1 { font-size: 16px; font-weight: 700; }
+.header-info p { font-size: 12px; color: var(--text-muted); }
+.header-date { margin-left: auto; text-align: right; font-size: 12px; color: var(--text-muted); }
+
+/* Nav */
+.nav { background: var(--surface); border-bottom: 1px solid var(--border); display: flex; overflow-x: auto; scrollbar-width: none; }
+.nav::-webkit-scrollbar { display: none; }
+.nav-btn { padding: 10px 16px; font-size: 13px; font-weight: 500; color: var(--text-muted); background: none; border: none; border-bottom: 2px solid transparent; cursor: pointer; white-space: nowrap; transition: all .2s; }
+.nav-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+.nav-btn:hover:not(.active) { color: var(--text); background: var(--surface2); }
+
+/* Pages */
+.page { display: none; padding: 16px; max-width: 900px; margin: 0 auto; width: 100%; }
+.page.active { display: block; }
+
+/* Cards */
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; margin-bottom: 12px; }
+.card-title { font-size: 13px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 12px; }
+.card h2 { font-size: 15px; font-weight: 600; margin-bottom: 12px; }
+
+/* Grid */
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.grid4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+@media(max-width:600px) { .grid2,.grid3,.grid4 { grid-template-columns: 1fr 1fr; } }
+@media(max-width:380px) { .grid2,.grid3,.grid4 { grid-template-columns: 1fr; } }
+
+/* Stat cards */
+.stat { background: var(--surface2); border-radius: var(--radius-sm); padding: 14px; }
+.stat-label { font-size: 11px; color: var(--text-muted); margin-bottom: 4px; text-transform: uppercase; letter-spacing: .4px; }
+.stat-value { font-size: 20px; font-weight: 700; }
+.stat-sub { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+.green { color: var(--accent2); }
+.red { color: var(--warn); }
+.blue { color: var(--accent); }
+.gold { color: var(--gold); }
+.purple { color: var(--purple); }
+
+/* Progress bars */
+.prog-wrap { margin: 6px 0; }
+.prog-label { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 4px; }
+.prog-bar { height: 8px; background: var(--surface3); border-radius: 4px; overflow: hidden; }
+.prog-fill { height: 100%; border-radius: 4px; transition: width .5s; }
+.prog-green { background: var(--accent2); }
+.prog-blue { background: var(--accent); }
+.prog-gold { background: var(--gold); }
+.prog-red { background: var(--warn); }
+.prog-purple { background: var(--purple); }
+
+/* Tables */
+.table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th { text-align: left; padding: 8px 10px; font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: .4px; border-bottom: 1px solid var(--border); white-space: nowrap; }
+td { padding: 8px 10px; border-bottom: 1px solid var(--surface3); }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: var(--surface2); }
+.td-r { text-align: right; font-variant-numeric: tabular-nums; }
+.tag { display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+.tag-green { background: #1a3a22; color: #3fb950; }
+.tag-red { background: #3a1a1a; color: #f85149; }
+.tag-blue { background: #1a2a3a; color: #58a6ff; }
+.tag-gold { background: #3a2a00; color: #e3b341; }
+.tag-purple { background: #2a1a3a; color: #bc8cff; }
+.tag-gray { background: var(--surface3); color: var(--text-muted); }
+
+/* Chat */
+.chat-msgs { height: 380px; overflow-y: auto; padding: 12px; background: var(--surface2); border-radius: var(--radius-sm); margin-bottom: 12px; scroll-behavior: smooth; }
+.msg { max-width: 82%; margin-bottom: 10px; }
+.msg-user { margin-left: auto; }
+.msg-bubble { padding: 10px 14px; border-radius: 16px; font-size: 13px; line-height: 1.6; }
+.msg-user .msg-bubble { background: #1f4287; color: #e6edf3; border-bottom-right-radius: 4px; }
+.msg-bot .msg-bubble { background: var(--surface); border: 1px solid var(--border); border-bottom-left-radius: 4px; }
+.msg-bot .msg-bubble strong { color: var(--accent); }
+.msg-time { font-size: 10px; color: var(--text-muted); margin-top: 3px; text-align: right; }
+.chat-input-wrap { display: flex; gap: 8px; }
+.chat-input { flex: 1; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px 14px; color: var(--text); font-size: 14px; outline: none; resize: none; min-height: 44px; max-height: 100px; font-family: inherit; }
+.chat-input:focus { border-color: var(--accent); }
+.btn { padding: 10px 18px; border-radius: var(--radius-sm); border: none; cursor: pointer; font-size: 13px; font-weight: 600; transition: all .2s; }
+.btn-primary { background: var(--accent); color: #000; }
+.btn-primary:hover { background: #79c0ff; }
+.btn-secondary { background: var(--surface3); color: var(--text); }
+.btn-secondary:hover { background: var(--border); }
+.btn-success { background: var(--accent2); color: #000; }
+.btn-success:hover { background: #56d364; }
+.btn-sm { padding: 6px 12px; font-size: 12px; }
+.quick-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+.chip { padding: 5px 12px; border-radius: 20px; background: var(--surface3); border: 1px solid var(--border); color: var(--text); font-size: 12px; cursor: pointer; transition: all .2s; white-space: nowrap; }
+.chip:hover { border-color: var(--accent); color: var(--accent); }
+
+/* Forms */
+.form-group { margin-bottom: 12px; }
+.form-label { font-size: 12px; color: var(--text-muted); margin-bottom: 4px; display: block; }
+.form-input { width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 9px 12px; color: var(--text); font-size: 14px; outline: none; }
+.form-input:focus { border-color: var(--accent); }
+select.form-input { cursor: pointer; }
+.result-box { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 14px; margin-top: 12px; }
+.result-row { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid var(--surface3); font-size: 13px; }
+.result-row:last-child { border-bottom: none; font-weight: 700; }
+.result-row span:first-child { color: var(--text-muted); }
+
+/* Milestone timeline */
+.timeline { position: relative; padding-left: 20px; }
+.timeline::before { content: ''; position: absolute; left: 7px; top: 0; bottom: 0; width: 2px; background: var(--surface3); }
+.tl-item { position: relative; margin-bottom: 16px; }
+.tl-dot { position: absolute; left: -17px; top: 3px; width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--surface); }
+.tl-dot.done { background: var(--accent2); }
+.tl-dot.current { background: var(--accent); box-shadow: 0 0 0 3px rgba(88,166,255,.3); }
+.tl-dot.future { background: var(--surface3); }
+.tl-date { font-size: 11px; color: var(--text-muted); margin-bottom: 2px; }
+.tl-title { font-size: 13px; font-weight: 600; }
+.tl-amount { font-size: 12px; color: var(--text-muted); }
+
+/* Alerts */
+.alert { padding: 10px 14px; border-radius: var(--radius-sm); font-size: 13px; margin-bottom: 10px; }
+.alert-info { background: #1a2a3a; border-left: 3px solid var(--accent); }
+.alert-success { background: #1a3a22; border-left: 3px solid var(--accent2); }
+.alert-warn { background: #3a2a00; border-left: 3px solid var(--gold); }
+.alert-danger { background: #3a1a1a; border-left: 3px solid var(--warn); }
+
+/* Month selector */
+.month-bar { display: flex; gap: 8px; align-items: center; margin-bottom: 14px; flex-wrap: wrap; }
+.month-bar label { font-size: 13px; color: var(--text-muted); }
+select.month-sel { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 6px 10px; color: var(--text); font-size: 13px; outline: none; }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--surface); }
+::-webkit-scrollbar-thumb { background: var(--surface3); border-radius: 3px; }
+
+/* Section divider */
+.divider { border: none; border-top: 1px solid var(--border); margin: 14px 0; }
+
+/* Flex utils */
+.flex { display: flex; }
+.flex-between { display: flex; justify-content: space-between; align-items: center; }
+.gap8 { gap: 8px; }
+.mt8 { margin-top: 8px; }
+.mt12 { margin-top: 12px; }
+.mb8 { margin-bottom: 8px; }
+.small { font-size: 12px; color: var(--text-muted); }
+.bold { font-weight: 700; }
+.text-center { text-align: center; }
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-logo">💰</div>
+  <div class="header-info">
+    <h1>Ajith's Financial Advisor</h1>
+    <p>Senior Consultant · Systech Solutions · Chennai</p>
+  </div>
+  <div class="header-date" id="headerDate"></div>
+</div>
+
+<!-- NAV -->
+<div class="nav">
+  <button class="nav-btn active" onclick="showPage('dashboard')">📊 Dashboard</button>
+  <button class="nav-btn" onclick="showPage('loans')">💳 Loans</button>
+  <button class="nav-btn" onclick="showPage('goals')">🎯 Goals</button>
+  <button class="nav-btn" onclick="showPage('advisor')">🤖 Advisor</button>
+  <button class="nav-btn" onclick="showPage('whatif')">🔮 What-If</button>
+  <button class="nav-btn" onclick="showPage('tax')">📋 Tax</button>
+  <button class="nav-btn" onclick="showPage('sip')">📈 SIP & MF</button>
+  <button class="nav-btn" onclick="showPage('updater')">✏️ Update</button>
+</div>
+
+<!-- =================== DASHBOARD =================== -->
+<div class="page active" id="page-dashboard">
+
+  <div class="month-bar">
+    <label>Viewing month:</label>
+    <select class="month-sel" id="dashMonth" onchange="renderDashboard()"></select>
+    <span class="small" id="phaseLabel"></span>
+  </div>
+
+  <div class="grid4 mb8">
+    <div class="stat">
+      <div class="stat-label">Take-Home Salary</div>
+      <div class="stat-value blue" id="d-salary">—</div>
+    </div>
+    <div class="stat">
+      <div class="stat-label">Total EMIs</div>
+      <div class="stat-value red" id="d-emis">—</div>
+    </div>
+    <div class="stat">
+      <div class="stat-label">Fixed Expenses</div>
+      <div class="stat-value gold" id="d-fixed">—</div>
+    </div>
+    <div class="stat">
+      <div class="stat-label">Free Cash</div>
+      <div class="stat-value green" id="d-free">—</div>
+    </div>
+  </div>
+
+  <div class="grid2">
+    <div class="card">
+      <div class="card-title">Monthly Breakdown</div>
+      <div id="d-breakdown"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">EF Status</div>
+      <div id="d-ef"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Debt Payoff Progress</div>
+    <div id="d-debt"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Milestones</div>
+    <div class="timeline" id="d-milestones"></div>
+  </div>
+
+</div>
+
+<!-- =================== LOANS =================== -->
+<div class="page" id="page-loans">
+  <div class="month-bar">
+    <label>Viewing month:</label>
+    <select class="month-sel" id="loansMonth" onchange="renderLoans()"></select>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Loan Balances & Payoff Schedule</div>
+    <div class="table-wrap" id="loan-table"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Repayment Timeline (Avalanche Strategy)</div>
+    <div class="alert alert-info">🎯 Strategy: Pay minimum EMIs on all → extra cash hits <strong>highest interest loan first</strong></div>
+    <div id="loan-timeline"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">All Loan EMI Summary</div>
+    <div id="loan-emi-summary"></div>
+  </div>
+</div>
+
+<!-- =================== GOALS =================== -->
+<div class="page" id="page-goals">
+  <div class="card">
+    <div class="card-title">Your Goals Queue (Priority Order)</div>
+    <div id="goals-list"></div>
+  </div>
+  <div class="card mt12">
+    <div class="card-title">Goals EF Accumulation</div>
+    <div id="goals-ef"></div>
+  </div>
+</div>
+
+<!-- =================== ADVISOR =================== -->
+<div class="page" id="page-advisor">
+  <div class="card">
+    <div class="card-title">💬 Ask Your Financial Advisor</div>
+    <div class="quick-chips" id="quick-chips"></div>
+    <div class="chat-msgs" id="chat-msgs"></div>
+    <div class="chat-input-wrap">
+      <textarea class="chat-input" id="chat-input" placeholder="Ask anything about your finances… e.g. When will I be debt free? How much to save this month?" rows="2" onkeydown="chatKey(event)"></textarea>
+      <button class="btn btn-primary" onclick="chatSend()">Send</button>
+    </div>
+  </div>
+</div>
+
+<!-- =================== WHAT-IF =================== -->
+<div class="page" id="page-whatif">
+  <div class="grid2">
+
+    <div class="card">
+      <div class="card-title">🔮 Prepay a Loan</div>
+      <div class="form-group">
+        <label class="form-label">Select Loan</label>
+        <select class="form-input" id="wi-loan">
+          <option value="solar">Solar Roof (₹6,025/m)</option>
+          <option value="car">Car (₹9,296/m)</option>
+          <option value="personal">Personal (₹6,883/m)</option>
+          <option value="cred">CRED (₹4,982/m)</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Prepayment Amount (₹)</label>
+        <input class="form-input" id="wi-prepay" type="number" placeholder="e.g. 50000">
+      </div>
+      <button class="btn btn-primary" onclick="calcPrepay()">Calculate Savings</button>
+      <div id="wi-prepay-result"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">💳 CC Bill Scenario</div>
+      <div class="form-group">
+        <label class="form-label">New Monthly CC Bill (₹)</label>
+        <input class="form-input" id="wi-cc" type="number" placeholder="Current: 35000" value="35000">
+      </div>
+      <div class="form-group">
+        <label class="form-label">From Month</label>
+        <select class="form-input" id="wi-cc-month"></select>
+      </div>
+      <button class="btn btn-primary" onclick="calcCC()">See Impact</button>
+      <div id="wi-cc-result"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">💰 Extra SIP Impact</div>
+      <div class="form-group">
+        <label class="form-label">Additional Monthly SIP (₹)</label>
+        <input class="form-input" id="wi-sip" type="number" placeholder="e.g. 5000">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Expected XIRR (%)</label>
+        <input class="form-input" id="wi-sip-xirr" type="number" value="14">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Duration (years)</label>
+        <input class="form-input" id="wi-sip-years" type="number" value="10">
+      </div>
+      <button class="btn btn-primary" onclick="calcSIP()">Calculate Corpus</button>
+      <div id="wi-sip-result"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">🏠 New Loan Affordability</div>
+      <div class="form-group">
+        <label class="form-label">Loan Amount (₹)</label>
+        <input class="form-input" id="wi-newloan-amt" type="number" placeholder="e.g. 500000">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Interest Rate (% p.a.)</label>
+        <input class="form-input" id="wi-newloan-rate" type="number" value="12">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Tenure (months)</label>
+        <input class="form-input" id="wi-newloan-tenure" type="number" value="24">
+      </div>
+      <button class="btn btn-primary" onclick="calcNewLoan()">Check Affordability</button>
+      <div id="wi-newloan-result"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- =================== TAX =================== -->
+<div class="page" id="page-tax">
+  <div class="grid2">
+
+    <div class="card">
+      <div class="card-title">📋 80C Deduction Tracker</div>
+      <div class="alert alert-info">Max 80C limit: <strong>₹1,50,000/year</strong></div>
+      <div id="deductions-80c">
+        <div class="form-group">
+          <label class="form-label">ELSS SIP (annual ₹)</label>
+          <input class="form-input" id="t-elss" type="number" value="189000">
+        </div>
+        <div class="form-group">
+          <label class="form-label">LIC / Life Insurance Premium (annual ₹)</label>
+          <input class="form-input" id="t-lic" type="number" value="27480">
+        </div>
+        <div class="form-group">
+          <label class="form-label">PPF / EPF (annual ₹)</label>
+          <input class="form-input" id="t-ppf" type="number" value="0">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Home Loan Principal (annual ₹)</label>
+          <input class="form-input" id="t-hlprincipal" type="number" value="0">
+        </div>
+        <button class="btn btn-primary" onclick="calc80C()">Calculate 80C</button>
+        <div id="t-80c-result"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">📈 LTCG / STCG Calculator</div>
+      <div class="form-group">
+        <label class="form-label">Asset Type</label>
+        <select class="form-input" id="t-asset">
+          <option value="eq_ltcg">Equity / MF – LTCG (held > 1 yr)</option>
+          <option value="eq_stcg">Equity / MF – STCG (held ≤ 1 yr)</option>
+          <option value="debt_ltcg">Debt MF – LTCG (held > 3 yr)</option>
+          <option value="debt_stcg">Debt MF – STCG (held ≤ 3 yr)</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Purchase Value (₹)</label>
+        <input class="form-input" id="t-buy" type="number" placeholder="e.g. 100000">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Sale Value (₹)</label>
+        <input class="form-input" id="t-sell" type="number" placeholder="e.g. 140000">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Your Tax Slab (%)</label>
+        <select class="form-input" id="t-slab">
+          <option value="30">30% (> ₹15L)</option>
+          <option value="20">20% (₹10L–₹15L)</option>
+          <option value="15">15% (₹7.5L–₹10L)</option>
+        </select>
+      </div>
+      <button class="btn btn-primary" onclick="calcCG()">Calculate Tax</button>
+      <div id="t-cg-result"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">💼 Old vs New Tax Regime</div>
+      <div class="form-group">
+        <label class="form-label">Gross Annual Salary (₹)</label>
+        <input class="form-input" id="t-gross" type="number" value="1220640">
+      </div>
+      <div class="form-group">
+        <label class="form-label">HRA Exemption (₹)</label>
+        <input class="form-input" id="t-hra" type="number" value="60000">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Total 80C (₹)</label>
+        <input class="form-input" id="t-80c-in" type="number" value="150000">
+      </div>
+      <div class="form-group">
+        <label class="form-label">80D (Health Insurance ₹)</label>
+        <input class="form-input" id="t-80d" type="number" value="25000">
+      </div>
+      <button class="btn btn-primary" onclick="calcRegime()">Compare Regimes</button>
+      <div id="t-regime-result"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">🏠 Section 24 – Home Loan Interest</div>
+      <div class="alert alert-warn">⚠️ Currently no home loan. Use this when you take a home loan.</div>
+      <div class="form-group">
+        <label class="form-label">Annual Home Loan Interest (₹)</label>
+        <input class="form-input" id="t-s24" type="number" placeholder="e.g. 200000">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Self-occupied / Let-out?</label>
+        <select class="form-input" id="t-s24-type">
+          <option value="self">Self-occupied (max ₹2L deduction)</option>
+          <option value="let">Let-out (full interest deductible)</option>
+        </select>
+      </div>
+      <button class="btn btn-primary" onclick="calcS24()">Calculate</button>
+      <div id="t-s24-result"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- =================== SIP & MF =================== -->
+<div class="page" id="page-sip">
+  <div class="card">
+    <div class="card-title">📈 SIP Step-Up Schedule</div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Period</th><th>Monthly SIP</th><th>Annual SIP</th><th>Step-Up</th><th>Phase</th></tr></thead>
+        <tbody id="sip-table"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card mt12">
+    <div class="card-title">🎯 Long-Term Corpus Projection</div>
+    <div id="sip-corpus"></div>
+  </div>
+
+  <div class="card mt12">
+    <div class="card-title">⚖️ MF Portfolio Rebalancing</div>
+    <div class="alert alert-info">Review & rebalance every April (aligned with SIP step-up)</div>
+    <div class="form-group mt8">
+      <label class="form-label">Total Portfolio Value (₹)</label>
+      <input class="form-input" id="mf-total" type="number" placeholder="e.g. 500000">
+    </div>
+    <div class="grid2 mt8">
+      <div>
+        <div class="form-group">
+          <label class="form-label">Large Cap (₹)</label>
+          <input class="form-input" id="mf-lc" type="number" placeholder="0">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Mid Cap (₹)</label>
+          <input class="form-input" id="mf-mc" type="number" placeholder="0">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Small Cap (₹)</label>
+          <input class="form-input" id="mf-sc" type="number" placeholder="0">
+        </div>
+      </div>
+      <div>
+        <div class="form-group">
+          <label class="form-label">Flexi / Multi Cap (₹)</label>
+          <input class="form-input" id="mf-flex" type="number" placeholder="0">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Sectoral / Thematic (₹)</label>
+          <input class="form-input" id="mf-sect" type="number" placeholder="0">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Debt / Liquid (₹)</label>
+          <input class="form-input" id="mf-debt" type="number" placeholder="0">
+        </div>
+      </div>
+    </div>
+    <button class="btn btn-primary" onclick="rebalance()">Analyze Allocation</button>
+    <div id="mf-rebal-result"></div>
+  </div>
+</div>
+
+<!-- =================== UPDATER =================== -->
+<div class="page" id="page-updater">
+  <div class="card">
+    <div class="card-title">✏️ Monthly Actuals Update</div>
+    <div class="alert alert-info">Update your actual spends to track variance from plan. Data saves in browser storage.</div>
+    <div class="form-group mt8">
+      <label class="form-label">Month</label>
+      <select class="form-input" id="u-month"></select>
+    </div>
+    <div class="grid2">
+      <div class="form-group">
+        <label class="form-label">Actual CC Bill (₹)</label>
+        <input class="form-input" id="u-cc" type="number" placeholder="35000">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Actual Misc Spend (₹)</label>
+        <input class="form-input" id="u-misc" type="number" placeholder="5000">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Actual Rent (₹)</label>
+        <input class="form-input" id="u-rent" type="number" placeholder="10000">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Any Extra Income (₹)</label>
+        <input class="form-input" id="u-extra" type="number" placeholder="0">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Notes / Remarks</label>
+        <input class="form-input" id="u-notes" type="text" placeholder="e.g. Festival spends">
+      </div>
+    </div>
+    <button class="btn btn-success" onclick="saveUpdate()">Save Actuals</button>
+  </div>
+
+  <div class="card mt12">
+    <div class="card-title">📋 Saved Actuals History</div>
+    <div id="u-history"></div>
+  </div>
+</div>
+
+</div><!-- end .app -->
+
+<script>
+// ====================================================================
+// FINANCIAL DATA — ALL PRE-LOADED (as of Oct 2026)
+// ====================================================================
+const DATA = {
+  name: "Ajith Khan",
+  role: "Senior Consultant, Systech Solutions, Chennai",
+
+  // Salary step-ups (Jan-aligned)
+  salaries: [
+    { from: [2026,10], to: [2026,12], net: 101720 },
+    { from: [2027,1],  to: [2027,12], net: 109858 },
+    { from: [2028,1],  to: [2028,12], net: 118646 },
+    { from: [2029,1],  to: [2099,12], net: 128138 },
+  ],
+
+  // Fixed monthly outflows
+  fixed: {
+    rent:       10000,
+    lifeIns:    2290,
+    healthIns:  991,
+    activeOne:  1633,
+    familyPlan: 11500,
+    misc:       5000,
+    cc:         35000,   // average
+  },
+
+  // Loans (Oct-2026 opening balances)
+  loans: {
+    solar:    { name: "Solar Roof",    bal: 189492, rate: 8.95/12/100,  emi: 6025,  color: "#39d353", closedAt: [2027,12] },
+    car:      { name: "Car Loan",      bal: 344727, rate: 9.25/12/100,  emi: 9296,  color: "#58a6ff", closedAt: [2028,9] },
+    personal: { name: "Personal Loan", bal: 187335, rate: 13.00/12/100, emi: 6883,  color: "#e3b341", closedAt: [2028,11] },
+    cred:     { name: "CRED Loan",     bal: 97768,  rate: 14.99/12/100, emi: 4982,  color: "#bc8cff", closedAt: [2028,10] },
+    mfpledge: { name: "MF Pledge",     bal: 35000,  rate: 0,            emi: 375,   color: "#f85149", closedAt: [2027,12] },
+  },
+
+  // Emergency Fund split
+  ef: {
+    loanEF: { target: 100000, current: 0, label: "Loan EF (Lump-sum payoff)" },
+    goalsEF: { target: 250000, current: 0, label: "Goals EF (Fund lifestyle)" },
+  },
+
+  // SIP schedule
+  sips: [
+    { from: [2026,10], to: [2027,3],  monthly: 15750, label: "Push Phase" },
+    { from: [2027,4],  to: [2028,3],  monthly: 18900, label: "Push Phase" },
+    { from: [2028,4],  to: [2029,3],  monthly: 22680, label: "Push Phase" },
+    { from: [2029,4],  to: [2030,3],  monthly: 27216, label: "Push Phase" },
+    { from: [2030,4],  to: [2031,3],  monthly: 28577, label: "Grow Phase" },
+    { from: [2031,4],  to: [2049,12], monthly: 30006, label: "Grow Phase" },
+  ],
+
+  // Goals queue
+  goals: [
+    { name: "Laptop", amount: 15000, targetDate: [2026,12], status: "saving", icon: "💻" },
+    { name: "Vacation", amount: 100000, targetDate: [2028,4], status: "pending", icon: "✈️" },
+    { name: "Gold Chain", amount: 50000, targetDate: [2028,9], status: "pending", icon: "🥇" },
+    { name: "iPhone", amount: 80000, targetDate: [2028,12], status: "pending", icon: "📱" },
+  ],
+
+  // Milestones
+  milestones: [
+    { date: [2026,12], label: "Buy Laptop", amount: 15000, icon: "💻" },
+    { date: [2027,12], label: "Solar Loan Closed", amount: 189492, icon: "☀️" },
+    { date: [2027,12], label: "MF Pledge Closed", amount: 35000, icon: "📊" },
+    { date: [2028,4],  label: "Vacation Fund Ready", amount: 100000, icon: "✈️" },
+    { date: [2028,9],  label: "Car Loan Closed", amount: 344727, icon: "🚗" },
+    { date: [2028,10], label: "CRED Loan Closed", amount: 97768, icon: "💳" },
+    { date: [2028,11], label: "Personal Loan Closed", amount: 187335, icon: "🏦" },
+    { date: [2028,12], label: "🎉 DEBT FREE!", amount: 0, icon: "🎉" },
+  ],
+
+  // Split ratios by phase
+  splitPhases: [
+    { from: [2026,10], to: [2026,12], loanEF: 0.50, goalsEF: 0.50, label: "50/50" },
+    { from: [2027,1],  to: [2027,9],  loanEF: 0.65, goalsEF: 0.35, label: "65/35" },
+    { from: [2027,10], to: [2028,2],  loanEF: 0.70, goalsEF: 0.30, label: "70/30" },
+    { from: [2028,3],  to: [2099,12], loanEF: 0.80, goalsEF: 0.20, label: "80/20" },
+  ],
+
+  savingsFloor: 20000,
+};
+
+// ====================================================================
+// HELPERS
+// ====================================================================
+const fmt = n => '₹' + Math.round(n).toLocaleString('en-IN');
+const fmtN = n => Math.round(n).toLocaleString('en-IN');
+const pct = (a,b) => b ? Math.min(100, Math.round(a/b*100)) : 0;
+
+function dateToYM(d) { return [d.getFullYear(), d.getMonth()+1]; }
+function ymToDate(ym) { return new Date(ym[0], ym[1]-1, 1); }
+function ymLabel(ym) { const m=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']; return m[ym[1]-1]+' '+ym[0]; }
+function ymCompare(a,b) { return a[0]!==b[0] ? a[0]-b[0] : a[1]-b[1]; }
+function ymAdd(ym,n) { let m=ym[1]+n-1,y=ym[0]+Math.floor(m/12); return [y,m%12+1]; }
+function ymBetween(ym,from,to) { return ymCompare(ym,from)>=0 && ymCompare(ym,to)<=0; }
+
+function getSalary(ym) {
+  for(const s of DATA.salaries) if(ymBetween(ym,s.from,s.to)) return s.net;
+  return DATA.salaries[DATA.salaries.length-1].net;
+}
+function getSIP(ym) {
+  for(const s of DATA.sips) if(ymBetween(ym,s.from,s.to)) return s.monthly;
+  return DATA.sips[DATA.sips.length-1].monthly;
+}
+function getSplit(ym) {
+  for(const s of DATA.splitPhases) if(ymBetween(ym,s.from,s.to)) return s;
+  return DATA.splitPhases[DATA.splitPhases.length-1];
+}
+
+// Compute loan balance for a given YM
+function getLoanBal(key, ym) {
+  const loan = DATA.loans[key];
+  let bal = loan.bal;
+  let cur = [2026,10];
+  while(ymCompare(cur,ym)<0) {
+    const interest = bal * loan.rate;
+    const principal = loan.emi - interest;
+    bal = Math.max(0, bal - principal);
+    cur = ymAdd(cur,1);
+  }
+  return bal;
+}
+
+// Total EMIs for a month
+function totalEMIs(ym) {
+  let total = 0;
+  for(const [k,l] of Object.entries(DATA.loans)) {
+    if(ymCompare(ym, l.closedAt)<=0) total += l.emi;
+  }
+  return total;
+}
+
+// Compute free cash
+function getFreeCash(ym) {
+  const salary = getSalary(ym);
+  const emis = totalEMIs(ym);
+  const fixed = Object.values(DATA.fixed).reduce((a,b)=>a+b,0);
+  return salary - emis - fixed;
+}
+
+// Months list for selectors
+function monthsList(from, months) {
+  const list = [];
+  let cur = from;
+  for(let i=0;i<months;i++) { list.push([...cur]); cur=ymAdd(cur,1); }
+  return list;
+}
+
+const ALL_MONTHS = monthsList([2026,10], 60); // Oct 2026 → Sep 2031
+
+function populateSelect(id, months, current) {
+  const sel = document.getElementById(id);
+  if(!sel) return;
+  sel.innerHTML = '';
+  months.forEach(ym => {
+    const opt = document.createElement('option');
+    opt.value = ym.join('-');
+    opt.textContent = ymLabel(ym);
+    if(ymCompare(ym,current)===0) opt.selected = true;
+    sel.appendChild(opt);
+  });
+}
+
+function getSelYM(id) {
+  const v = document.getElementById(id).value;
+  return v.split('-').map(Number);
+}
+
+// Current month
+const TODAY = new Date();
+const CURRENT_YM = dateToYM(TODAY);
+
+// ====================================================================
+// INIT
+// ====================================================================
+window.onload = () => {
+  document.getElementById('headerDate').innerHTML = TODAY.toLocaleDateString('en-IN',{weekday:'short',day:'numeric',month:'short',year:'numeric'});
+
+  populateSelect('dashMonth', ALL_MONTHS, CURRENT_YM);
+  populateSelect('loansMonth', ALL_MONTHS, CURRENT_YM);
+  populateSelect('wi-cc-month', ALL_MONTHS, CURRENT_YM);
+  populateSelect('u-month', ALL_MONTHS, CURRENT_YM);
+
+  renderDashboard();
+  renderLoans();
+  renderGoals();
+  renderSIP();
+  initChat();
+  loadHistory();
+};
+
+// ====================================================================
+// DASHBOARD
+// ====================================================================
+function renderDashboard() {
+  const ym = getSelYM('dashMonth');
+  const salary = getSalary(ym);
+  const emis = totalEMIs(ym);
+  const fixedTotal = Object.values(DATA.fixed).reduce((a,b)=>a+b,0);
+  const free = salary - emis - fixedTotal;
+
+  document.getElementById('d-salary').textContent = fmt(salary);
+  document.getElementById('d-emis').textContent = fmt(emis);
+  document.getElementById('d-fixed').textContent = fmt(fixedTotal);
+  document.getElementById('d-free').textContent = fmt(free);
+  document.getElementById('d-free').className = 'stat-value ' + (free>=20000?'green':'red');
+
+  const split = getSplit(ym);
+  document.getElementById('phaseLabel').textContent = `Split Phase: ${split.label}`;
+
+  // Breakdown
+  const loanEF = free * split.loanEF;
+  const goalsEF = free * split.goalsEF;
+  const rows = [
+    ['Salary', salary, 'green'],
+    ['EMIs (all loans)', -emis, 'red'],
+    ['Rent', -DATA.fixed.rent, 'gold'],
+    ['Life Insurance', -DATA.fixed.lifeIns, 'gold'],
+    ['Health + ActiveOne', -(DATA.fixed.healthIns+DATA.fixed.activeOne), 'gold'],
+    ['Family Plan', -DATA.fixed.familyPlan, 'gold'],
+    ['CC Bill (avg)', -DATA.fixed.cc, 'gold'],
+    ['Misc', -DATA.fixed.misc, 'gold'],
+    ['→ Loan EF ('+split.label+')', loanEF, 'blue'],
+    ['→ Goals EF', goalsEF, 'purple'],
+  ];
+  let html='';
+  rows.forEach(([l,v,c])=>{
+    html+=`<div class="result-row"><span>${l}</span><span class="${c} bold">${v<0?'-':'+'}${fmt(Math.abs(v))}</span></div>`;
+  });
+  html+=`<div class="result-row" style="margin-top:6px"><span><strong>Free Cash (before EF split)</strong></span><span class="${free>=0?'green':'red'} bold">${fmt(free)}</span></div>`;
+  document.getElementById('d-breakdown').innerHTML = html;
+
+  // EF Status
+  let efHtml = '';
+  const loanEFAccum = computeEFAccum(ym, 'loan');
+  const goalsEFAccum = computeEFAccum(ym, 'goals');
+  efHtml += buildProg('Loan EF', loanEFAccum, 100000, 'blue');
+  efHtml += buildProg('Goals EF', goalsEFAccum, 250000, 'purple');
+  efHtml += `<div class="small mt8">Loan EF fills → lump-sum payoff. Goals EF funds lifestyle goals.</div>`;
+  document.getElementById('d-ef').innerHTML = efHtml;
+
+  // Debt progress
+  let debtHtml = '';
+  const loans = Object.entries(DATA.loans);
+  loans.forEach(([k,l]) => {
+    const bal = getLoanBal(k, ym);
+    const paid = l.bal - bal;
+    debtHtml += buildProg(l.name + ' ('+fmt(bal)+' left)', paid, l.bal, k==='solar'?'green':k==='car'?'blue':k==='personal'?'gold':k==='cred'?'purple':'red');
+  });
+  document.getElementById('d-debt').innerHTML = debtHtml;
+
+  // Milestones
+  let tlHtml = '';
+  DATA.milestones.forEach(m => {
+    const isPast = ymCompare(m.date, ym) < 0;
+    const isCurrent = ymCompare(m.date, ym) === 0;
+    const dotClass = isPast ? 'done' : isCurrent ? 'current' : 'future';
+    tlHtml += `<div class="tl-item">
+      <div class="tl-dot ${dotClass}"></div>
+      <div class="tl-date">${ymLabel(m.date)}</div>
+      <div class="tl-title">${m.icon} ${m.label}</div>
+      ${m.amount ? `<div class="tl-amount">${fmt(m.amount)}</div>` : ''}
+    </div>`;
+  });
+  document.getElementById('d-milestones').innerHTML = tlHtml;
+}
+
+function buildProg(label, current, target, color) {
+  const p = pct(current, target);
+  return `<div class="prog-wrap">
+    <div class="prog-label"><span>${label}</span><span>${fmt(current)} / ${fmt(target)} (${p}%)</span></div>
+    <div class="prog-bar"><div class="prog-fill prog-${color}" style="width:${p}%"></div></div>
+  </div>`;
+}
+
+function computeEFAccum(upToYM, type) {
+  let accum = 0;
+  let cur = [2026,10];
+  while(ymCompare(cur, upToYM) < 0) {
+    const salary = getSalary(cur);
+    const emis = totalEMIs(cur);
+    const fixed = Object.values(DATA.fixed).reduce((a,b)=>a+b,0);
+    const free = salary - emis - fixed;
+    const split = getSplit(cur);
+    accum += free * (type==='loan' ? split.loanEF : split.goalsEF);
+    cur = ymAdd(cur,1);
+  }
+  return Math.max(0, accum);
+}
+
+// ====================================================================
+// LOANS
+// ====================================================================
+function renderLoans() {
+  const ym = getSelYM('loansMonth');
+
+  // Table
+  let html = `<table><thead><tr><th>Loan</th><th>Rate</th><th>EMI</th><th>Balance</th><th>Paid Off</th><th>Status</th></tr></thead><tbody>`;
+  for(const [k,l] of Object.entries(DATA.loans)) {
+    const bal = getLoanBal(k, ym);
+    const paid = l.bal - bal;
+    const closed = bal <= 0 || ymCompare(ym, l.closedAt) > 0;
+    const tagClass = closed ? 'tag-green' : bal < l.bal*0.3 ? 'tag-gold' : 'tag-blue';
+    const tagText = closed ? '✅ Closed' : bal < l.bal*0.3 ? '🔥 Final Stretch' : '🔄 Active';
+    html+=`<tr>
+      <td style="font-weight:600">${l.name}</td>
+      <td class="td-r">${(l.rate*1200).toFixed(2)}% p.a.</td>
+      <td class="td-r">${fmt(l.emi)}</td>
+      <td class="td-r ${closed?'green':'red'}">${fmt(bal)}</td>
+      <td class="td-r green">${fmt(paid)}</td>
+      <td><span class="tag ${tagClass}">${tagText}</span></td>
+    </tr>`;
+  }
+  html += '</tbody></table>';
+  document.getElementById('loan-table').innerHTML = html;
+
+  // Timeline
+  let tlHtml = '<div class="timeline">';
+  DATA.milestones.filter(m=>m.label.includes('Closed')||m.label.includes('DEBT')).forEach(m=>{
+    const isPast = ymCompare(m.date,ym)<0;
+    tlHtml+=`<div class="tl-item">
+      <div class="tl-dot ${isPast?'done':'future'}"></div>
+      <div class="tl-date">${ymLabel(m.date)}</div>
+      <div class="tl-title">${m.icon} ${m.label}</div>
+    </div>`;
+  });
+  tlHtml += '</div>';
+  document.getElementById('loan-timeline').innerHTML = tlHtml;
+
+  // EMI summary
+  const emis = Object.entries(DATA.loans).map(([k,l])=>`<div class="result-row"><span>${l.name}</span><span class="bold">${fmt(l.emi)}/mo</span></div>`).join('');
+  const total = Object.values(DATA.loans).reduce((a,l)=>a+l.emi,0);
+  document.getElementById('loan-emi-summary').innerHTML = `<div class="result-box">${emis}<div class="result-row"><span>Total EMIs</span><span class="red bold">${fmt(total)}/mo</span></div></div>`;
+}
+
+// ====================================================================
+// GOALS
+// ====================================================================
+function renderGoals() {
+  let html = '';
+  DATA.goals.forEach((g,i)=>{
+    const isActive = i===0;
+    html += `<div class="card" style="margin-bottom:10px;border-color:${isActive?'#58a6ff':'var(--border)'}">
+      <div class="flex-between mb8">
+        <div style="font-size:15px;font-weight:700">${g.icon} ${g.name}</div>
+        <span class="tag ${isActive?'tag-blue':'tag-gray'}">${isActive?'🔄 Saving Now':'⏳ Pending'}</span>
+      </div>
+      <div class="flex-between small">
+        <span>Target: ${fmt(g.amount)}</span>
+        <span>By: ${ymLabel(g.targetDate)}</span>
+      </div>
+    </div>`;
+  });
+  document.getElementById('goals-list').innerHTML = html;
+
+  // Goals EF chart
+  let efHtml = '';
+  const goalTotals = DATA.goals.reduce((a,g)=>a+g.amount,0);
+  efHtml += `<div class="result-box">
+    <div class="result-row"><span>Total Goals Value</span><span class="bold">${fmt(goalTotals)}</span></div>
+    <div class="result-row"><span>Goals EF Target</span><span class="bold">${fmt(DATA.ef.goalsEF.target)}</span></div>
+    <div class="result-row"><span>Debt-free Month</span><span class="green bold">Dec 2028</span></div>
+  </div>`;
+  efHtml += `<div class="alert alert-success mt8">✅ After Dec-2028 debt freedom, all loan EMI savings (₹27,581/mo) redirect to goals!</div>`;
+  document.getElementById('goals-ef').innerHTML = efHtml;
+}
+
+// ====================================================================
+// SIP
+// ====================================================================
+function renderSIP() {
+  let html = '';
+  DATA.sips.forEach(s=>{
+    const annual = s.monthly*12;
+    const step = s===DATA.sips[0] ? '—' : `+${Math.round((s.monthly/DATA.sips[DATA.sips.indexOf(s)-1].monthly-1)*100)}%`;
+    html+=`<tr>
+      <td>${ymLabel(s.from)} – ${ymLabel(s.to)}</td>
+      <td class="td-r blue bold">${fmt(s.monthly)}</td>
+      <td class="td-r">${fmt(annual)}</td>
+      <td class="td-r green">${step}</td>
+      <td><span class="tag ${s.label==='Push Phase'?'tag-blue':'tag-green'}">${s.label}</span></td>
+    </tr>`;
+  });
+  document.getElementById('sip-table').innerHTML = html;
+
+  // Corpus projection (at 14% XIRR)
+  const xirr = 0.14/12;
+  let corpus = 0;
+  let curSIP = 0;
+  let months = 0;
+  const milestones2 = [[10,2036],[20,2046],[23,2049]];
+  let corpusHtml = '<div class="result-box">';
+  for(let yr=0;yr<23;yr++) {
+    let ym = ymAdd([2026,10], yr*12);
+    for(let m=0;m<12;m++) {
+      curSIP = getSIP(ymAdd([2026,10], yr*12+m));
+      corpus = corpus*(1+xirr) + curSIP;
+      months++;
+    }
+    const tgt = milestones2.find(x=>x[0]===yr+1);
+    if(tgt||yr===4||yr===9||yr===14||yr===22) {
+      corpusHtml+=`<div class="result-row"><span>${yr+1} year${yr>0?'s':''} (${yr+2027})</span><span class="green bold">${fmt(corpus)}</span></div>`;
+    }
+  }
+  corpusHtml+=`<div class="result-row"><span style="font-size:11px;color:var(--text-muted)">Assumes 14% XIRR, step-up schedule</span><span></span></div>`;
+  corpusHtml += '</div>';
+  document.getElementById('sip-corpus').innerHTML = corpusHtml;
+}
+
+// ====================================================================
+// CHAT ADVISOR
+// ====================================================================
+const QUICK_Qs = [
+  "When will I be debt free?",
+  "How much to save this month?",
+  "What is my current free cash?",
+  "Which loan should I prepay first?",
+  "How much is my total EMI?",
+  "What is my EF status?",
+  "When can I buy a laptop?",
+  "What is my SIP this month?",
+  "How much will I save after becoming debt free?",
+  "What are my financial milestones?",
+  "How much is my next salary?",
+  "Explain my debt repayment strategy",
+];
+
+function initChat() {
+  const chips = document.getElementById('quick-chips');
+  QUICK_Qs.forEach(q => {
+    const c = document.createElement('div');
+    c.className = 'chip';
+    c.textContent = q;
+    c.onclick = () => { document.getElementById('chat-input').value=q; chatSend(); };
+    chips.appendChild(c);
+  });
+  addBotMsg(`👋 Hello Ajith! I'm your personal financial advisor. I have all your financial data loaded — loans, SIPs, goals, EF strategy, milestones and more.<br><br>Ask me anything about your finances, or tap a quick question above!`);
+}
+
+function chatKey(e) { if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();chatSend();} }
+
+function chatSend() {
+  const inp = document.getElementById('chat-input');
+  const q = inp.value.trim();
+  if(!q) return;
+  addUserMsg(q);
+  inp.value = '';
+  const ans = getAnswer(q.toLowerCase());
+  setTimeout(()=>addBotMsg(ans), 300);
+}
+
+function addUserMsg(text) {
+  const msgs = document.getElementById('chat-msgs');
+  const now = new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
+  msgs.innerHTML += `<div class="msg msg-user"><div class="msg-bubble">${escHtml(text)}</div><div class="msg-time">${now}</div></div>`;
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function addBotMsg(html) {
+  const msgs = document.getElementById('chat-msgs');
+  const now = new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
+  msgs.innerHTML += `<div class="msg msg-bot"><div class="msg-bubble">${html}</div><div class="msg-time">${now}</div></div>`;
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function escHtml(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function getAnswer(q) {
+  const ym = CURRENT_YM;
+  const salary = getSalary(ym);
+  const emis = totalEMIs(ym);
+  const fixed = Object.values(DATA.fixed).reduce((a,b)=>a+b,0);
+  const free = salary - emis - fixed;
+  const split = getSplit(ym);
+  const sip = getSIP(ym);
+
+  // ---- DEBT FREE ----
+  if(q.includes('debt free')||q.includes('debt-free')||q.includes('loan free')) {
+    return `🎉 You'll be <strong>DEBT FREE in December 2028!</strong><br><br>
+      <strong>Payoff timeline (Avalanche):</strong><br>
+      ☀️ Solar Roof → Dec 2027<br>
+      📊 MF Pledge → Dec 2027<br>
+      💳 CRED → Oct 2028<br>
+      🚗 Car Loan → Sep 2028<br>
+      🏦 Personal Loan → Nov 2028<br>
+      🎉 <strong>All done → Dec 2028</strong><br><br>
+      That's just <strong>${monthsFrom(ym,[2028,12])} months away!</strong>`;
+  }
+
+  // ---- FREE CASH / SAVE THIS MONTH ----
+  if(q.includes('free cash')||q.includes('save this month')||q.includes('save in')||q.includes('how much to save')) {
+    const loanEF = free * split.loanEF;
+    const goalsEF = free * split.goalsEF;
+    return `💰 For <strong>${ymLabel(ym)}</strong>:<br><br>
+      Take-home: <strong>${fmt(salary)}</strong><br>
+      Total EMIs: <strong>-${fmt(emis)}</strong><br>
+      Fixed costs: <strong>-${fmt(fixed)}</strong><br>
+      <strong>Free Cash: ${fmt(free)}</strong><br><br>
+      Split (${split.label}):<br>
+      → Loan EF: <strong>${fmt(loanEF)}</strong><br>
+      → Goals EF: <strong>${fmt(goalsEF)}</strong><br><br>
+      ${free<20000?'⚠️ <span class="red">Below ₹20k safety floor! Cut CC spend.</span>':'✅ Above safety floor.'}`;
+  }
+
+  // ---- EMI ----
+  if(q.includes('emi')||q.includes('loan payment')) {
+    let rows = '';
+    Object.entries(DATA.loans).forEach(([k,l])=>{ rows+=`• ${l.name}: <strong>${fmt(l.emi)}/mo</strong><br>`; });
+    return `📋 <strong>Your current EMIs:</strong><br><br>${rows}<br>Total: <strong>${fmt(emis)}/mo</strong>`;
+  }
+
+  // ---- SALARY ----
+  if(q.includes('salary')||q.includes('next salary')||q.includes('income')) {
+    return `💼 <strong>Your salary (net take-home):</strong><br><br>
+      Oct 2026 – Dec 2026: <strong>₹1,01,720/mo</strong><br>
+      Jan 2027 – Dec 2027: <strong>₹1,09,858/mo</strong><br>
+      Jan 2028 – Dec 2028: <strong>₹1,18,646/mo</strong><br>
+      Jan 2029 onward: <strong>₹1,28,138/mo</strong><br><br>
+      Current (${ymLabel(ym)}): <strong class="green">${fmt(salary)}</strong>`;
+  }
+
+  // ---- SIP ----
+  if(q.includes('sip')||q.includes('mutual fund')||q.includes('investment this month')) {
+    return `📈 <strong>Your SIP for ${ymLabel(ym)}: ${fmt(sip)}/mo</strong><br><br>
+      Apr 2027: ₹18,900 (+20%)<br>
+      Apr 2028: ₹22,680 (+20%)<br>
+      Apr 2029: ₹27,216 (+20%)<br>
+      Apr 2030: ₹28,577 (+5%)<br>
+      Apr 2031+: ₹30,006 (+5%)<br><br>
+      At 14% XIRR, your 23-year corpus (2049) projects to <strong class="green">~₹4.5–5 Cr</strong>`;
+  }
+
+  // ---- EF ----
+  if(q.includes('emergency fund')||q.includes('ef ')||q.includes('ef status')||q.includes('ef?')) {
+    const lef = computeEFAccum(ym,'loan');
+    const gef = computeEFAccum(ym,'goals');
+    return `🏦 <strong>Emergency Fund Status:</strong><br><br>
+      Loan EF: <strong>${fmt(lef)}</strong> / ₹1,00,000 (${pct(lef,100000)}%)<br>
+      Goals EF: <strong>${fmt(gef)}</strong> / ₹2,50,000 (${pct(gef,250000)}%)<br><br>
+      <strong>Strategy:</strong> Loan EF fills first → used for lump-sum prepayment.<br>
+      Goals EF funds: Laptop → Vacation → Gold → iPhone`;
+  }
+
+  // ---- WHICH LOAN TO PREPAY ----
+  if(q.includes('prepay')||q.includes('which loan')||q.includes('priority')) {
+    return `🎯 <strong>Avalanche Strategy — Highest Interest First:</strong><br><br>
+      1️⃣ <strong>CRED (14.99%)</strong> → Biggest interest drain<br>
+      2️⃣ <strong>Personal (13%)</strong><br>
+      3️⃣ <strong>Car (9.25%)</strong><br>
+      4️⃣ <strong>Solar (8.95%)</strong><br>
+      5️⃣ MF Pledge (interest-free)<br><br>
+      💡 Tip: Build Loan EF to ₹1L first, then use as lump-sum prepayment on CRED.`;
+  }
+
+  // ---- MILESTONES ----
+  if(q.includes('milestone')||q.includes('goal')||q.includes('target date')||q.includes('when can')) {
+    let rows='';
+    DATA.milestones.forEach(m=>{
+      const done=ymCompare(m.date,ym)<0;
+      rows+=`${done?'✅':'🔲'} ${m.icon} <strong>${ymLabel(m.date)}</strong> — ${m.label}<br>`;
+    });
+    return `🗓️ <strong>Your Financial Milestones:</strong><br><br>${rows}`;
+  }
+
+  // ---- LAPTOP ----
+  if(q.includes('laptop')) {
+    return `💻 <strong>Laptop Goal: ₹15,000 by Dec 2026</strong><br><br>
+      Your Goals EF will accumulate enough by Dec 2026.<br>
+      After buying: Vacation becomes next priority (₹1,00,000 by Apr 2028).`;
+  }
+
+  // ---- DEBT FREE SAVINGS ----
+  if(q.includes('after debt free')||q.includes('after becoming debt')) {
+    const postDebtEMI = Object.values(DATA.loans).reduce((a,l)=>a+l.emi,0);
+    return `🎉 <strong>After Dec-2028 (Debt Free):</strong><br><br>
+      All loan EMIs freed: <strong class="green">+${fmt(postDebtEMI)}/mo</strong><br>
+      This redirects to:<br>
+      → SIP boost (already at ₹27,216 by then)<br>
+      → Goals completion acceleration<br>
+      → NPS / real estate / emergency fund top-up<br><br>
+      <strong>Net worth growth accelerates significantly from 2029!</strong>`;
+  }
+
+  // ---- STRATEGY ----
+  if(q.includes('strategy')||q.includes('plan')||q.includes('how does it work')) {
+    return `📋 <strong>Your Debt Freedom Strategy:</strong><br><br>
+      <strong>1. Avalanche Repayment</strong><br>
+      Pay min EMIs → extra cash hits CRED first (14.99%)<br><br>
+      <strong>2. Split EF Model</strong><br>
+      Free cash → Loan EF (fills to ₹1L → lump-sum payoff)<br>
+      + Goals EF (lifestyle goals fund)<br><br>
+      <strong>3. SIP Step-Up (April-aligned)</strong><br>
+      Start ₹15,750 → grow to ₹30,006 by 2031<br><br>
+      <strong>4. Phase-based splits</strong><br>
+      Oct-Dec 2026: 50/50<br>
+      Jan-Sep 2027: 65/35<br>
+      Oct 2027-Feb 2028: 70/30<br>
+      Mar 2028+: 80/20<br><br>
+      <strong>Result: DEBT FREE Dec 2028 🎉</strong>`;
+  }
+
+  // ---- VACATION ----
+  if(q.includes('vacation')||q.includes('trip')) {
+    return `✈️ <strong>Vacation Goal: ₹1,00,000 by Apr 2028</strong><br><br>
+      Priority order: Laptop (Dec 2026) → <strong>Vacation (Apr 2028)</strong> → Gold Chain → iPhone<br><br>
+      After laptop purchase, Goals EF fully focuses on vacation fund.`;
+  }
+
+  // ---- CC BILL ----
+  if(q.includes('credit card')||q.includes('cc bill')) {
+    return `💳 <strong>Credit Card:</strong><br><br>
+      Average monthly CC bill: <strong>₹35,000/mo</strong><br>
+      Paid in full each month (no revolving interest).<br><br>
+      💡 Reducing CC by ₹5,000/mo frees extra ₹5k for Loan EF → faster payoff.`;
+  }
+
+  // ---- INSURANCE ----
+  if(q.includes('insurance')||q.includes('life')||q.includes('health')) {
+    return `🛡️ <strong>Your Insurance:</strong><br><br>
+      Life Insurance: <strong>₹2,290/mo</strong><br>
+      Health Insurance: <strong>₹991/mo</strong><br>
+      ActiveOne: <strong>₹1,633/mo</strong><br>
+      Family Plan: <strong>₹11,500/mo</strong><br><br>
+      Total insurance: <strong>${fmt(2290+991+1633+11500)}/mo</strong><br><br>
+      80D eligible: Up to ₹25,000/yr for health premiums.`;
+  }
+
+  // ---- DEFAULT ----
+  return `🤔 I don't have a specific rule for that query yet. Try asking:<br><br>
+    • "When will I be debt free?"<br>
+    • "How much to save this month?"<br>
+    • "Which loan should I prepay first?"<br>
+    • "What is my SIP this month?"<br>
+    • "Explain my debt repayment strategy"<br><br>
+    Or try the <strong>What-If</strong> tab for scenario calculations!`;
+}
+
+function monthsFrom(a,b) {
+  return (b[0]-a[0])*12 + (b[1]-a[1]);
+}
+
+// ====================================================================
+// WHAT-IF
+// ====================================================================
+function calcPrepay() {
+  const key = document.getElementById('wi-loan').value;
+  const amt = parseFloat(document.getElementById('wi-prepay').value)||0;
+  if(!amt){alert('Enter prepayment amount');return;}
+  const loan = DATA.loans[key];
+
+  // Normal payoff months
+  let bal = loan.bal;
+  let m = 0;
+  while(bal>0 && m<360) { bal = Math.max(0,bal-loan.emi+bal*loan.rate); m++; }
+  const normalMonths = m;
+  const normalInterest = loan.emi*m - loan.bal;
+
+  // With prepayment
+  bal = Math.max(0, loan.bal - amt);
+  m = 0;
+  while(bal>0 && m<360) { bal = Math.max(0,bal-loan.emi+bal*loan.rate); m++; }
+  const newMonths = m;
+  const newInterest = loan.emi*newMonths - (loan.bal-amt);
+  const savedInterest = normalInterest - newInterest;
+  const savedMonths = normalMonths - newMonths;
+
+  document.getElementById('wi-prepay-result').innerHTML = `<div class="result-box mt8">
+    <div class="result-row"><span>Prepayment Amount</span><span class="blue bold">${fmt(amt)}</span></div>
+    <div class="result-row"><span>Normal Payoff</span><span>${normalMonths} months</span></div>
+    <div class="result-row"><span>New Payoff</span><span class="green bold">${newMonths} months</span></div>
+    <div class="result-row"><span>Time Saved</span><span class="green bold">${savedMonths} months</span></div>
+    <div class="result-row"><span>Interest Saved</span><span class="green bold">${fmt(Math.max(0,savedInterest))}</span></div>
+  </div>`;
+}
+
+function calcCC() {
+  const newCC = parseFloat(document.getElementById('wi-cc').value)||35000;
+  const diff = 35000 - newCC;
+  const months = 26; // Oct 2026 to Dec 2028
+  const totalSaving = diff * months;
+  document.getElementById('wi-cc-result').innerHTML = `<div class="result-box mt8">
+    <div class="result-row"><span>Current CC Bill</span><span>₹35,000/mo</span></div>
+    <div class="result-row"><span>New CC Bill</span><span class="${diff>=0?'green':'red'} bold">${fmt(newCC)}/mo</span></div>
+    <div class="result-row"><span>Monthly Difference</span><span class="${diff>=0?'green':'red'} bold">${diff>=0?'+':''}${fmt(diff)}</span></div>
+    <div class="result-row"><span>Savings until Dec-2028</span><span class="green bold">${fmt(totalSaving)}</span></div>
+    <div class="result-row"><span>Impact</span><span>${diff>0?'Faster debt payoff 🚀':'Slower payoff ⚠️'}</span></div>
+  </div>`;
+}
+
+function calcSIP() {
+  const extra = parseFloat(document.getElementById('wi-sip').value)||0;
+  const xirr = parseFloat(document.getElementById('wi-sip-xirr').value)||14;
+  const years = parseFloat(document.getElementById('wi-sip-years').value)||10;
+  const r = xirr/12/100;
+  const n = years*12;
+  const future = extra * ((Math.pow(1+r,n)-1)/r) * (1+r);
+  const invested = extra * n;
+  document.getElementById('wi-sip-result').innerHTML = `<div class="result-box mt8">
+    <div class="result-row"><span>Extra SIP</span><span class="blue bold">${fmt(extra)}/mo</span></div>
+    <div class="result-row"><span>Duration</span><span>${years} years</span></div>
+    <div class="result-row"><span>Total Invested</span><span>${fmt(invested)}</span></div>
+    <div class="result-row"><span>Corpus at ${xirr}% XIRR</span><span class="green bold">${fmt(future)}</span></div>
+    <div class="result-row"><span>Wealth Created</span><span class="gold bold">${fmt(future-invested)}</span></div>
+  </div>`;
+}
+
+function calcNewLoan() {
+  const P = parseFloat(document.getElementById('wi-newloan-amt').value)||0;
+  const r = parseFloat(document.getElementById('wi-newloan-rate').value)/12/100;
+  const n = parseFloat(document.getElementById('wi-newloan-tenure').value);
+  if(!P||!n){alert('Fill all fields');return;}
+  const emi = P * r * Math.pow(1+r,n) / (Math.pow(1+r,n)-1);
+  const currentEMIs = totalEMIs(CURRENT_YM);
+  const salary = getSalary(CURRENT_YM);
+  const newTotal = currentEMIs + emi;
+  const foir = newTotal / salary * 100;
+  const safe = foir <= 40;
+  document.getElementById('wi-newloan-result').innerHTML = `<div class="result-box mt8">
+    <div class="result-row"><span>Loan Amount</span><span>${fmt(P)}</span></div>
+    <div class="result-row"><span>EMI</span><span class="blue bold">${fmt(emi)}/mo</span></div>
+    <div class="result-row"><span>Total Interest</span><span>${fmt(emi*n-P)}</span></div>
+    <div class="result-row"><span>Total EMIs (new)</span><span class="${safe?'gold':'red'} bold">${fmt(newTotal)}/mo</span></div>
+    <div class="result-row"><span>FOIR (debt/income)</span><span class="${safe?'green':'red'} bold">${foir.toFixed(1)}% ${safe?'✅ Safe':'⚠️ Risky (>40%)'}</span></div>
+  </div>`;
+}
+
+// ====================================================================
+// TAX
+// ====================================================================
+function calc80C() {
+  const elss = parseFloat(document.getElementById('t-elss').value)||0;
+  const lic = parseFloat(document.getElementById('t-lic').value)||0;
+  const ppf = parseFloat(document.getElementById('t-ppf').value)||0;
+  const hlp = parseFloat(document.getElementById('t-hlprincipal').value)||0;
+  const total = elss+lic+ppf+hlp;
+  const eligible = Math.min(total, 150000);
+  const excess = Math.max(0, total-150000);
+  document.getElementById('t-80c-result').innerHTML = `<div class="result-box mt8">
+    <div class="result-row"><span>ELSS SIP</span><span>${fmt(elss)}</span></div>
+    <div class="result-row"><span>Life Insurance</span><span>${fmt(lic)}</span></div>
+    <div class="result-row"><span>PPF / EPF</span><span>${fmt(ppf)}</span></div>
+    <div class="result-row"><span>Home Loan Principal</span><span>${fmt(hlp)}</span></div>
+    <div class="result-row"><span>Total 80C</span><span>${fmt(total)}</span></div>
+    <div class="result-row"><span>80C Deduction</span><span class="green bold">${fmt(eligible)}</span></div>
+    ${excess>0?`<div class="result-row"><span>Excess (not eligible)</span><span class="red">${fmt(excess)}</span></div>`:''}
+    <div class="result-row"><span>Remaining limit</span><span class="gold">${fmt(Math.max(0,150000-total))}</span></div>
+  </div>`;
+}
+
+function calcCG() {
+  const type = document.getElementById('t-asset').value;
+  const buy = parseFloat(document.getElementById('t-buy').value)||0;
+  const sell = parseFloat(document.getElementById('t-sell').value)||0;
+  const slab = parseFloat(document.getElementById('t-slab').value)/100;
+  const gain = sell - buy;
+  if(gain<=0) { document.getElementById('t-cg-result').innerHTML=`<div class="alert alert-warn mt8">No gain / capital loss — no tax applicable.</div>`; return; }
+
+  let tax=0, taxRate=0, note='';
+  if(type==='eq_ltcg') {
+    const exempted = Math.min(gain, 125000); // ₹1.25L LTCG exemption (Budget 2024)
+    tax = Math.max(0, (gain-125000)*0.125);
+    taxRate = 12.5;
+    note = '12.5% LTCG on equity/MF (after ₹1.25L exemption — Budget 2024)';
+  } else if(type==='eq_stcg') {
+    tax = gain * 0.20; // 20% STCG from Jul 2024
+    taxRate = 20;
+    note = '20% STCG on equity/MF (Budget 2024)';
+  } else if(type==='debt_ltcg') {
+    tax = gain * slab; // Taxed as per slab (post Apr 2023 rules)
+    taxRate = slab*100;
+    note = 'Debt MF LTCG taxed at income slab rate (post Apr 2023)';
+  } else {
+    tax = gain * slab;
+    taxRate = slab*100;
+    note = 'Debt MF STCG taxed at income slab rate';
+  }
+  const cess = tax * 0.04;
+  document.getElementById('t-cg-result').innerHTML = `<div class="result-box mt8">
+    <div class="result-row"><span>Purchase Value</span><span>${fmt(buy)}</span></div>
+    <div class="result-row"><span>Sale Value</span><span>${fmt(sell)}</span></div>
+    <div class="result-row"><span>Capital Gain</span><span class="green bold">${fmt(gain)}</span></div>
+    <div class="result-row"><span>Tax Rate</span><span>${taxRate}%</span></div>
+    <div class="result-row"><span>Tax</span><span class="red bold">${fmt(tax)}</span></div>
+    <div class="result-row"><span>+ 4% Health & Ed Cess</span><span class="red">${fmt(cess)}</span></div>
+    <div class="result-row"><span>Total Tax Payable</span><span class="red bold">${fmt(tax+cess)}</span></div>
+    <div class="result-row"><span>Net Gain</span><span class="green bold">${fmt(gain-tax-cess)}</span></div>
+  </div><div class="small mt8">${note}</div>`;
+}
+
+function calcRegime() {
+  const gross = parseFloat(document.getElementById('t-gross').value)||0;
+  const hra = parseFloat(document.getElementById('t-hra').value)||0;
+  const dedn80c = Math.min(parseFloat(document.getElementById('t-80c-in').value)||0, 150000);
+  const d80d = Math.min(parseFloat(document.getElementById('t-80d').value)||0, 25000);
+
+  // Old regime
+  const stdDedn = 50000;
+  const oldTaxable = Math.max(0, gross - hra - stdDedn - dedn80c - d80d);
+  const oldTax = calcSlabOld(oldTaxable);
+  const oldCess = oldTax * 0.04;
+
+  // New regime (FY 2024-25)
+  const newStd = 75000;
+  const newTaxable = Math.max(0, gross - newStd);
+  const newTax = calcSlabNew(newTaxable);
+  const newCess = newTax * 0.04;
+
+  const better = (oldTax+oldCess) <= (newTax+newCess) ? 'Old' : 'New';
+  const saving = Math.abs((oldTax+oldCess) - (newTax+newCess));
+
+  document.getElementById('t-regime-result').innerHTML = `<div class="result-box mt8">
+    <div class="result-row"><span></span><span class="bold">Old Regime</span><span class="bold">New Regime</span></div>
+    <div class="result-row"><span>Taxable Income</span><span>${fmt(oldTaxable)}</span><span>${fmt(newTaxable)}</span></div>
+    <div class="result-row"><span>Income Tax</span><span>${fmt(oldTax)}</span><span>${fmt(newTax)}</span></div>
+    <div class="result-row"><span>+ Cess (4%)</span><span>${fmt(oldCess)}</span><span>${fmt(newCess)}</span></div>
+    <div class="result-row"><span><strong>Total Tax</strong></span><span class="${better==='Old'?'green':'red'} bold">${fmt(oldTax+oldCess)}</span><span class="${better==='New'?'green':'red'} bold">${fmt(newTax+newCess)}</span></div>
+  </div>
+  <div class="alert alert-success mt8">✅ <strong>${better} Regime</strong> saves you <strong>${fmt(saving)}</strong></div>`;
+}
+
+function calcSlabOld(income) {
+  if(income<=250000) return 0;
+  let t=0;
+  if(income>1000000) t+=(income-1000000)*0.30;
+  if(income>500000)  t+=Math.min(income,1000000-500000)*0.20;
+  if(income>250000)  t+=Math.min(income,500000-250000)*0.05;
+  return t;
+}
+
+function calcSlabNew(income) {
+  // FY 2024-25 new regime slabs
+  const slabs = [[0,300000,0],[300000,600000,0.05],[600000,900000,0.10],[900000,1200000,0.15],[1200000,1500000,0.20],[1500000,Infinity,0.30]];
+  let t=0;
+  slabs.forEach(([lo,hi,r])=>{ if(income>lo) t+=Math.min(income,hi-lo)*r; });
+  // Rebate 87A (up to ₹7L)
+  if(income<=700000) t=0;
+  return t;
+}
+
+function calcS24() {
+  const interest = parseFloat(document.getElementById('t-s24').value)||0;
+  const type = document.getElementById('t-s24-type').value;
+  const deduction = type==='self' ? Math.min(interest,200000) : interest;
+  const taxSaving = deduction * 0.30 * 1.04; // 30% slab + cess
+  document.getElementById('t-s24-result').innerHTML = `<div class="result-box mt8">
+    <div class="result-row"><span>Annual Interest Paid</span><span>${fmt(interest)}</span></div>
+    <div class="result-row"><span>Sec 24 Deduction</span><span class="green bold">${fmt(deduction)}</span></div>
+    <div class="result-row"><span>Tax Saved (30% slab)</span><span class="green bold">${fmt(taxSaving)}</span></div>
+  </div>`;
+}
+
+// ====================================================================
+// MF REBALANCING
+// ====================================================================
+function rebalance() {
+  const total = parseFloat(document.getElementById('mf-total').value)||0;
+  const lc   = parseFloat(document.getElementById('mf-lc').value)||0;
+  const mc   = parseFloat(document.getElementById('mf-mc').value)||0;
+  const sc   = parseFloat(document.getElementById('mf-sc').value)||0;
+  const flex = parseFloat(document.getElementById('mf-flex').value)||0;
+  const sect = parseFloat(document.getElementById('mf-sect').value)||0;
+  const debt = parseFloat(document.getElementById('mf-debt').value)||0;
+
+  const inputTotal = lc+mc+sc+flex+sect+debt;
+  const t = total || inputTotal;
+  if(!t){alert('Enter portfolio value');return;}
+
+  // Suggested allocation (aggressive growth, pre-debt-free phase)
+  const targets = [
+    {name:'Large Cap', actual:lc, target:0.30, color:'blue'},
+    {name:'Mid Cap',   actual:mc, target:0.25, color:'purple'},
+    {name:'Small Cap', actual:sc, target:0.20, color:'green'},
+    {name:'Flexi/Multi Cap', actual:flex, target:0.15, color:'gold'},
+    {name:'Sectoral',  actual:sect, target:0.05, color:'red'},
+    {name:'Debt/Liquid', actual:debt, target:0.05, color:'gray'},
+  ];
+
+  let html = '<div class="result-box mt8">';
+  targets.forEach(item=>{
+    const actualPct = t ? (item.actual/t*100) : 0;
+    const targetPct = item.target*100;
+    const diff = actualPct - targetPct;
+    const action = Math.abs(diff)<2?'✅ On target':diff>0?'🔴 Over — consider booking profit':'🟡 Under — add more';
+    html+=`<div class="result-row">
+      <span>${item.name}</span>
+      <span>${actualPct.toFixed(1)}% / ${targetPct}% ${action}</span>
+    </div>`;
+  });
+  html+=`<div class="result-row"><span class="bold">Total</span><span class="bold">${fmt(inputTotal)} / ${fmt(t)}</span></div>`;
+  html+='</div>';
+  html+=`<div class="alert alert-info mt8">💡 Suggested: Large(30%) Mid(25%) Small(20%) Flexi(15%) Sect(5%) Debt(5%)<br>Rebalance annually in <strong>April</strong>.</div>`;
+  document.getElementById('mf-rebal-result').innerHTML = html;
+}
+
+// ====================================================================
+// MONTHLY UPDATER
+// ====================================================================
+function saveUpdate() {
+  const month = document.getElementById('u-month').value;
+  const cc = parseFloat(document.getElementById('u-cc').value)||35000;
+  const misc = parseFloat(document.getElementById('u-misc').value)||5000;
+  const rent = parseFloat(document.getElementById('u-rent').value)||10000;
+  const extra = parseFloat(document.getElementById('u-extra').value)||0;
+  const notes = document.getElementById('u-notes').value;
+
+  let history = [];
+  try { history = JSON.parse(localStorage.getItem('ajith_actuals')||'[]'); } catch(e){}
+  const idx = history.findIndex(h=>h.month===month);
+  const entry = {month, cc, misc, rent, extra, notes, savedAt:new Date().toISOString()};
+  if(idx>=0) history[idx]=entry; else history.unshift(entry);
+  try { localStorage.setItem('ajith_actuals', JSON.stringify(history)); } catch(e){}
+  loadHistory();
+  alert('✅ Saved! ' + month);
+}
+
+function loadHistory() {
+  let history = [];
+  try { history = JSON.parse(localStorage.getItem('ajith_actuals')||'[]'); } catch(e){}
+  if(!history.length) { document.getElementById('u-history').innerHTML='<div class="small text-center" style="padding:20px">No actuals saved yet.</div>'; return; }
+  let html=`<div class="table-wrap"><table><thead><tr><th>Month</th><th>CC</th><th>Misc</th><th>Rent</th><th>Extra Income</th><th>Notes</th></tr></thead><tbody>`;
+  history.forEach(h=>{
+    const ym = h.month.split('-').map(Number);
+    html+=`<tr>
+      <td>${ymLabel(ym)}</td>
+      <td class="td-r ${h.cc<=35000?'green':'red'}">${fmt(h.cc)}</td>
+      <td class="td-r">${fmt(h.misc)}</td>
+      <td class="td-r">${fmt(h.rent)}</td>
+      <td class="td-r green">${h.extra?fmt(h.extra):'—'}</td>
+      <td class="small">${h.notes||'—'}</td>
+    </tr>`;
+  });
+  html+='</tbody></table></div>';
+  document.getElementById('u-history').innerHTML=html;
+}
+
+// ====================================================================
+// PAGE SWITCHING
+// ====================================================================
+function showPage(name) {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  event.currentTarget.classList.add('active');
+  if(name==='loans') renderLoans();
+  if(name==='goals') renderGoals();
+  if(name==='sip') renderSIP();
+}
+</script>
+</body>
+</html>
