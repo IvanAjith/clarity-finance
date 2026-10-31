@@ -1019,8 +1019,8 @@ const D = {
   fixed: { lifeIns:2290, health:991, active:1633, family:11500, cc:35000, misc:5000 },
   rentIncome: 10000, // rental income received monthly
   loans: {
-    solar:    {name:"Solar Roof",    orig:194389, bal:189492, rate:8.95/12/100,  emi:6025,  close:[2027,12], color:"#2563eb"},
-    car:      {name:"Car Loan",      orig:348710, bal:344727, rate:9.25/12/100,  emi:9296,  close:[2028,9],  color:"#059669"},
+    solar:    {name:"Solar Roof",    orig:266000, bal:194380, rate:10.2/12/100,  emi:6025,  close:[2030,6],  color:"#2563eb"},
+    car:      {name:"Car Loan",      orig:403116, bal:354023, rate:13.5/12/100,  emi:9296,  close:[2030,11], color:"#059669"},
     personal: {name:"Personal Loan", orig:189480, bal:187335, rate:13.00/12/100, emi:6883,  close:[2028,11], color:"#d97706"},
     cred:     {name:"CRED Loan",     orig:100000, bal:97768,  rate:14.99/12/100, emi:4982,  close:[2028,10], color:"#7c3aed"},
     mfpledge: {name:"MF Pledge",     orig:35000,  bal:35000,  rate:0,            emi:375,   close:[2027,12], color:"#0891b2"},
@@ -1036,12 +1036,12 @@ const D = {
     // Nov SIP ran normally (couldn't cancel — 2 days notice too short)
     // Dec 2026 – Apr 2027: PAUSED (5 months) → save ₹15,750/mo as Emergency Fund
     // May 2027: Resume at ₹18,900 (April increment received by then)
-    // Dec 2027: Chit fund ₹1,50,000 → close CRED (₹36,147) + Personal Loan (₹1,08,743) in one shot
+    // Dec 2027: Chit fund ₹1,50,000 (potential, not confirmed) — not factored in below
     {from:[2026,10],to:[2026,11], mo:15750,  label:"Push"},  // Oct + Nov normal
     {from:[2026,12],to:[2027,4],  mo:0,      label:"Pause"}, // 5-month SIP pause
     {from:[2027,5], to:[2028,3],  mo:18900,  label:"Push"},  // Resume with increment
     {from:[2028,4], to:[2028,12], mo:22680,  label:"Push"},
-    // ── BOOST phase (Jan 2029 = Debt Free! ₹33,000 → +5%/yr × 3yrs) ──
+    // ── BOOST phase (Dec 2030 = Debt Free! ₹33,000 → +5%/yr × 3yrs) ──
     {from:[2029,1], to:[2029,12],mo:33000,  label:"Boost"},
     {from:[2030,1], to:[2030,12],mo:34650,  label:"Boost"},
     {from:[2031,1], to:[2031,12],mo:36382,  label:"Boost"},
@@ -1077,12 +1077,13 @@ const D = {
   milestones:[
     {date:[2026,12],label:"Buy Laptop",              icon:"💻", amt:15000},
     {date:[2027,5], label:"SIP Resumes ₹18,900",     icon:"📈", amt:18900},
-    {date:[2027,12],label:"Solar Loan Closed",        icon:"☀️", amt:189492},
     {date:[2027,12],label:"MF Pledge Closed",         icon:"📊", amt:35000},
-    {date:[2027,12],label:"Chit Fund ₹1.5L → CRED + Personal Loans Closed 🎉", icon:"🏦", amt:150000},
     {date:[2028,4], label:"Vacation Fund Ready",      icon:"✈️", amt:100000},
-    {date:[2028,9], label:"Car Loan Closed",          icon:"🚗", amt:344727},
-    {date:[2028,12],label:"DEBT FREE! 🎉",            icon:"🏆", amt:0},
+    {date:[2028,10],label:"CRED Loan Closed",         icon:"💳", amt:97768},
+    {date:[2028,11],label:"Personal Loan Closed",     icon:"🏦", amt:187335},
+    {date:[2030,6], label:"Solar Loan Closed",        icon:"☀️", amt:266000},
+    {date:[2030,11],label:"Car Loan Closed",          icon:"🚗", amt:403116},
+    {date:[2030,11],label:"DEBT FREE! 🎉",            icon:"🏆", amt:0},
   ],
   existingCorpus: 155111,  // Existing equity MF corpus as of Oct 2026
   bondFundValue:   20631,  // ICICI Pru Dynamic Bond Fund current value Oct 2026
@@ -2497,12 +2498,15 @@ function renderDash(){
     {date:[2026,12], icon:'💻', label:'Buy Laptop — withdraw ₹15k from Savings Account'},
     {date:[2027,1],  icon:'🔄', label:'Switch Bond lump ₹27,086 → Equity SIP (change SIP mandate to ₹18,900)'},
     {date:[2027,1],  icon:'📈', label:'SIP step-up: ₹15,750 → ₹18,900/mo (April-aligned from now)'},
-    {date:[2027,12], icon:'✅', label:'Solar Roof & MF Pledge close — redirect freed EMI (₹6,400) to Loan EF'},
+    {date:[2027,12], icon:'✅', label:'MF Pledge closes — redirect freed EMI (₹375) to Loan EF'},
     // Loans
     {date:[2027,6],  icon:'🎯', label:'Check Loan EF balance — if ≥₹1L, do lump-sum prepay on CRED Loan'},
     {date:[2028,4],  icon:'✈️', label:'Vacation — withdraw ₹1L from Savings Account (fund should be ready)'},
     {date:[2028,4],  icon:'📈', label:'SIP step-up: ₹22,680 → ₹27,216/mo'},
-    {date:[2028,9],  icon:'🚗', label:'Car Loan closes — redirect ₹9,296 EMI to aggressive prepayment / SIP boost'},
+    {date:[2028,10], icon:'💳', label:'CRED Loan closes — redirect ₹4,982 EMI to Personal Loan / SIP'},
+    {date:[2028,11], icon:'🏦', label:'Personal Loan closes — redirect ₹6,883 EMI to Solar/Car prepayment'},
+    {date:[2030,6],  icon:'☀️', label:'Solar Loan closes — redirect ₹6,025 EMI to Car prepayment'},
+    {date:[2030,11], icon:'🚗', label:'Car Loan closes — DEBT FREE! 🎉 Redirect all EMIs (₹27,561) to SIP boost'},
     {date:[2028,9],  icon:'💍', label:'Gold Chain — withdraw ₹50k from Savings Account'},
     {date:[2028,10], icon:'💳', label:'CRED Loan closes — redirect ₹4,982 EMI to Loan EF'},
     {date:[2028,11], icon:'🏦', label:'Personal Loan closes — you are DEBT FREE 🎉'},
@@ -3766,23 +3770,23 @@ function answer(q){
   const ym=NOW, sal=getSalary(ym), emis=activeEMIs(ym), fix=fixedTotal(ym), free=freeCash(ym);
   const ansAccum=getEFAccumulated(ym); const split=getSplit(ym, ansAccum.gef);
   if(q.includes('debt free')||q.includes('debt-free'))
-    return `🎉 You'll be <strong>DEBT FREE in December 2028</strong> — that's <strong>${mFrom(ym,[2028,12])} months away!</strong><br><br>☀️ Solar → Dec 2027<br>📊 MF Pledge → Dec 2027<br>🚗 Car → Sep 2028<br>💳 CRED → Oct 2028<br>🏦 Personal → Nov 2028<br>🏆 <strong>All done → Dec 2028</strong>`;
+    return `🎉 You'll be <strong>DEBT FREE in November 2030</strong> — that's <strong>${mFrom(ym,[2030,11])} months away!</strong><br><br>📊 MF Pledge → Dec 2027<br>💳 CRED → Oct 2028<br>🏦 Personal → Nov 2028<br>☀️ Solar → Jun 2030<br>🚗 Car → Nov 2030<br>🏆 <strong>All done → Nov 2030</strong>`;
   if(q.includes('free cash')||q.includes('this month')||q.includes('save this'))
     return `💰 <strong>${ymLabel(ym)} Snapshot:</strong><br>Salary: <strong class="c-blue">${INR(sal)}</strong><br>EMIs: <strong class="c-red">-${INR(emis)}</strong><br>Fixed: <strong class="c-gold">-${INR(fix)}</strong><br><strong>Free Cash: <span class="${free>=20000?'c-green':'c-red'}">${INR(free)}</span></strong><br><br>Split (${split.label}):<br>→ Loan EF: ${INR(free*split.lef)}<br>→ Savings Account: ${INR(free*split.gef)}`;
   if(q.includes('emi')||q.includes('loan payment'))
     return `📋 <strong>EMIs right now:</strong><br>${Object.entries(D.loans).map(([k,l])=>`• ${l.name}: ${INR(l.emi)}`).join('<br>')}<br><br><strong>Total: ${INR(emis)}/mo</strong> (${Math.round(emis/sal*100)}% of income)`;
   if(q.includes('prepay')||q.includes('which loan'))
-    return `🎯 <strong>Avalanche order (highest interest first):</strong><br><br>1️⃣ CRED — 14.99% p.a.<br>2️⃣ Personal — 13%<br>3️⃣ Car — 9.25%<br>4️⃣ Solar — 8.95%<br>5️⃣ MF Pledge — 0%<br><br>💡 Build Loan EF to ₹1L first, then lump-sum hit on CRED.`;
+    return `🎯 <strong>Avalanche order (highest interest first):</strong><br><br>1️⃣ CRED — 14.99% p.a.<br>2️⃣ Personal — 13%<br>3️⃣ Car — 13.5%<br>4️⃣ Solar — 10.2%<br>5️⃣ MF Pledge — 0%<br><br>💡 Build Loan EF to ₹1L first, then lump-sum hit on CRED.`;
   if(q.includes('sip')||q.includes('investment'))
     return `📈 <strong>SIP for ${ymLabel(ym)}: ${INR(getSIP(ym))}/mo</strong><br><br>Apr 2027: ₹18,900 (+20%)<br>Apr 2028: ₹22,680 (+20%)<br>Apr 2029: ₹27,216 (+20%)<br>Apr 2030: ₹28,577 (+5%)<br>Apr 2031+: ₹30,006 (+5%)<br><br>23-year corpus @ 14% XIRR: <strong class="c-green">~₹4.5–5 Cr</strong>`;
   if(q.includes('strategy')||q.includes('plan'))
-    return `📋 <strong>Your Debt Freedom Strategy:</strong><br><br><strong>1. Avalanche Repayment</strong> — min EMIs → extra hits CRED (14.99%) first<br><br><strong>2. Split EF Model</strong> — Free cash → Savings Account (buffer ₹20K then growth to ₹1.5L) + Loan EF (Flexi FD prepay pool to ₹1L)<br><br><strong>3. SIP Step-Up</strong> — Start ₹15,750 → grow to ₹30,006 by 2031 (April-aligned)<br><br>🎉 <strong>Result: DEBT FREE Dec 2028</strong>`;
+    return `📋 <strong>Your Debt Freedom Strategy:</strong><br><br><strong>1. Avalanche Repayment</strong> — min EMIs → extra hits CRED (14.99%) first<br><br><strong>2. Split EF Model</strong> — Free cash → Savings Account (buffer ₹20K then growth to ₹1.5L) + Loan EF (Flexi FD prepay pool to ₹1L)<br><br><strong>3. SIP Step-Up</strong> — Start ₹15,750 → grow to ₹66,987 by Dec 2051 (Age 57 plan)<br><br>🎉 <strong>Result: DEBT FREE Nov 2030</strong>`;
   if(q.includes('vacation'))
     return `✈️ <strong>Vacation Goal: ${INR(100000)} by Apr 2028</strong><br><br>Priority 2 (after Laptop Dec-2026).<br>Savings Account builds after laptop purchase.<br>${mFrom(ym,[2028,4])} months away.`;
   if(q.includes('salary')||q.includes('next year'))
     return `💼 <strong>Income Step-Ups:</strong><br><br>Oct 2026–Dec 2026: ${INR(101720)} + ₹10k rent = ${INR(111720)}<br>Jan 2027–Dec 2027: ${INR(109858)} + ₹10k rent = ${INR(119858)}<br>Jan 2028–Dec 2028: ${INR(118646)} + ₹10k rent = ${INR(128646)}<br>Jan 2029+: ${INR(128138)} + ₹10k rent = ${INR(138138)}<br><br>Current total income: <strong class="c-blue">${INR(sal)}</strong>`;
   if(q.includes('after debt')||q.includes('debt free saving'))
-    return `🎉 <strong>After Dec 2028 — Freedom Dividend:</strong><br><br>EMIs freed: <strong class="c-green">+${INR(Object.values(D.loans).reduce((a,l)=>a+l.emi,0))}/mo</strong><br>Options: SIP boost | NPS | Real estate prep | Vacation & goals acceleration<br><br>Net worth growth rate <strong>accelerates massively from 2029!</strong>`;
+    return `🎉 <strong>After Nov 2030 — Freedom Dividend:</strong><br><br>EMIs freed: <strong class="c-green">+${INR(Object.values(D.loans).reduce((a,l)=>a+l.emi,0))}/mo</strong><br>Options: SIP boost to ₹33k+ | NPS | Real estate prep | Vacation & goals acceleration<br><br>Net worth growth rate <strong>accelerates massively from Dec 2030!</strong>`;
   return `🤔 I don't have a specific answer for that. Try:<br>• "When will I be debt free?"<br>• "Free cash this month?"<br>• "Which loan to prepay?"<br>• "Explain my strategy"<br><br>Or use the <strong>What-If</strong> tab for calculators!`;
 }
 

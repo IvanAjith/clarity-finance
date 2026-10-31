@@ -83,14 +83,16 @@ clarity-finance/
 
 ### Loans — Oct 2026 Opening Balances
 
-| Loan | Balance | EMI | Rate p.a. | Closes |
-|------|---------|-----|-----------|--------|
-| Solar Roof | ₹1,89,492 | ₹6,025 | 8.95% | Dec 2027 |
-| Car Loan | ₹3,44,727 | ₹9,296 | 9.25% | Sep 2028 |
-| Personal Loan | ₹1,87,335 | ₹6,883 | 13.00% | Nov 2028 |
-| CRED Loan | ₹97,768 | ₹4,982 | 14.99% | Oct 2028 |
-| MF Pledge | ₹35,000 | ₹375 | 0% | Dec 2027 |
-| **TOTAL** | **₹8,54,322** | **₹27,561** | — | **Dec 2028** |
+| Loan | Balance (Nov 2026) | EMI | Rate p.a. | Closes | Source |
+|------|-------------------|-----|-----------|--------|--------|
+| Solar Roof | ₹1,94,380 | ₹6,025 | 10.2% | Jun 2030 | CreditFair PDF macro0274220 |
+| Car Loan | ₹3,54,023 | ₹9,296 | 13.5% | Nov 2030 | Bajaj Finance PDF P403PZC59921523 |
+| Personal Loan | ₹1,87,335 | ₹6,883 | 13.00% | Nov 2028 | Confirmed correct |
+| CRED Loan | ₹97,768 | ₹4,982 | 14.99% | Oct 2028 | Confirmed correct |
+| MF Pledge | ₹35,000 | ₹375 | 0% | Dec 2027 | Confirmed correct |
+| **TOTAL** | **₹8,68,506** | **₹27,561** | — | **Nov 2030** | |
+
+> ⚠️ Solar and Car loan values corrected 01 Nov 2026 from actual lender repayment schedule PDFs (CreditFair & Bajaj Finance). EMIs were always correct; principals and rates were estimated wrongly in earlier sessions.
 
 > CRED loan: ₹1,02,750 total / 24 months / auto-pay HDFC XX0090
 
@@ -331,7 +333,8 @@ https://claude.ai/artifact/KF1cfK1vN35DwLX4G2xqGD
 | 1 | Earlier 2026 | Built financial plan from scratch; `Ajith_Financial_Plan_v1_Fresh.xlsx`; V1 dashboard; Google Sheet + onEdit trigger |
 | 2 | Oct 2026 | Built V80 dashboard; JSONP → fetch() CSP debugging; Apps Script fix identified; published Artifact; CRED analysis |
 | 3 | Oct 2026 | CRED verdict re-confirmed; built 8-screen Clarity Finance mockup; created README; created this GitHub repo |
-| 4 | 31 Oct 2026 | Financial advisory: MF redemption vs SIP pause vs keep-as-is. Discovered ₹35k MF pledged (only ₹98,887 redeemable). Option A/B/C analysis. Revised plan comparison. Confirmed Age 57 as primary plan (final SIP ₹66,987 in Dec 2051). Age 55 alternative has final SIP ₹92,434. |
+| 4 | 31 Oct 2026 | Financial advisory: MF redemption vs SIP pause vs keep-as-is. Discovered ₹35k MF pledged (only ₹98,887 redeemable). Option A/B/C analysis. Chose Option C (pause SIP Dec–Apr). Confirmed Age 57 as primary plan. Chit fund ₹1.5L potential in Dec 2027 (not confirmed — excluded from plan). |
+| 5 | 01 Nov 2026 | **LOAN DATA CORRECTION** — Cross-verified all loans against actual lender PDFs. Solar (CreditFair) and Car (Bajaj Finance) had wrong principals and rates. EMIs were correct. Debt-free date corrected from Dec 2028 → Nov 2030. All dashboard visuals, tables, charts, milestones, and chatbot updated. |
 
 ---
 
