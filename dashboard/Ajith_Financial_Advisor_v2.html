@@ -1032,10 +1032,15 @@ const D = {
   // Phase 3 GROW  : Jan'32–Dec'51 — +3%/yr sustainable forever
   // Target: ₹9.85 Cr @ 14% XIRR by Dec 2051 (25 years) | Ratio: 7.0× | Invest only ₹1.41 Cr
   sips: [
-    // ── PUSH phase (debt paydown, keep SIPs modest) ──
-    {from:[2026,10],to:[2027,3], mo:15750,  label:"Push"},
-    {from:[2027,4], to:[2028,3], mo:18900,  label:"Push"},
-    {from:[2028,4], to:[2028,12],mo:22680,  label:"Push"},
+    // ── PUSH phase — OPTION C (decided 31 Oct 2026) ──
+    // Nov SIP ran normally (couldn't cancel — 2 days notice too short)
+    // Dec 2026 – Apr 2027: PAUSED (5 months) → save ₹15,750/mo as Emergency Fund
+    // May 2027: Resume at ₹18,900 (April increment received by then)
+    // Dec 2027: Chit fund ₹1,50,000 → close CRED (₹36,147) + Personal Loan (₹1,08,743) in one shot
+    {from:[2026,10],to:[2026,11], mo:15750,  label:"Push"},  // Oct + Nov normal
+    {from:[2026,12],to:[2027,4],  mo:0,      label:"Pause"}, // 5-month SIP pause
+    {from:[2027,5], to:[2028,3],  mo:18900,  label:"Push"},  // Resume with increment
+    {from:[2028,4], to:[2028,12], mo:22680,  label:"Push"},
     // ── BOOST phase (Jan 2029 = Debt Free! ₹33,000 → +5%/yr × 3yrs) ──
     {from:[2029,1], to:[2029,12],mo:33000,  label:"Boost"},
     {from:[2030,1], to:[2030,12],mo:34650,  label:"Boost"},
@@ -1070,14 +1075,14 @@ const D = {
     {name:"iPhone",     amt:80000,  date:[2028,12],icon:"📱",color:"#7c3aed"},
   ],
   milestones:[
-    {date:[2026,12],label:"Buy Laptop",       icon:"💻", amt:15000},
-    {date:[2027,12],label:"Solar Loan Closed",icon:"☀️", amt:189492},
-    {date:[2027,12],label:"MF Pledge Closed", icon:"📊", amt:35000},
-    {date:[2028,4], label:"Vacation Fund Ready",icon:"✈️",amt:100000},
-    {date:[2028,9], label:"Car Loan Closed",  icon:"🚗", amt:344727},
-    {date:[2028,10],label:"CRED Closed",      icon:"💳", amt:97768},
-    {date:[2028,11],label:"Personal Closed",  icon:"🏦", amt:187335},
-    {date:[2028,12],label:"DEBT FREE! 🎉",    icon:"🏆", amt:0},
+    {date:[2026,12],label:"Buy Laptop",              icon:"💻", amt:15000},
+    {date:[2027,5], label:"SIP Resumes ₹18,900",     icon:"📈", amt:18900},
+    {date:[2027,12],label:"Solar Loan Closed",        icon:"☀️", amt:189492},
+    {date:[2027,12],label:"MF Pledge Closed",         icon:"📊", amt:35000},
+    {date:[2027,12],label:"Chit Fund ₹1.5L → CRED + Personal Loans Closed 🎉", icon:"🏦", amt:150000},
+    {date:[2028,4], label:"Vacation Fund Ready",      icon:"✈️", amt:100000},
+    {date:[2028,9], label:"Car Loan Closed",          icon:"🚗", amt:344727},
+    {date:[2028,12],label:"DEBT FREE! 🎉",            icon:"🏆", amt:0},
   ],
   existingCorpus: 155111,  // Existing equity MF corpus as of Oct 2026
   bondFundValue:   20631,  // ICICI Pru Dynamic Bond Fund current value Oct 2026
