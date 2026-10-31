@@ -3,7 +3,7 @@
 > Personal finance dashboard built around Ajith Khan's real financial data.  
 > Debt payoff tracker · Daily safe-to-spend calculator · Loan amortization · Clarity Finance product concept.
 
-**Last Updated:** 30 Oct 2026  
+**Last Updated:** 31 Oct 2026  
 **Owner:** Ajith Khan (IvanAjith) — khanajith.official@gmail.com  
 **Built with:** Claude (multi-session AI-assisted development)
 
@@ -125,39 +125,87 @@ Minimum EMIs on all loans; any extra free cash attacks the **highest interest ra
 - Loan EF target: ₹1,00,000
 - Goals EF target: ₹2,50,000
 
-### SIP Schedule (April step-ups)
+---
 
-| Period | Monthly SIP | Phase |
-|--------|-------------|-------|
-| Oct 2026 – Mar 2027 | ₹15,750 | Push |
-| Apr 2027 – Mar 2028 | ₹18,900 | Push |
-| Apr 2028 – Mar 2029 | ₹22,680 | Push |
-| Apr 2029 – Mar 2030 | ₹27,216 | Push |
-| Apr 2030 – Mar 2031 | ₹28,577 | Grow |
-| Apr 2031 onward | ₹30,006 | Grow |
+## 🏆 Primary Retirement Plan — Age 57 (USE THIS FOR ALL CALCULATIONS)
 
-### Goals Queue
+> **This is the canonical plan. Always use Age 57 unless Ajith explicitly asks for Age 55.**
 
-| Priority | Goal | Amount | Target Date |
-|----------|------|--------|-------------|
-| 1 | Laptop | ₹15,000 | Dec 2026 |
-| 2 | Vacation | ₹1,00,000 | Apr 2028 |
-| 3 | Gold Chain | ₹50,000 | Sep 2028 |
-| 4 | iPhone | ₹80,000 | Dec 2028 |
+### SIP Schedule — Age 57 Plan
 
-### Key Milestones
+| Period | Monthly SIP | Phase | Notes |
+|--------|-------------|-------|-------|
+| Oct 2026 – Mar 2027 | ₹15,750 | Push | During debt paydown |
+| Apr 2027 – Mar 2028 | ₹18,900 | Push | +20% step-up |
+| Apr 2028 – Dec 2028 | ₹22,680 | Push | +20% step-up |
+| Jan 2029 – Dec 2029 | ₹33,000 | Boost | Debt-free! Jump to ₹33k |
+| Jan 2030 – Dec 2030 | ₹34,650 | Boost | +5%/yr |
+| Jan 2031 – Dec 2031 | ₹36,382 | Boost | +5%/yr |
+| Jan 2032 – Dec 2032 | ₹38,202 | Grow | +3%/yr begins |
+| Jan 2033 – Dec 2033 | ₹39,348 | Grow | +3%/yr |
+| ... | +3%/yr | Grow | — |
+| Jan 2050 – Dec 2050 | ₹65,036 | Grow | — |
+| **Jan 2051 – Dec 2051** | **₹66,987** | **Grow** | **Final SIP — Age 57** |
 
-| Date | Milestone |
-|------|-----------|
-| Dec 2026 | Buy Laptop |
-| Dec 2027 | Solar Roof + MF Pledge close |
-| Apr 2028 | Vacation fund ready |
-| Sep 2028 | Car Loan closes |
-| Oct 2028 | CRED closes |
-| Nov 2028 | Personal Loan closes |
-| **Dec 2028** | **🎉 DEBT FREE** (26 months from Oct 2026) |
+**Key numbers (Age 57 plan @ 14% XIRR):**
+- Plan end: Dec 2051 (age 57, 25 years of investing)
+- Final monthly SIP: **₹66,987**
+- Target corpus: **₹9.85 Cr**
+- Total invested: ~₹1.41 Cr
+- Wealth ratio: ~7.0×
+- Bond lump sum: ₹27,086 added to equity corpus in Jan 2027
 
-**Total remaining interest across all loans: ₹1,41,035**
+### Age 55 Alternative Plan (for reference only)
+
+| Key Metric | Value |
+|-----------|-------|
+| Plan end | Dec 2048 (23 years) |
+| Boost start | ₹41,000 (+12%/yr × 3yrs) |
+| Final SIP | ₹92,434 (Dec 2048) |
+| Target corpus | ~₹10.1 Cr |
+| Extra cost vs Age 57 | ~₹42L more invested |
+
+---
+
+## 🔄 Revised SIP Plan (Oct 2026 Decision)
+
+Ajith considered redeeming MF or pausing SIP to build emergency fund. Final analysis:
+
+### MF Portfolio — Actual Position (Oct 2026)
+
+| Item | Value |
+|------|-------|
+| Total MF portfolio | ₹1,33,887 |
+| Of which pledged (locked till Dec 2027) | ₹35,000 |
+| Freely redeemable | ₹98,887 |
+| CRED loan payoff cost | ₹94,007 |
+| Leftover after CRED payoff | ₹4,880 |
+
+### Three Options Analysed
+
+**Option A — Redeem MF to pay off a loan:** Redeem ₹98,887 → pay CRED (₹94,007) → only ₹4,880 left as EF seed. Starting corpus drops to ₹39,880 (pledge ₹35k + ₹4,880). Final Age 57 corpus drops significantly.
+
+**Option B — Keep MF, continue as planned:** Maintain ₹1,55,111 corpus. Cash flow stays tight (ending each month with ₹5–6k).
+
+**Option C — Pause SIP 5 months, build EF:** Pause Nov 2026, reduce Dec–Mar to ₹8,000, resume ₹18,900 Apr 2027. Analysis showed this barely moves the needle on EF given fixed expenses.
+
+### Revised Plan Comparison (if Option A chosen — Age 57 basis)
+
+| Metric | Original Plan | Revised Plan | Difference |
+|--------|--------------|-------------|-----------|
+| Starting corpus | ₹1,55,111 | ₹39,880 | −₹1,15,231 |
+| PUSH phase SIP total | ₹5,25,420 | ₹4,62,920 | −₹62,500 |
+| BOOST + GROW SIP | Identical | Identical | ₹0 |
+| Total SIP invested | ₹1.72 Cr | ~₹1.71 Cr | −₹62,500 |
+
+> Note: Full revised corpus figure for Age 57 plan not yet calculated — the ₹8.72 Cr / ₹9.11 Cr comparison was done on the Age 55 plan. For Age 57, recalculate if needed.
+
+### SIP Amount Clarification (CONFIRMED)
+
+- **Age 57 plan final SIP: ₹66,987/month (Dec 2051)** — this is what the dashboard shows
+- **Age 57 plan max SIP ever: ₹66,987**
+- Age 55 plan final SIP: ₹92,434/month (Dec 2048) — alternative only
+- All future calculations: **use Age 57 plan**
 
 ---
 
@@ -175,6 +223,17 @@ Minimum EMIs on all loans; any extra free cash attacks the **highest interest ra
   - SIP tracker with step-up schedule
   - Goals tracker with target dates
   - Google Sheet HDFC balance auto-load (see below)
+  - Two retirement plan toggles: Age 57 (primary) and Age 55 (alternative)
+
+### Dashboard Key Constants
+
+```javascript
+existingCorpus: 155111   // Oct 2026 opening equity MF corpus
+bondFundValue:   20631   // ICICI Pru Dynamic Bond Fund
+bondLumpJan27:   27086   // Bond fund redeemed Jan 2027, added to equity corpus
+```
+
+> ⚠️ If Ajith proceeds with CRED payoff using MF redemption, update `existingCorpus` to `39880`
 
 ### Google Sheet Integration
 
@@ -272,6 +331,7 @@ https://claude.ai/artifact/KF1cfK1vN35DwLX4G2xqGD
 | 1 | Earlier 2026 | Built financial plan from scratch; `Ajith_Financial_Plan_v1_Fresh.xlsx`; V1 dashboard; Google Sheet + onEdit trigger |
 | 2 | Oct 2026 | Built V80 dashboard; JSONP → fetch() CSP debugging; Apps Script fix identified; published Artifact; CRED analysis |
 | 3 | Oct 2026 | CRED verdict re-confirmed; built 8-screen Clarity Finance mockup; created README; created this GitHub repo |
+| 4 | 31 Oct 2026 | Financial advisory: MF redemption vs SIP pause vs keep-as-is. Discovered ₹35k MF pledged (only ₹98,887 redeemable). Option A/B/C analysis. Revised plan comparison. Confirmed Age 57 as primary plan (final SIP ₹66,987 in Dec 2051). Age 55 alternative has final SIP ₹92,434. |
 
 ---
 
@@ -282,6 +342,8 @@ https://claude.ai/artifact/KF1cfK1vN35DwLX4G2xqGD
 | Google Sheet balance auto-load | ⏳ Blocked | Deploy Apps Script `doGet`, update URL in dashboard |
 | Build fully interactive Clarity Finance web app | 🆕 New | Say "build the interactive Clarity Finance app" in new chat |
 | Apps Script URL wiring | ⏳ Waiting | Receive URL from Ajith, update `fetchSheetBalance()` |
+| Decide: redeem MF to pay CRED or keep as-is | ⏳ Pending | Ajith to confirm; if yes, update `existingCorpus` to ₹39,880 in dashboard |
+| Recalculate revised plan corpus for Age 57 | ⏳ Pending | If Option A chosen, run simulation with ₹39,880 seed on Age 57 schedule |
 
 ---
 
@@ -300,6 +362,8 @@ Or with file attached:
 Read this README.md and continue the Clarity Finance project.
 [attach README.md]
 ```
+
+> **Important for AI reading this:** Always use the **Age 57 plan** for all SIP and corpus calculations unless Ajith explicitly asks for Age 55. The Age 57 plan has a final SIP of ₹66,987/month and targets ₹9.85 Cr by Dec 2051.
 
 ---
 
