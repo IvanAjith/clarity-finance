@@ -807,8 +807,8 @@ tbody tr:hover { background: var(--surface2); }
       <div class="kpi-icon">⚖️</div>
       <div class="kpi-formula" id="sip-k-alloc-f">—</div>
     </div>
-    <!-- Tile 3: Next Step-Up -->
-    <div class="kpi"><div class="kpi-stripe bg-purple"></div><div class="kpi-label">Next Step-Up</div><div class="kpi-value c-purple" id="sip-k-next">—</div><div class="kpi-sub" id="sip-k-next-sub">—</div><div class="kpi-icon">🚀</div><div class="kpi-formula" id="sip-k-next-f">—</div></div>
+    <!-- Tile 3: Next Step-Up / Resume -->
+    <div class="kpi"><div class="kpi-stripe bg-purple"></div><div class="kpi-label" id="sip-k-next-label">Next Step-Up</div><div class="kpi-value c-purple" id="sip-k-next">—</div><div class="kpi-sub" id="sip-k-next-sub">—</div><div class="kpi-icon">🚀</div><div class="kpi-formula" id="sip-k-next-f">—</div></div>
     <!-- Tile 4: Projected Corpus at Retirement -->
     <div class="kpi"><div class="kpi-stripe" style="background:var(--red)"></div><div class="kpi-label">Projected Corpus</div><div class="kpi-value" id="sip-k-corpus" style="color:var(--red)">—</div><div class="kpi-sub" id="sip-k-corpus-sub">—</div><div class="kpi-icon">🏆</div><div class="kpi-formula" id="sip-k-corpus-f">—</div></div>
   </div>
@@ -3382,25 +3382,41 @@ function renderSIPAll(){
   const glidePhase = getGlidePhase(selYm);
   const bondIsActive = ymCmp(selYm, [2026,12]) <= 0;
 
-  // Next step-up: find the next sip entry after selYm
+  // Next step-up: find the next NON-PAUSE sip entry after selYm
+  const isPaused = sipAmt === 0;
   let nextEntry=null, prevEntry=sipEntry;
   for(const s of activeSips){
     if(ymCmp(s.from, selYm)>0){ nextEntry=s; break; }
     prevEntry=s;
   }
-  // Next step-up % is equity-only (gold doesn't step up, so exclude ₹1,000 from both)
-  const prevEqMo = prevEntry ? prevEntry.mo - 1000 : null;
-  const nextEqMo = nextEntry ? nextEntry.mo - 1000 : null;
-  const nextStepPct = (nextEqMo&&prevEqMo&&prevEqMo>0) ? `+${Math.round((nextEqMo/prevEqMo-1)*100)}%` : '—';
-  const nextStepLbl = nextEntry ? ymLabel(nextEntry.from) : 'Final phase';
-  const nextStepAmt = nextEntry ? `${INR(nextEntry.mo)} total (eq. ${INR(nextEqMo)})` : '—';
-
+  // Find the last non-zero entry before current month (for % calc baseline)
+  let lastActiveEntry = null;
+  for(const s of activeSips){
+    if(ymCmp(s.from, selYm)<=0 && s.mo>0) lastActiveEntry=s;
+    else if(ymCmp(s.from, selYm)>0) break;
+  }
+  // Find next non-pause entry (skip zero-SIP entries when calculating "resume")
+  let nextNonPauseEntry = null;
+  for(const s of activeSips){
+    if(ymCmp(s.from, selYm)>0 && s.mo>0){ nextNonPauseEntry=s; break; }
+  }
   const GOLD_FLAT_KPI = 1000;
-  const eqOnlySIP = sipAmt - GOLD_FLAT_KPI;
-  setText('sip-k-amount', INR(sipAmt));
-  setStyle('sip-k-amount','color',tagCol);
-  setText('sip-k-phase', `${phaseLabel} phase · Equity ${INR(eqOnlySIP)} + Gold ₹1,000`);
-  setText('sip-k-annual', `Annual: ${INR(sipAmt*12)} (equity ${INR(eqOnlySIP*12)} + gold ₹12,000)`);
+  const eqOnlySIP = Math.max(0, sipAmt - GOLD_FLAT_KPI);
+
+  // Tile 1: Active SIP — show PAUSED state clearly
+  setText('sip-k-amount', isPaused ? '⏸ ₹0' : INR(sipAmt));
+  setStyle('sip-k-amount','color', isPaused ? 'var(--gold)' : tagCol);
+  if(isPaused){
+    const resumeEntry = nextNonPauseEntry;
+    const resumeLbl = resumeEntry ? ymLabel(resumeEntry.from) : '—';
+    const resumeAmt = resumeEntry ? INR(resumeEntry.mo) : '—';
+    setText('sip-k-phase', `SIP Paused · Building Emergency Fund`);
+    setText('sip-k-annual', `Resumes ${resumeLbl} at ${resumeAmt} · Saving ₹15,750/mo as EF`);
+  } else {
+    setText('sip-k-phase', `${phaseLabel} phase · Equity ${INR(eqOnlySIP)} + Gold ₹1,000`);
+    setText('sip-k-annual', `Annual: ${INR(sipAmt*12)} (equity ${INR(eqOnlySIP*12)} + gold ₹12,000)`);
+  }
+
   // Compute actual fund breakdown for KPI tiles
   const breakdown0     = getSIPBreakdown(selYm);
   const bondAmt0       = (breakdown0.find(f=>f.isBond)||{amount:0}).amount;
@@ -3412,17 +3428,45 @@ function renderSIPAll(){
   // Tile 2: Merged Equity / Gold Allocation
   setText('sip-k-equity', eqPctDisplay+'%');
   setText('sip-k-debt',   debtPctDisplay+'%');
-  const allocSub = `Eq ₹${eqAmt0.toLocaleString('en-IN')} + Gold ₹${debtAmtDisplay.toLocaleString('en-IN')} / mo`;
+  const allocSub = isPaused ? `Will resume: Eq ${INR(nextNonPauseEntry ? nextNonPauseEntry.mo-1000 : 0)} + Gold ₹1,000` : `Eq ₹${eqAmt0.toLocaleString('en-IN')} + Gold ₹${debtAmtDisplay.toLocaleString('en-IN')} / mo`;
   setText('sip-k-alloc-sub', allocSub);
   const glideNote = debtPct > 0 ? `Glide active — ${debtPct}% shifting to bond` : 'Static until 2047 glide kicks in';
   setText('sip-k-alloc-f', `${glidePhase.label} phase · ${glideNote}`);
-  // Tile 3: Next Step-Up — add current phase range
+
+  // Tile 3: Next Step-Up (or Resume) — smart logic for pause vs normal
   const curPhaseFrom = sipEntry ? ymLabel(sipEntry.from) : '—';
   const curPhaseTo   = sipEntry ? ymLabel(sipEntry.to)   : '—';
-  const curPhaseDesc = sipEntry ? `${phaseLabel} phase: ${curPhaseFrom} → ${curPhaseTo}` : '—';
-  setText('sip-k-next', nextStepPct);
-  setText('sip-k-next-sub', `(${nextStepPct}) on ${nextStepLbl}`);
-  setText('sip-k-next-f', (nextEntry ? `Jumps to ${nextStepAmt}` : 'Already at final step') + ` · ${curPhaseDesc}`);
+  if(isPaused && nextNonPauseEntry){
+    setText('sip-k-next-label', 'SIP Resumes On');
+    // Show RESUME info instead of % step-up
+    const resumeMo  = nextNonPauseEntry.mo;
+    const resumeEq  = resumeMo - 1000;
+    const pauseEnd  = ymLabel(nextNonPauseEntry.from);
+    const pauseFrom = sipEntry ? ymLabel(sipEntry.from) : '—';
+    const pauseTo   = sipEntry ? ymLabel(sipEntry.to)   : '—';
+    // % jump from last active SIP to resume amount (equity only)
+    const baseEq = lastActiveEntry ? lastActiveEntry.mo - 1000 : 0;
+    const resumePct = baseEq > 0 ? `+${Math.round((resumeEq/baseEq-1)*100)}%` : '—';
+    setText('sip-k-next', pauseEnd);
+    setStyle('sip-k-next','color','var(--gold)');
+    setStyle('sip-k-next','font-size','20px');
+    setText('sip-k-next-sub', `SIP Resumes · ${INR(resumeMo)}/mo (${resumePct} vs last active)`);
+    setText('sip-k-next-f', `Paused: ${pauseFrom} → ${pauseTo} · Push phase continues at ${INR(resumeMo)}`);
+  } else {
+    setText('sip-k-next-label', 'Next Step-Up');
+    // Normal: show step-up %
+    const prevEqMo = lastActiveEntry ? lastActiveEntry.mo - 1000 : null;
+    const nextEqMo = nextNonPauseEntry ? nextNonPauseEntry.mo - 1000 : (nextEntry ? nextEntry.mo - 1000 : null);
+    const nextStepPct = (nextEqMo && prevEqMo && prevEqMo>0) ? `+${Math.round((nextEqMo/prevEqMo-1)*100)}%` : '—';
+    const nextStepLbl = nextNonPauseEntry ? ymLabel(nextNonPauseEntry.from) : (nextEntry ? ymLabel(nextEntry.from) : 'Final phase');
+    const nextStepAmt = nextNonPauseEntry ? `${INR(nextNonPauseEntry.mo)} total (eq. ${INR(nextEqMo)})` : '—';
+    const curPhaseDesc = sipEntry ? `${phaseLabel} phase: ${curPhaseFrom} → ${curPhaseTo}` : '—';
+    setStyle('sip-k-next','color','var(--purple)');
+    setStyle('sip-k-next','font-size','');
+    setText('sip-k-next', nextStepPct);
+    setText('sip-k-next-sub', `on ${nextStepLbl}`);
+    setText('sip-k-next-f', (nextNonPauseEntry ? `Jumps to ${nextStepAmt}` : 'Already at final step') + ` · ${curPhaseDesc}`);
+  }
 
   // Tile 4: Projected Corpus — big number = corpus at END of current phase, sub = retirement target
   const _corpusPlan     = _activePlan === 55 ? D.sips55 : D.sips;
