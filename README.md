@@ -14,7 +14,8 @@
 ```
 clarity-finance/
 ├── dashboard/                        ← Main financial dashboard HTML app
-│   ├── Ajith_Financial_Advisor_v2.html   ← LATEST (V80) — use this
+│   ├── Ajith_Financial_Advisor_v3.html   ← LATEST (V3, 01 Nov 2026) — use this
+│   ├── Ajith_Financial_Advisor_v2.html   ← Previous version
 │   └── Ajith_Financial_Advisor_v1.html   ← Original V1 (offline only)
 │
 ├── loan-repayment-schedule/          ← Excel financial plan
@@ -37,7 +38,7 @@ clarity-finance/
 
 ## 🚀 Quick Start (for any AI or developer picking this up)
 
-1. **Open the dashboard:** `dashboard/Ajith_Financial_Advisor_v2.html` in any browser — works offline
+1. **Open the dashboard:** `dashboard/Ajith_Financial_Advisor_v3.html` in any browser — works offline
 2. **Fix Google Sheet auto-load:** Deploy `google-sheet/apps-script-doGet.js`, update URL in dashboard (see below)
 3. **See the product mockup:** Open `clarity-app/clarity-app.html` — 8-screen phone UI
 
@@ -215,9 +216,10 @@ Ajith considered redeeming MF or pausing SIP to build emergency fund. Final anal
 
 ### Dashboard HTML App (`dashboard/Ajith_Financial_Advisor_v2.html`)
 
-- **Version:** V80 (latest)
+- **Version:** V3 (01 Nov 2026 — latest, corrected loan data)
 - **Works:** Fully offline, all calculations in JS
 - **Published Artifact:** https://claude.ai/artifact/PQZUpcvGmAGo4myCV2KvmV
+- **File:** `dashboard/Ajith_Financial_Advisor_v3.html`
 - **Features:**
   - Live loan balances (formula-calculated for current month)
   - Avalanche payoff plan with milestone dates
