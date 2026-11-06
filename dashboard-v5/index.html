@@ -842,7 +842,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);min-height:100vh;displa
       <!-- SIP Schedule -->
       <div id="sip-card" class="inv-card" style="display:flex;flex-direction:column;">
         <div class="inv-card-title">SIP Step-Up Schedule</div>
-        <div id="sip-scroll" style="overflow-y:auto;"><div class="sip-row">
+        <div id="sip-scroll" style="overflow-y:auto;max-height:210px;"><div class="sip-row">
           <div><div class="sip-period">Oct 2026 – Mar 2027</div><div style="font-size:11px;color:var(--gray);">Push phase · Debt paydown priority</div></div>
           <div style="text-align:right;"><div class="sip-amt active">₹15,750</div><span class="sip-tag st-now">Active now</span></div>
         </div>
@@ -1326,21 +1326,7 @@ function applyActuals(){
   setTimeout(()=>{ btn.textContent = 'Update →'; btn.style.background = ''; },2000);
 }
 
-// ── SIP SCROLL HEIGHT: match Fund Allocation card ──
-function syncSipHeight(){
-  const allocCard = document.getElementById('fund-alloc-card');
-  const sipCard   = document.getElementById('sip-card');
-  const sipScroll = document.getElementById('sip-scroll');
-  if(!allocCard||!sipCard||!sipScroll) return;
-  const allocH = allocCard.offsetHeight; // total height of fund alloc card
-  const titleEl = sipCard.querySelector('.inv-card-title');
-  const usedH = titleEl.offsetHeight + 14 + 36; // title + its margin-bottom + card top+bottom padding
-  const scrollH = allocH - usedH;
-  sipScroll.style.maxHeight = scrollH + 'px';
-  sipCard.style.height = allocH + 'px';
-}
-window.addEventListener('load', syncSipHeight);
-window.addEventListener('resize', syncSipHeight);
+
 </script>
 </body>
 </html>
