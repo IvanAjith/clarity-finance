@@ -489,7 +489,7 @@ tbody tr:hover { background: var(--surface2); }
     <div class="kpi"><div class="kpi-stripe bg-blue"></div><div class="kpi-label">Total Income</div><div class="kpi-value c-blue" id="d-sal">—</div><div class="kpi-sub" id="d-sal-sub">Salary only</div><div class="kpi-icon">💰</div><div class="kpi-formula" id="d-sal-formula">Salary + Rent</div></div>
     <div class="kpi"><div class="kpi-stripe bg-red"></div><div class="kpi-label">Total EMIs</div><div class="kpi-value c-red" id="d-emi">—</div><div class="kpi-sub" id="d-emi-pct">% of income</div><div class="kpi-icon">🏦</div><div class="kpi-formula">Sum of active loan EMIs</div></div>
     <div class="kpi"><div class="kpi-stripe bg-gold"></div><div class="kpi-label">Fixed Expenses</div><div class="kpi-value c-gold" id="d-fix">—</div><div class="kpi-sub" id="d-fix-sub">Insurance + CC + SIP + misc</div><div class="kpi-icon">📋</div><div class="kpi-formula">Ins + Health + SIP + CC + Misc</div></div>
-    <div class="kpi"><div class="kpi-stripe bg-teal"></div><div class="kpi-label">Free Cash</div><div class="kpi-value" id="d-free">—</div><div class="kpi-sub" id="d-free-sub">Income − EMIs − Fixed</div><div class="kpi-icon">📊</div><div class="kpi-formula">Actual if entered · else projected</div></div>
+    <div class="kpi"><div class="kpi-stripe bg-teal"></div><div class="kpi-label">Spendable Cash</div><div class="kpi-value" id="d-free">—</div><div class="kpi-sub" id="d-free-sub">Savings − Buffer − Loan EF</div><div class="kpi-icon">💵</div><div class="kpi-formula">Actual if entered · else projected</div></div>
   </div>
   <!-- Hidden spans — values still computed by renderDash(), used by Loans page & snapshot -->
   <span id="cash-kpi-row" style="display:none"></span>
@@ -2035,19 +2035,29 @@ function renderDash(){
   document.getElementById('d-fix-sub').textContent=hasAct&&fixDiff!==0?(fixDiff>0?'⬆ +'+INR(fixDiff)+' vs plan':'⬇ '+INR(-fixDiff)+' vs plan'):'Insurance + CC + SIP + misc';
   // V74: single flag used throughout renderDash for savings-balance-based logic
   const hasSavBal = a.savingsBal !== null;
-  // "Projected Free Cash" tile — show savings balance when entered, projected otherwise
-  const displayFree = hasSavBal ? a.savingsBal : free;
+  // "Spendable Cash" tile — savings balance minus locked buffer and Loan EF
+  const SAV_BUFFER_FC = 20000;
+  const lefLocked = getEFAccumulated(ym).lef || 0; // Loan EF accumulated (locked)
+  const spendable = hasSavBal
+    ? Math.max(0, a.savingsBal - SAV_BUFFER_FC - lefLocked)
+    : Math.max(0, free - SAV_BUFFER_FC);
   const freeEl=document.getElementById('d-free');
-  freeEl.textContent=INR(displayFree);
-  freeEl.className='kpi-value '+(displayFree>=20000?'c-blue':'c-red');
+  freeEl.textContent = INR(hasSavBal ? spendable : free);
+  freeEl.className='kpi-value '+(hasSavBal ? (spendable>5000?'c-green':spendable>0?'c-gold':'c-red') : (free>=20000?'c-blue':'c-red'));
+  document.getElementById('d-free').setAttribute('title', hasSavBal
+    ? `₹${a.savingsBal.toLocaleString('en-IN')} − ₹20,000 buffer − ₹${lefLocked.toLocaleString('en-IN')} Loan EF`
+    : 'Projected free cash');
   if(hasSavBal){
-    const vsProj = a.savingsBal - free;
     document.getElementById('d-free-sub').textContent=
-      (vsProj>=0?'▲ +':'▼ ')+INR(Math.abs(vsProj))+' vs projected'+(a.savingsBal>=20000?' ✅':' ⚠️');
+      `−₹20k buffer −${INR(lefLocked)} EF = spendable`+(spendable<=0?' ⚠️ Nothing left':' ✅');
   } else {
     document.getElementById('d-free-sub').textContent=
-      free>=20000?'Projected · above ₹20k floor ✅':'⚠️ Projected · below safety floor';
+      free>=20000?'Projected · enter savings balance for spendable':'⚠️ Projected · below safety floor';
   }
+  document.getElementById('d-free').parentElement.querySelector('.kpi-formula').textContent =
+    hasSavBal
+      ? `Savings ₹${(a.savingsBal||0).toLocaleString('en-IN')} − Buffer ₹20k − Loan EF ${INR(lefLocked)}`
+      : 'Actual if entered · else projected';
   document.getElementById('dash-phase').textContent='Split: '+split.label;
 
   // Row 2 KPIs — always visible; Cash in Hand shows projected free cash by default, actual when entered
