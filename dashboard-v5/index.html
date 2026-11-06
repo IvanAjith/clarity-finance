@@ -520,11 +520,12 @@ body{font-family:'Inter',sans-serif;background:var(--bg);min-height:100vh;displa
             <div style="font-size:12px;font-weight:600;color:var(--dark);">HDFC Savings</div>
             <div style="font-size:13px;font-weight:800;color:var(--dark);" id="bar-savings-val">₹25,000</div>
           </div>
-          <div style="height:10px;background:var(--canvas);border-radius:99px;overflow:hidden;border:1px solid var(--border);">
-            <div id="bar-savings-fill" style="height:100%;border-radius:99px;background:var(--Y);width:50%;transition:width 500ms ease;"></div>
+          <div style="height:10px;background:var(--canvas);border-radius:99px;overflow:hidden;border:1px solid var(--border);display:flex;">
+            <div id="bar-savings-fill" style="height:100%;background:var(--Y);width:0%;transition:width 500ms ease;"></div>
+            <div id="bar-savings-fill2" style="height:100%;background:var(--green);width:0%;transition:width 500ms ease;"></div>
           </div>
           <div style="display:flex;justify-content:space-between;margin-top:4px;">
-            <div style="font-size:10.5px;color:var(--gray);">₹20K buffer + ₹5K free</div>
+            <div style="font-size:10.5px;color:var(--gray);"><span style="color:var(--YD);">■</span> ₹20K buffer &nbsp;<span style="color:var(--green);">■</span> above buffer</div>
             <div style="font-size:10.5px;color:var(--gray);" id="bar-savings-target">of ₹50K</div>
           </div>
         </div>
@@ -1042,9 +1043,15 @@ function updateBalanceBars(savingsRaw, efCurrent, onetime){
   document.getElementById('centre-num').textContent = Math.round(freeCash).toLocaleString('en-IN');
   document.getElementById('modal-free-val').textContent = '₹'+Math.round(freeCash).toLocaleString('en-IN');
 
-  document.getElementById('bar-savings-val').textContent = '₹'+Math.round(savingsBalance).toLocaleString('en-IN');
-  const savPct = Math.min(100, Math.round(savingsBalance/SAVINGS_DISPLAY_MAX*100));
-  document.getElementById('bar-savings-fill').style.width = savPct+'%';
+  // Show actual raw savings, not buffer+free
+  document.getElementById('bar-savings-val').textContent = '₹'+Math.round(savingsRaw).toLocaleString('en-IN');
+  const savPct = Math.min(100, Math.round(savingsRaw/SAVINGS_DISPLAY_MAX*100));
+  const bufferPct = Math.min(100, Math.round(Math.min(savingsRaw, BUFFER)/SAVINGS_DISPLAY_MAX*100));
+  const freePct = Math.max(0, savPct - bufferPct);
+  // Two-tone bar: amber for buffer portion, green for above-buffer
+  document.getElementById('bar-savings-fill').style.width = bufferPct+'%';
+  document.getElementById('bar-savings-fill').style.background = '#F5C842';
+  document.getElementById('bar-savings-fill2').style.width = freePct+'%';
 
   document.getElementById('bar-ef-val').textContent = '₹'+Math.round(newEF).toLocaleString('en-IN');
   const efPct = Math.min(100, Math.round(newEF/EF_TARGET*100));
