@@ -2798,22 +2798,19 @@ function renderLoans(){
   const lAccum=getEFAccumulated(ym);
   const sp=getSplit(ym, lAccum.gef);
 
-  // Spendable = savings − ₹20k buffer − Loan EF already accumulated
-  const L_BUFFER = 20000;
-  const lLefLocked = lAccum.lef || 0;
-  const surplus = isActual ? Math.max(0, lSavBal - L_BUFFER) : Math.max(0, fc - L_BUFFER);
-  const gefRoom = Math.max(0, D.gefCap - lAccum.gef);
-  const gefVal  = Math.min(surplus * sp.gef, gefRoom);
-  const lefVal  = surplus - gefVal;
-  // Spendable = surplus − Loan EF split (same logic as Dashboard tile)
-  const lSpendable = Math.max(0, surplus - lefVal);
+  // ── Single source of truth: computeEFAllocationV74 (same as Dashboard) ──
+  const lOnetimeExpense = lActuals.onetimeExpense || 0;
+  const lV74 = computeEFAllocationV74(isActual ? lSavBal : fc, lOnetimeExpense);
+  const lefVal     = lV74.toFlexiFD;        // 50% of surplus after one-time deducted
+  const lSpendable = Math.max(0, lV74.postTransferSav - 20000); // above buffer = spendable
+  const surplus    = lV74.effective > 20000 ? lV74.effective - 20000 : 0; // for display only
 
   set('l-cash', INR(lSpendable));
   set('l-cash-sub', isActual
     ? `−₹20k buffer −${INR(Math.round(lefVal))} EF = spendable ✅`
     : 'Projected · enter savings balance on Dashboard');
   set('l-cash-formula', isActual
-    ? `Savings ${INR(lSavBal)} − Buffer ₹20k − Loan EF ${INR(Math.round(lefVal))}`
+    ? `Savings ${INR(lSavBal)}${lOnetimeExpense>0?' −₹'+lOnetimeExpense.toLocaleString('en-IN')+' one-time':''} − Buffer ₹20k − Loan EF ${INR(Math.round(lefVal))}`
     : 'Enter HDFC balance on Dashboard → 6th tab');
 
   // Color the tile
@@ -2821,10 +2818,10 @@ function renderLoans(){
   if(lCashEl) lCashEl.className = 'kpi-value ' + (lSpendable > 5000 ? 'c-green' : lSpendable > 0 ? 'c-gold' : 'c-red');
 
   set('l-lef', surplus>0 ? INR(lefVal) : '⏸ Waiting');
-  set('l-lef-sub', surplus>0 ? sp.label+' → Loan EF' : 'Need surplus above ₹20k');
+  set('l-lef-sub', surplus>0 ? '50% of surplus → Loan EF (Flexi FD)' : 'Need surplus above ₹20k');
   set('l-lef-formula', isActual
-    ? `(₹${lSavBal.toLocaleString('en-IN')} − ₹20k) × ${sp.lef*100}%`
-    : `(Proj ₹${fc.toLocaleString('en-IN')} − ₹20k) × ${sp.lef*100}%`);
+    ? `(${INR(lV74.effective)} effective − ₹20k) × 50%`
+    : `(Proj ${INR(fc)} − ₹20k) × 50%`);
 
   // EF Pool Remaining — detailed avalanche narrative
   {
