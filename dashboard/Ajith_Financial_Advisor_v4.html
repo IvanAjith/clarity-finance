@@ -2810,35 +2810,37 @@ function renderLoans(){
     // The "EF pool remaining" figure = what's actively building toward the next loan.
     // If a loan was partially hit, that partial amount IS the remaining pool directed at it.
     // If pool has leftover after all loans, show that.
-    const displayRemaining = partialLoan ? partialLoan.paid : remaining;
+    // Find the current target loan (first open loan in avalanche order)
+    const targetLoanKey = partialLoan ? partialLoan.k : (wipedLoans.length===0 && nextLoan ? nextLoan : null);
+    const targetLoanBal = targetLoanKey ? Math.max(0, loanBal(targetLoanKey, ym)) : 0;
+    const targetLoanName = targetLoanKey ? loanNames[targetLoanKey] : null;
+    const targetLoanRate = targetLoanKey ? (D.loans[targetLoanKey].rate * 1200).toFixed(2) : null;
+    // Gap = how much MORE is needed to close the target loan
+    const gapToClose = targetLoanKey ? Math.max(0, targetLoanBal - lefAccum) : 0;
 
-    // Build value display
+    // Build value display — show GAP TO CLOSE, not pool size
     if(lefAccum<=0){
       set('l-lef-remain','⏸ No pool yet');
-      set('l-lef-remain-sub','Enter cash in hand on Dashboard to see deployment');
+      set('l-lef-remain-sub','Enter savings balance on Dashboard to activate');
       set('l-lef-remain-formula','Loan EF pool is empty');
-    } else if(!partialLoan && remaining===0 && wipedLoans.length>0){
-      // Every open loan was fully wiped — nothing left
+    } else if(!partialLoan && remaining===0 && wipedLoans.length>0 && !nextLoan){
       set('l-lef-remain','✅ All loans cleared');
       const names=wipedLoans.map(w=>w.name).join(' + ');
       set('l-lef-remain-sub',names+' — fully wiped');
       set('l-lef-remain-formula',INR(lefAccum)+' pool fully deployed');
     } else {
-      // Show the meaningful "active" pool number
-      set('l-lef-remain', INR(displayRemaining));
-      // Build narrative sub-label
-      let parts=[];
-      if(wipedLoans.length>0){
-        const names=wipedLoans.map(w=>w.name).join(' + ');
-        parts.push(names+' wiped ✅');
-      }
-      if(partialLoan){
-        parts.push('Building toward '+partialLoan.name+' — '+INR(partialLoan.remaining)+' still to go');
-      } else if(remaining>0 && nextLoan){
-        parts.push(INR(remaining)+' ready for '+loanNames[nextLoan]);
-      }
-      set('l-lef-remain-sub', parts.join(' · ') || 'Pool available for prepayment');
-      set('l-lef-remain-formula', INR(lefAccum)+' total pool · '+INR(wipedLoans.reduce((a,w)=>a+w.amt,0))+' deployed');
+      // Show gap remaining to close the current target loan — big and bold
+      set('l-lef-remain', INR(Math.round(gapToClose)));
+      // Sub: which loan, what rate
+      const poolBuilt = `${INR(Math.round(lefAccum))} built so far`;
+      set('l-lef-remain-sub',
+        targetLoanName
+          ? `Still needed to close ${targetLoanName} (${targetLoanRate}% p.a.)`
+          : 'Pool available for prepayment');
+      set('l-lef-remain-formula',
+        targetLoanName
+          ? `${poolBuilt} · Target ${INR(Math.round(targetLoanBal))} · Gap ${INR(Math.round(gapToClose))}`
+          : poolBuilt);
     }
   }
 
