@@ -2060,17 +2060,12 @@ function renderDash(){
   document.getElementById('d-fix-sub').textContent=hasAct&&fixDiff!==0?(fixDiff>0?'⬆ +'+INR(fixDiff)+' vs plan':'⬇ '+INR(-fixDiff)+' vs plan'):'Insurance + CC + SIP + misc';
   // V74: single flag used throughout renderDash for savings-balance-based logic
   const hasSavBal = a.savingsBal !== null;
-  // "Spendable Cash" tile — use v74Alloc as single source of truth (computed just below)
-  // v74Alloc runs BEFORE this block; hoist result here after renderDash computes it.
-  // For now compute inline using same logic as computeEFAllocationV74:
+  // "Spendable Cash" tile — use computeEFAllocationV74 as single source of truth
+  // Must deduct one-time expense BEFORE computing surplus, same as the EF bars
   const SAV_BUFFER_FC = 20000;
-  const fcEffective   = hasSavBal ? Math.max(0, a.savingsBal) : Math.max(0, free);
-  const fcLefSplit    = hasSavBal
-    ? (fcEffective < SAV_BUFFER_FC ? 0 : Math.round((fcEffective - SAV_BUFFER_FC) * 0.5))
-    : Math.max(0, Math.round((free - SAV_BUFFER_FC) * 0.5));
-  const fcPostSav     = hasSavBal
-    ? (fcEffective < SAV_BUFFER_FC ? fcEffective : fcEffective - fcLefSplit)
-    : 0;
+  const _fcAlloc      = computeEFAllocationV74(hasSavBal ? a.savingsBal : free, a.onetimeExpense);
+  const fcLefSplit    = _fcAlloc.toFlexiFD;        // 50% of surplus after one-time deducted
+  const fcPostSav     = _fcAlloc.postTransferSav;  // ₹20K buffer + spendable half
   const spendable     = Math.max(0, fcPostSav - SAV_BUFFER_FC); // above buffer = spendable
   const freeEl=document.getElementById('d-free');
   freeEl.textContent = INR(hasSavBal ? spendable : free);
