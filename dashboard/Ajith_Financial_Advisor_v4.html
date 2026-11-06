@@ -437,39 +437,58 @@ tbody tr:hover { background: var(--surface2); }
       </div>
     </div>
     <!-- V74: Simplified actuals — only 3 fields needed on 6th of every month -->
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px">
+    <!-- ── Three-input clarity panel ───────────────────────────────── -->
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:12px">
 
-      <!-- PRIMARY: Savings account balance -->
-      <div class="form-group" style="margin:0;grid-column:1/-1">
-        <label class="form-label" style="font-size:13px;font-weight:700;color:var(--accent)">
-          🏦 HDFC Savings Account Balance (₹)
-          <span style="font-size:11px;font-weight:400;color:var(--fg3);margin-left:6px">Enter on 6th of every month — after all EMIs & bills cleared</span>
+      <!-- 1. HDFC Savings Balance -->
+      <div class="form-group" style="margin:0;background:var(--accent-lt);border:1.5px solid var(--accent);border-radius:var(--radius-sm);padding:12px">
+        <label class="form-label" style="font-size:12px;font-weight:700;color:var(--accent);margin-bottom:4px">
+          🏦 HDFC Savings Balance (₹)
         </label>
-        <input class="form-input" id="act-savings-bal" type="number" placeholder="e.g. 24000 — what you see in HDFC app right now"
-               style="font-size:16px;font-weight:700;border:2px solid var(--accent)"
+        <input class="form-input" id="act-savings-bal" type="number" placeholder="e.g. 30,000"
+               style="font-size:18px;font-weight:800;border:2px solid var(--accent);margin-bottom:4px"
                oninput="renderDash()">
-        <div style="font-size:11px;color:var(--fg3);margin-top:4px">
-          💡 This includes all previous months' unspent balance + this month's net after salary, EMIs, CC bills, and all expenses
-        </div>
-        <div style="margin-top:6px">
+        <div style="font-size:10px;color:var(--fg3)">What you see in the HDFC app · Enter on 6th after all EMIs cleared</div>
+        <div style="margin-top:4px">
           <span id="sheet-source-badge" style="display:none;font-size:11px;font-weight:600;color:var(--green);background:var(--green-lt);border:1px solid var(--green);border-radius:99px;padding:2px 10px"></span>
         </div>
       </div>
 
-      <!-- One-time expense -->
-      <div class="form-group" style="margin:0">
-        <label class="form-label">🔖 One-time Expense this month (₹)
-          <span style="font-size:11px;color:var(--fg3)">e.g. health insurance ₹18,000</span>
+      <!-- 2. Loan EF (Flexi FD) Balance -->
+      <div class="form-group" style="margin:0;background:var(--green-lt);border:1.5px solid var(--green);border-radius:var(--radius-sm);padding:12px">
+        <label class="form-label" style="font-size:12px;font-weight:700;color:var(--green);margin-bottom:4px">
+          💰 Loan EF — Flexi FD Balance (₹)
         </label>
-        <input class="form-input" id="act-onetime" type="number" placeholder="0 (optional)" oninput="renderDash()">
+        <input class="form-input" id="act-lef-bal" type="number" placeholder="0"
+               style="font-size:18px;font-weight:800;border:2px solid var(--green);margin-bottom:4px"
+               oninput="renderDash()">
+        <div style="font-size:10px;color:var(--fg3)">Your actual HDFC Flexi FD balance · Starts at 0 · Grows each month</div>
       </div>
 
-      <!-- Notes -->
+      <!-- 3. One-time Expense -->
+      <div class="form-group" style="margin:0;background:var(--gold-lt);border:1.5px solid var(--gold);border-radius:var(--radius-sm);padding:12px">
+        <label class="form-label" style="font-size:12px;font-weight:700;color:var(--gold);margin-bottom:4px">
+          🔖 One-time Expense this month (₹)
+        </label>
+        <input class="form-input" id="act-onetime" type="number" placeholder="0"
+               style="font-size:18px;font-weight:800;border:2px solid var(--gold);margin-bottom:4px"
+               oninput="renderDash()">
+        <div style="font-size:10px;color:var(--fg3)">Deducted before split · e.g. insurance, laptop EMI</div>
+      </div>
+
+    </div>
+
+    <!-- Live allocation summary strip -->
+    <div id="alloc-summary-strip" style="display:none;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 14px;font-size:12px;color:var(--fg2);margin-bottom:4px">
+      <span id="alloc-summary-text"></span>
+    </div>
+
+    <!-- Notes row -->
+    <div style="display:grid;grid-template-columns:1fr;gap:12px">
       <div class="form-group" style="margin:0">
-        <label class="form-label">📝 Notes (optional)</label>
-        <input class="form-input" id="act-notes" type="text" placeholder="e.g. Festival spend, bonus received...">
+        <label class="form-label" style="font-size:11px">📝 Notes (optional)</label>
+        <input class="form-input" id="act-notes" type="text" placeholder="e.g. Festival spend, bonus received..." style="font-size:13px">
       </div>
-
     </div>
     <!-- Hidden legacy fields — kept so old localStorage reads don't throw JS errors -->
     <input type="hidden" id="act-cc">
@@ -1593,13 +1612,16 @@ function showPage(name,btn){
 // ACTUALS HELPERS
 // ════════════════════════════════════════════════════════════════════
 function getActuals(){
-  // V74: only savings balance + one-time expense matter; everything else sourced from plan defaults
-  const savRaw = parseFloat(document.getElementById('act-savings-bal').value);
-  const otRaw  = parseFloat(document.getElementById('act-onetime').value);
-  const savingsBal = isNaN(savRaw) ? null : savRaw;
+  // V74: savings balance + loan EF balance + one-time expense; everything else sourced from plan defaults
+  const savRaw  = parseFloat(document.getElementById('act-savings-bal').value);
+  const lefRaw  = parseFloat(document.getElementById('act-lef-bal').value);
+  const otRaw   = parseFloat(document.getElementById('act-onetime').value);
+  const savingsBal  = isNaN(savRaw) ? null : savRaw;
+  const lefBalEntered = isNaN(lefRaw) ? null : lefRaw;  // null = not entered (use computed)
   return {
     // V74 primary fields
     savingsBal:     savingsBal,
+    lefBalEntered:  lefBalEntered,                        // actual Flexi FD balance from user
     onetimeExpense: isNaN(otRaw) ? 0 : otRaw,
     notes:          document.getElementById('act-notes').value.trim() || '',
     // Legacy fields — always use plan defaults (hidden inputs have no user data)
@@ -1634,11 +1656,13 @@ function onMonthChange(){
   }
   let ef=null;
   try{ ef=JSON.parse(localStorage.getItem('ajith_ef_'+monthKey)); }catch(e){}
-  // V74: only 3 user-visible fields to restore
+  // V74: 4 user-visible fields to restore (savings, lef, one-time, notes)
   const savEl   = document.getElementById('act-savings-bal');
+  const lefEl   = document.getElementById('act-lef-bal');
   const otEl    = document.getElementById('act-onetime');
   const notesEl = document.getElementById('act-notes');
   if(savEl)   savEl.value   = saved?.savingsBal != null ? saved.savingsBal : '';
+  if(lefEl)   lefEl.value   = saved?.lefBalEntered != null ? saved.lefBalEntered : '';
   if(otEl)    otEl.value    = saved?.onetimeExpense || '';
   if(notesEl) notesEl.value = saved?.notes ?? '';
   // Floor always 'yes' in V74 — zone determined by savings balance
@@ -1673,6 +1697,7 @@ function saveActualsFromDash(){
     gefWithdraw:  0,
     isManual:     a.savingsBal !== null,
     savingsBal:   a.savingsBal,
+    lefBalEntered: a.lefBalEntered,      // actual Flexi FD balance entered by user
     onetimeExpense: a.onetimeExpense || 0,
     toSavings:    v74ef.postTransferSav,
     toFlexiFD:    v74ef.toFlexiFD,
@@ -1705,7 +1730,7 @@ function highlightFloor(val){ /* no-op: floor buttons removed in V74 */ }
 
 function clearActuals(){
   // V74: only 3 visible fields to clear
-  ['act-savings-bal','act-onetime','act-notes'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  ['act-savings-bal','act-lef-bal','act-onetime','act-notes'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
   const floorEl=document.getElementById('act-floor-ok'); if(floorEl) floorEl.value='yes';
   const ym=getSel('dash-month');
   const monthKey=ym.join('-');
@@ -2145,8 +2170,11 @@ function renderDash(){
       setEl('sav-status-sub','textContent', savSub);
 
       // ── Loan EF (Flexi FD) bar ──
-      // Running LEF from accumulated history + this month's Flexi FD allocation
-      let lefRunning = accum.lef + v73Alloc.toFlexiFD;
+      // If user entered actual Flexi FD balance → use it directly (source of truth)
+      // Otherwise fall back to computed: accumulated history + this month's allocation
+      let lefRunning = (a.lefBalEntered !== null)
+        ? a.lefBalEntered + v73Alloc.toFlexiFD   // actual balance + this month's new transfer
+        : accum.lef + v73Alloc.toFlexiFD;
       const topLoan = getTopPriorityLoan(ym);
       const lefTarget = topLoan ? topLoan.bal : 100000; // ₹1L default if all loans done
       const lefPct = lefTarget > 0 ? Math.min(100, Math.round(lefRunning / lefTarget * 100)) : 100;
@@ -2166,6 +2194,33 @@ function renderDash(){
       const repayBtn=document.getElementById('lef-repay-btn');
       if(repayBtn) repayBtn.style.display = lefCanRepay ? '' : 'none';
       _repayState = topLoan ? {loanKey:topLoan.key, loanName:topLoan.name, loanBal:topLoan.bal, lefTotal:Math.round(lefRunning), ym} : null;
+
+      // ── Allocation summary strip (shown when savings balance entered) ──
+      const stripEl  = document.getElementById('alloc-summary-strip');
+      const stripTxt = document.getElementById('alloc-summary-text');
+      if(stripEl && stripTxt){
+        if(a.savingsBal !== null){
+          const ot   = a.onetimeExpense || 0;
+          const eff  = Math.max(0, a.savingsBal - ot);
+          const surp = Math.max(0, eff - 20000);
+          const lef  = Math.round(surp * 0.5);
+          const spnd = surp - lef;
+          let html = '';
+          if(ot > 0) html += `<span style="color:var(--gold);font-weight:700">₹${INR(ot)} one-time deducted</span> → `;
+          html += `<strong>₹${INR(eff)}</strong> effective`;
+          html += ` &nbsp;→&nbsp; <span style="color:var(--accent);font-weight:700">₹20,000 buffer 🔒</span>`;
+          if(surp > 0){
+            html += ` &nbsp;→&nbsp; <span style="color:var(--green);font-weight:700">₹${INR(lef)} → Loan EF (Flexi FD) 💰</span>`;
+            html += ` &nbsp;+&nbsp; <span style="color:var(--fg);font-weight:700">₹${INR(spnd)} spendable 🛍️</span>`;
+          } else {
+            html += ` &nbsp;→&nbsp; <span style="color:var(--gold);font-weight:700">Below ₹20K — build buffer first ⚠️</span>`;
+          }
+          stripTxt.innerHTML = html;
+          stripEl.style.display = '';
+        } else {
+          stripEl.style.display = 'none';
+        }
+      }
 
       // ── Monthly instruction card ──
       const instrCard = document.getElementById('ef-instruction-card');
@@ -4458,7 +4513,7 @@ function deleteAllHistory(){
     keys.forEach(k=>localStorage.removeItem(k));
   }catch(e){}
   // Clear the actuals form (V74: only 3 visible fields)
-  ['act-savings-bal','act-onetime','act-notes'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
+  ['act-savings-bal','act-lef-bal','act-onetime','act-notes'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
   const floorEl2=document.getElementById('act-floor-ok'); if(floorEl2) floorEl2.value='yes';
   showHistMsg('🗑️ All history deleted. Dashboard reset to projected values.','var(--red)');
   loadHistory();
