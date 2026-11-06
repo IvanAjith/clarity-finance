@@ -1332,13 +1332,14 @@ function syncSipHeight(){
   const sipCard   = document.getElementById('sip-card');
   const sipScroll = document.getElementById('sip-scroll');
   if(!allocCard||!sipCard||!sipScroll) return;
-  const targetH = allocCard.offsetHeight;
-  sipCard.style.height = targetH+'px';
-  const titleH = sipCard.querySelector('.inv-card-title').offsetHeight;
-  const pad = 18*2; // top+bottom padding
-  sipScroll.style.height = (targetH - titleH - pad - 14)+'px'; // 14 = title margin-bottom
+  const allocH = allocCard.offsetHeight; // total height of fund alloc card
+  const titleEl = sipCard.querySelector('.inv-card-title');
+  const usedH = titleEl.offsetHeight + 14 + 36; // title + its margin-bottom + card top+bottom padding
+  const scrollH = allocH - usedH;
+  sipScroll.style.maxHeight = scrollH + 'px';
+  sipCard.style.height = allocH + 'px';
 }
-document.addEventListener('DOMContentLoaded', syncSipHeight);
+window.addEventListener('load', syncSipHeight);
 window.addEventListener('resize', syncSipHeight);
 </script>
 </body>
