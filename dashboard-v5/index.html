@@ -340,12 +340,12 @@ body{font-family:'Inter',sans-serif;background:var(--bg);min-height:100vh;displa
           <div class="kpi-label-sm">Total EMIs</div>
         </div>
         <div class="kpi-item">
-          <div class="kpi-num green" id="d-free">₹1,995</div>
-          <div class="kpi-label-sm">Free Cash</div>
-        </div>
-        <div class="kpi-item">
           <div class="kpi-num amber">₹15,750</div>
           <div class="kpi-label-sm">Monthly SIP</div>
+        </div>
+        <div class="kpi-item">
+          <div class="kpi-num green" id="d-free">₹5,000</div>
+          <div class="kpi-label-sm">Budget</div>
         </div>
       </div>
     </div>
@@ -365,7 +365,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);min-height:100vh;displa
 
   <!-- ACTUALS STRIP -->
   <div class="actuals-strip">
-    <div class="as-label">Actuals <span style="font-size:10.5px;font-weight:400;color:var(--grayL);">— enter on the 6th</span></div>
+    <div class="as-label" style="font-size:14px;">Actuals</div>
     <div class="as-fields">
       <div class="as-field">
         <div class="as-field-label">HDFC Savings (₹)</div>
@@ -1061,10 +1061,10 @@ function updateBalanceBars(savingsRaw, efCurrent, onetime){
   window._barChart = new Chart(document.getElementById('barChart'),{
     type:'bar',
     data:{
-      labels:['Car','Personal','CRED','Solar','MF'],
+      labels:['Car','Solar','Personal','CRED','MF'],
       datasets:[{
-        data:[344727,187335,97768,189492,50000],
-        backgroundColor:['#F5C842','#1A1A1A','#E5484D','#9B9B9B','#C8C8C8'],
+        data:[344727,189492,187335,97768,50000],
+        backgroundColor:['#F5C842','#9B9B9B','#1A1A1A','#E5484D','#C8C8C8'],
         borderRadius:6,
         borderSkipped:false,
         barThickness:22,
