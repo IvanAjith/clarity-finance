@@ -202,7 +202,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);min-height:100vh;displa
 .lpb-normal{background:rgba(44,192,132,.1);color:var(--green);}
 
 /* ── INVESTMENTS PAGE ── */
-.inv-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;align-items:stretch;}
+.inv-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;align-items:start;}
 .inv-card{background:var(--white);border-radius:var(--r);padding:18px 20px;box-shadow:var(--sh);}
 .inv-card-title{font-size:14px;font-weight:700;color:var(--dark);margin-bottom:14px;}
 .sip-row{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--border);}
@@ -840,9 +840,9 @@ body{font-family:'Inter',sans-serif;background:var(--bg);min-height:100vh;displa
     <div class="inv-grid">
 
       <!-- SIP Schedule -->
-      <div class="inv-card" style="display:flex;flex-direction:column;">
+      <div id="sip-card" class="inv-card" style="display:flex;flex-direction:column;">
         <div class="inv-card-title">SIP Step-Up Schedule</div>
-        <div style="flex:1;min-height:0;overflow-y:auto;"><div class="sip-row">
+        <div id="sip-scroll" style="overflow-y:auto;"><div class="sip-row">
           <div><div class="sip-period">Oct 2026 – Mar 2027</div><div style="font-size:11px;color:var(--gray);">Push phase · Debt paydown priority</div></div>
           <div style="text-align:right;"><div class="sip-amt active">₹15,750</div><span class="sip-tag st-now">Active now</span></div>
         </div>
@@ -937,8 +937,8 @@ body{font-family:'Inter',sans-serif;background:var(--bg);min-height:100vh;displa
       </div></div>
 
       <!-- Fund Allocation + Corpus -->
-      <div style="display:flex;flex-direction:column;gap:14px;">
-        <div class="inv-card">
+      <div id="inv-right-col" style="display:flex;flex-direction:column;gap:14px;">
+        <div id="fund-alloc-card" class="inv-card">
           <div class="inv-card-title">Fund Allocation — ₹15,750 / mo</div>
           <div class="alloc-row"><div class="alloc-dot" style="background:#F5C842;"></div><div class="alloc-name">Large Cap / Index</div><div><div class="alloc-pct">40%</div><div class="alloc-amt">₹6,300</div></div></div>
           <div class="alloc-row"><div class="alloc-dot" style="background:#1A1A1A;"></div><div class="alloc-name">Mid Cap</div><div><div class="alloc-pct">30%</div><div class="alloc-amt">₹4,725</div></div></div>
@@ -1325,6 +1325,21 @@ function applyActuals(){
   btn.style.background = '#2CC084';
   setTimeout(()=>{ btn.textContent = 'Update →'; btn.style.background = ''; },2000);
 }
+
+// ── SIP SCROLL HEIGHT: match Fund Allocation card ──
+function syncSipHeight(){
+  const allocCard = document.getElementById('fund-alloc-card');
+  const sipCard   = document.getElementById('sip-card');
+  const sipScroll = document.getElementById('sip-scroll');
+  if(!allocCard||!sipCard||!sipScroll) return;
+  const targetH = allocCard.offsetHeight;
+  sipCard.style.height = targetH+'px';
+  const titleH = sipCard.querySelector('.inv-card-title').offsetHeight;
+  const pad = 18*2; // top+bottom padding
+  sipScroll.style.height = (targetH - titleH - pad - 14)+'px'; // 14 = title margin-bottom
+}
+document.addEventListener('DOMContentLoaded', syncSipHeight);
+window.addEventListener('resize', syncSipHeight);
 </script>
 </body>
 </html>
