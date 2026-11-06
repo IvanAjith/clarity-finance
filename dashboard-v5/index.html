@@ -864,15 +864,15 @@ body{font-family:'Inter',sans-serif;background:var(--bg);min-height:100vh;displa
       </div>
       <div class="mini-tile">
         <div class="m-dot" style="background:#D97706;"></div>
-        <div class="m-label">Corpus Growth This Month</div>
-        <div class="m-num" id="inv-t-cash">₹1,647</div>
-        <div class="m-sub" id="inv-t-salary">Returns + SIP added</div>
+        <div class="m-label">SIP % of Salary</div>
+        <div class="m-num" id="inv-t-cash">15.5%</div>
+        <div class="m-sub" id="inv-t-salary">of take-home pay</div>
       </div>
       <div class="mini-tile">
         <div class="m-dot" style="background:#7C3AED;"></div>
-        <div class="m-label">SIP % of Salary</div>
-        <div class="m-num" id="inv-t-pct">15.5%</div>
-        <div class="m-sub" id="inv-t-pctlabel">of take-home pay</div>
+        <div class="m-label">Next Phase</div>
+        <div class="m-num" id="inv-t-pct" style="font-size:15px;line-height:1.3;">Push · Apr 2027</div>
+        <div class="m-sub" id="inv-t-pctlabel">5 months away · ₹18,900/mo</div>
       </div>
     </div>
 
@@ -1419,16 +1419,31 @@ function updateInvMonth(key){
   document.getElementById('inv-t-corpus').textContent = fmtINR(corpus);
   document.getElementById('inv-t-cum').textContent = 'Invested: '+fmtINR(cum)+' total';
 
-  // Tile 3 — Corpus Growth this month (corpus - prev month corpus)
-  const idx = INV_KEYS.indexOf(key);
-  const prevCorpus = idx>0 ? SIP_DATA[INV_KEYS[idx-1]][1] : 150000; // opening corpus
-  const growth = corpus - prevCorpus;
-  document.getElementById('inv-t-cash').textContent = fmtINR(growth);
-  document.getElementById('inv-t-salary').textContent = 'Returns + SIP added';
+  // Tile 3 — SIP % of salary
+  document.getElementById('inv-t-cash').textContent = pct>0 ? pct+'%' : '0% (Hold)';
+  document.getElementById('inv-t-salary').textContent = pct>0 ? 'of take-home pay' : 'SIP paused — corpus compounds';
 
-  // Tile 4 — % of salary
-  document.getElementById('inv-t-pct').textContent = pct+'%';
-  document.getElementById('inv-t-pctlabel').textContent = pct>0 ? 'of take-home pay' : 'SIP paused';
+  // Tile 4 — Next Phase countdown
+  const PHASES=[
+    {key:'2027-04',label:'Push',sip:18900},
+    {key:'2029-01',label:'Grow',sip:37100},
+    {key:'2035-04',label:'Cruise',sip:60000},
+    {key:'2045-04',label:'Hold',sip:0}
+  ];
+  const idx = INV_KEYS.indexOf(key);
+  const nextPhase = PHASES.find(p=>p.key>key);
+  if(nextPhase){
+    const nIdx = INV_KEYS.indexOf(nextPhase.key);
+    const monthsAway = nIdx - idx;
+    const sipStr = nextPhase.sip>0 ? '₹'+nextPhase.sip.toLocaleString('en-IN')+'/mo' : 'SIP = ₹0';
+    const startKey = nextPhase.key;
+    const startLabel = SIP_DATA[startKey]?SIP_DATA[startKey][5]:nextPhase.key;
+    document.getElementById('inv-t-pct').textContent = nextPhase.label+' · '+startLabel;
+    document.getElementById('inv-t-pctlabel').textContent = monthsAway+' month'+(monthsAway===1?'':'s')+' away · '+sipStr;
+  } else {
+    document.getElementById('inv-t-pct').textContent = 'Hold phase active';
+    document.getElementById('inv-t-pctlabel').textContent = 'Corpus compounding — no more SIP';
+  }
 
   // Nav button states
   document.getElementById('inv-prev').disabled = (key===INV_FIRST);
