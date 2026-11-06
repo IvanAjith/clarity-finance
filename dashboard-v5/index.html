@@ -102,8 +102,12 @@ body{font-family:'Inter',sans-serif;background:var(--bg);min-height:100vh;displa
 .pill{padding:5px 12px;border-radius:99px;font-size:12px;font-weight:500;cursor:pointer;border:none;background:var(--canvas);color:var(--gray);transition:all 150ms;}
 .pill.active{background:var(--dark);color:var(--white);}
 
-.tab-content{display:none;flex-direction:column;gap:8px;}
+.tab-content{display:none;flex-direction:column;gap:8px;overflow-y:auto;max-height:260px;padding-right:2px;}
 .tab-content.active{display:flex;}
+.tab-content::-webkit-scrollbar{width:4px;}
+.tab-content::-webkit-scrollbar-track{background:transparent;}
+.tab-content::-webkit-scrollbar-thumb{background:var(--border);border-radius:99px;}
+.tab-content:hover::-webkit-scrollbar-thumb{background:var(--grayL);}
 
 .ev-card{border-radius:var(--rsm);padding:12px 14px;position:relative;}
 .ev-card.yel{background:var(--YL);}
@@ -362,10 +366,10 @@ body{font-family:'Inter',sans-serif;background:var(--bg);min-height:100vh;displa
       </div>
 
       <div class="pill-tabs">
+        <button class="pill active" data-tab="actuals">Actuals</button>
         <button class="pill" data-tab="emis">EMIs</button>
         <button class="pill" data-tab="goals">Goals</button>
         <button class="pill" data-tab="sip">Funds</button>
-        <button class="pill active" data-tab="actuals">Actuals</button>
       </div>
 
       <!-- EMIs TAB -->
