@@ -223,6 +223,9 @@ body{font-family:'Inter',sans-serif;background:var(--bg);min-height:100vh;displa
 .phase-title{font-size:13px;font-weight:700;color:var(--YD);margin-bottom:6px;}
 .phase-desc{font-size:12px;color:var(--gray);line-height:1.6;}
 .corpus-big{font-size:36px;font-weight:800;color:var(--dark);margin:4px 0;}
+.rate-btn{font-size:11px;font-weight:700;padding:3px 9px;border-radius:99px;border:1.5px solid var(--border);background:var(--white);color:var(--gray);cursor:pointer;transition:all 120ms;white-space:nowrap;}
+.rate-btn:hover{border-color:var(--YD);color:var(--YD);}
+.rate-btn-active{background:var(--dark);color:var(--Y)!important;border-color:var(--dark)!important;}
 .corpus-label{font-size:12px;color:var(--gray);}
 
 /* ── MODAL / POPUP ── */
@@ -915,31 +918,38 @@ body{font-family:'Inter',sans-serif;background:var(--bg);min-height:100vh;displa
       <!-- Fund Allocation + Corpus -->
       <div id="inv-right-col" style="display:flex;flex-direction:column;gap:14px;">
         <div id="fund-alloc-card" class="inv-card">
-          <div class="inv-card-title">Fund Allocation — ₹15,750 / mo</div>
-          <div class="alloc-row"><div class="alloc-dot" style="background:#F5C842;"></div><div class="alloc-name">Large Cap / Index</div><div><div class="alloc-pct">40%</div><div class="alloc-amt">₹6,300</div></div></div>
-          <div class="alloc-row"><div class="alloc-dot" style="background:#1A1A1A;"></div><div class="alloc-name">Mid Cap</div><div><div class="alloc-pct">30%</div><div class="alloc-amt">₹4,725</div></div></div>
-          <div class="alloc-row"><div class="alloc-dot" style="background:#2CC084;"></div><div class="alloc-name">Small Cap</div><div><div class="alloc-pct">20%</div><div class="alloc-amt">₹3,150</div></div></div>
-          <div class="alloc-row"><div class="alloc-dot" style="background:#E5484D;"></div><div class="alloc-name">International / Gold</div><div><div class="alloc-pct">10%</div><div class="alloc-amt">₹1,575</div></div></div>
+          <div class="inv-card-title">Fund Allocation — <span id="alloc-sip-amt">₹15,750</span> / mo</div>
+          <div class="alloc-row"><div class="alloc-dot" style="background:#F5C842;"></div><div class="alloc-name">Large Cap / Index</div><div><div class="alloc-pct">40%</div><div class="alloc-amt" id="alloc-lc">₹6,300</div></div></div>
+          <div class="alloc-row"><div class="alloc-dot" style="background:#1A1A1A;"></div><div class="alloc-name">Mid Cap</div><div><div class="alloc-pct">30%</div><div class="alloc-amt" id="alloc-mc">₹4,725</div></div></div>
+          <div class="alloc-row"><div class="alloc-dot" style="background:#2CC084;"></div><div class="alloc-name">Small Cap</div><div><div class="alloc-pct">20%</div><div class="alloc-amt" id="alloc-sc">₹3,150</div></div></div>
+          <div class="alloc-row"><div class="alloc-dot" style="background:#E5484D;"></div><div class="alloc-name">International / Gold</div><div><div class="alloc-pct">10%</div><div class="alloc-amt" id="alloc-ig">₹1,575</div></div></div>
         </div>
         <div class="inv-card" style="background:var(--YL);border:1.5px solid var(--Y);">
-          <div class="inv-card-title" style="color:var(--YD);">Corpus Projections — 14% XIRR · Verified</div>
+          <!-- Rate toggle buttons -->
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+            <div class="inv-card-title" style="color:var(--YD);margin-bottom:0;" id="corpus-card-title">Corpus Projections — 14% XIRR · Verified</div>
+            <div style="display:flex;gap:5px;flex-shrink:0;margin-left:8px;">
+              <button onclick="setCorpusRate(10)" id="rate-btn-10" class="rate-btn">10%</button>
+              <button onclick="setCorpusRate(12)" id="rate-btn-12" class="rate-btn">12%</button>
+              <button onclick="setCorpusRate(14)" id="rate-btn-14" class="rate-btn rate-btn-active">14%</button>
+            </div>
+          </div>
           <!-- Age 57 — primary target -->
-          <div class="corpus-big" style="color:var(--green);">₹7.10 Cr</div>
-          <div class="corpus-label">🎯 Age ~57 — March 2049 · 23-year plan · Base ₹1.5L existing · SIP stops Apr 2045, compounds to goal</div>
+          <div class="corpus-big" style="color:var(--green);" id="corpus-big">₹7.10 Cr</div>
+          <div class="corpus-label" id="corpus-label">🎯 Age ~57 — March 2049 · 23-year plan · Base ₹1.5L existing · SIP stops Apr 2045, compounds to goal</div>
           <div style="margin-top:10px;display:flex;flex-direction:column;gap:6px;">
-            <div style="display:flex;justify-content:space-between;font-size:12.5px;"><span style="color:var(--gray);">Monthly withdrawal @ 57 (4% SWR)</span><span style="font-weight:700;color:var(--dark);">₹2,36,722</span></div>
-            <div style="display:flex;justify-content:space-between;font-size:12.5px;"><span style="color:var(--gray);">Worth in today's money (6% inflation)</span><span style="font-weight:700;color:var(--dark);">₹1.86 Cr</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:12.5px;"><span style="color:var(--gray);">Monthly withdrawal @ 57 (4% SWR)</span><span style="font-weight:700;color:var(--dark);" id="cp-swr57">₹2,36,722</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:12.5px;"><span style="color:var(--gray);">Worth in today's money (6% inflation)</span><span style="font-weight:700;color:var(--dark);" id="cp-pv">₹1.86 Cr</span></div>
             <div style="border-top:1px solid var(--Y);margin:4px 0;"></div>
-            <!-- Age 55 — checkpoint -->
-            <div style="display:flex;justify-content:space-between;font-size:12.5px;"><span style="color:var(--gray);">Age ~55 checkpoint (Mar 2047)</span><span style="font-weight:700;color:var(--dark);">₹5.46 Cr</span></div>
-            <div style="display:flex;justify-content:space-between;font-size:12.5px;"><span style="color:var(--gray);">Monthly withdrawal @ 55 (4% SWR)</span><span style="font-weight:700;color:var(--dark);">₹1,82,150</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:12.5px;"><span style="color:var(--gray);">Age ~55 checkpoint (Mar 2047)</span><span style="font-weight:700;color:var(--dark);" id="cp-55">₹5.46 Cr</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:12.5px;"><span style="color:var(--gray);">Monthly withdrawal @ 55 (4% SWR)</span><span style="font-weight:700;color:var(--dark);" id="cp-swr55">₹1,82,150</span></div>
             <div style="border-top:1px solid var(--Y);margin:4px 0;"></div>
-            <div style="display:flex;justify-content:space-between;font-size:12.5px;"><span style="color:var(--gray);">2 extra years benefit</span><span style="font-weight:700;color:var(--green);">+₹1.64 Cr ↑</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:12.5px;"><span style="color:var(--gray);">2 extra years benefit</span><span style="font-weight:700;color:var(--green);" id="cp-diff">+₹1.64 Cr ↑</span></div>
             <div style="border-top:1px solid var(--border);margin:4px 0;"></div>
             <div style="font-size:11px;font-weight:600;color:var(--gray);margin-bottom:2px;">IF MARKETS CRASH AT AGE 57</div>
-            <div style="display:flex;justify-content:space-between;font-size:12px;"><span style="color:var(--gray);">−20% crash → ₹5.68 Cr</span><span style="font-weight:600;color:var(--dark);">₹1,89,378/mo</span></div>
-            <div style="display:flex;justify-content:space-between;font-size:12px;"><span style="color:var(--gray);">−30% crash → ₹4.97 Cr</span><span style="font-weight:600;color:var(--dark);">₹1,65,706/mo</span></div>
-            <div style="display:flex;justify-content:space-between;font-size:12px;"><span style="color:var(--gray);">−50% crash → ₹3.55 Cr</span><span style="font-weight:600;color:#E5484D;">₹1,18,361/mo</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:12px;"><span style="color:var(--gray);" id="cp-cr20-label">−20% crash → ₹5.68 Cr</span><span style="font-weight:600;color:var(--dark);" id="cp-cr20-swr">₹1,89,378/mo</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:12px;"><span style="color:var(--gray);" id="cp-cr30-label">−30% crash → ₹4.97 Cr</span><span style="font-weight:600;color:var(--dark);" id="cp-cr30-swr">₹1,65,706/mo</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:12px;"><span style="color:var(--gray);" id="cp-cr50-label">−50% crash → ₹3.55 Cr</span><span style="font-weight:600;color:#E5484D;" id="cp-cr50-swr">₹1,18,361/mo</span></div>
             <div style="border-top:1px solid var(--Y);margin:4px 0;"></div>
             <div style="display:flex;justify-content:space-between;font-size:12.5px;"><span style="color:var(--gray);">Debt-free by</span><span style="font-weight:700;color:var(--green);">Dec 2028 ✓</span></div>
           </div>
@@ -950,7 +960,15 @@ body{font-family:'Inter',sans-serif;background:var(--bg);min-height:100vh;displa
 
     <!-- SIP Chart -->
     <div class="inv-card" style="margin-top:0;">
-      <div class="inv-card-title">SIP Corpus Growth — Verified (14% XIRR) · ₹7.10 Cr by Mar 2049 · First ₹1Cr: Sep 2036 · First ₹5Cr: Jul 2046</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+        <div class="inv-card-title" style="margin-bottom:0;" id="chart-title">SIP Corpus Growth — 14% XIRR · ₹7.10 Cr by Mar 2049 · First ₹1Cr: Sep 2036 · First ₹5Cr: Jul 2046</div>
+        <div style="display:flex;gap:5px;flex-shrink:0;margin-left:12px;">
+          <button onclick="setChartRate(10)" id="chart-btn-10" class="rate-btn">10%</button>
+          <button onclick="setChartRate(12)" id="chart-btn-12" class="rate-btn">12%</button>
+          <button onclick="setChartRate(14)" id="chart-btn-14" class="rate-btn rate-btn-active">14%</button>
+          <button onclick="setChartRate('all')" id="chart-btn-all" class="rate-btn">All</button>
+        </div>
+      </div>
       <canvas id="sipChart" height="80"></canvas>
     </div>
 
@@ -1163,83 +1181,86 @@ function updateBalanceBars(savingsRaw, efCurrent, onetime){
 
 // ── SIP CORPUS CHART ──
 (function(){
-  // Corpus projection — computed with 14% XIRR monthly compounding (₹L = Lakhs)
-  // All values in Lakhs — computed with 14% XIRR monthly compounding
   const years=['2027','2028','2029','2030','2031','2032','2033','2034','2035','2036','2037','2038','2039','2040','2041','2042','2043','2044','2045','2046','2047','2048','2049'];
-  const corpus=[2.39,5.23,9.9,16.39,24.21,33.56,44.69,57.9,73.51,91.45,111.91,135.23,161.81,192.12,226.66,266.05,310.94,362.13,420.48,479.34,546.45,622.95,710.17];
-  // Milestones: index 10=Mar2037 (near ₹1Cr Sep2036), index 20=Mar2047 (age~55 + near ₹5Cr Jul2046), index 22=Mar2049 (goal)
-  const milestoneIdx=[10,20,22];
-  const ptRadius = corpus.map((_,i)=>milestoneIdx.includes(i)?7:3);
-  const ptBg = corpus.map((_,i)=>{
-    if(i===10) return '#F5C842';    // ₹1Cr milestone
-    if(i===20) return '#E5484D';    // Age 55 / ₹5Cr milestone
-    if(i===22) return '#2CC084';    // Final goal
-    return '#F5C842';
-  });
-  const ptBorder = corpus.map((_,i)=>milestoneIdx.includes(i)?'#fff':'#F5C842');
 
-  // Custom inline annotation plugin
+  // All three scenarios in Lakhs
+  const C = {
+    10:[2.36,5.06,9.45,15.42,22.38,30.48,39.86,50.68,63.14,76.97,92.2,108.94,127.36,147.62,169.9,194.42,221.38,251.05,283.68,312.04,343.25,377.57,415.33],
+    12:[2.38,5.15,9.67,15.9,23.28,31.98,42.2,54.16,68.11,83.87,101.52,121.29,143.43,168.23,196.01,227.12,261.96,300.99,344.69,386.05,432.38,484.27,542.38],
+    14:[2.39,5.23,9.9,16.39,24.21,33.56,44.69,57.9,73.51,91.45,111.91,135.23,161.81,192.12,226.66,266.05,310.94,362.13,420.48,479.34,546.45,622.95,710.17]
+  };
+
+  // Milestone config per rate
+  const M = {
+    10:{idx:[9,20,22], labels:{9:'₹1Cr (Sep\'37)',20:'Age 55',22:'🎯 ₹4.15Cr'}, colors:{9:'#F5C842',20:'#E5484D',22:'#2CC084'}},
+    12:{idx:[10,20,22], labels:{10:'₹1Cr (Mar\'37)',20:'Age 55',22:'🎯 ₹5.42Cr'}, colors:{10:'#F5C842',20:'#E5484D',22:'#2CC084'}},
+    14:{idx:[10,20,22], labels:{10:'₹1Cr (Sep\'36)',20:'₹5Cr · Age 55',22:'🎯 ₹7.10Cr'}, colors:{10:'#F5C842',20:'#E5484D',22:'#2CC084'}}
+  };
+
+  const fmtL = l => l>=100?'₹'+(l/100).toFixed(2)+' Cr':'₹'+l.toFixed(2)+' L';
+
+  function buildDataset(rate, activeCorpus, m){
+    const ptRadius = activeCorpus.map((_,i)=>m.idx.includes(i)?7:3);
+    const ptBg = activeCorpus.map((_,i)=> m.colors[i] || '#F5C842');
+    const ptBorder = activeCorpus.map((_,i)=>m.idx.includes(i)?'#fff':'#F5C842');
+    return {label:rate+'% XIRR', data:activeCorpus, borderColor:'#F5C842', borderWidth:2.5,
+      pointRadius:ptRadius, pointBackgroundColor:ptBg, pointBorderColor:ptBorder, pointBorderWidth:2,
+      tension:0.4, fill:true, backgroundColor:(ctx)=>{
+        const g=ctx.chart.ctx.createLinearGradient(0,0,0,220);
+        g.addColorStop(0,'rgba(245,200,66,0.22)'); g.addColorStop(1,'rgba(245,200,66,0)'); return g;
+      }};
+  }
+
+  const palette = {10:{line:'#A8A8A8',fill:'rgba(168,168,168,0.08)'},12:{line:'#F5C842',fill:'rgba(245,200,66,0.10)'},14:{line:'#2CC084',fill:'rgba(44,192,132,0.13)'}};
+
+  function buildMultiDatasets(){
+    return [10,12,14].map(r=>({
+      label:r+'%', data:C[r], borderColor:palette[r].line, borderWidth:r===14?2.5:1.5,
+      pointRadius:C[r].map((_,i)=>i===22?6:2), pointBackgroundColor:palette[r].line,
+      pointBorderColor:'#fff', pointBorderWidth:1.5, tension:0.4, fill:false
+    }));
+  }
+
+  let currentRate = 14;
+  let currentM = M[14];
+
   const milestonePlugin = {
     id:'milestoneLabels',
     afterDatasetsDraw(chart){
+      if(currentRate==='all') return;
       const {ctx,scales:{x,y}} = chart;
-      const annotations=[
-        {idx:10, label:'₹1Cr (Sep\'36)', color:'#F5C842'},
-        {idx:20, label:'₹5Cr · Age 55', color:'#E5484D'},
-        {idx:22, label:'🎯 ₹7.10Cr', color:'#2CC084'},
-      ];
+      const corpus = C[currentRate];
+      const m = M[currentRate];
       ctx.save();
-      annotations.forEach(({idx,label,color})=>{
+      m.idx.forEach(idx=>{
         const xPos = x.getPixelForValue(idx);
         const yPos = y.getPixelForValue(corpus[idx]);
         ctx.font='bold 10px Inter,sans-serif';
-        ctx.fillStyle=color;
+        ctx.fillStyle = m.colors[idx];
         ctx.textAlign='center';
-        ctx.fillText(label, xPos, yPos - 12);
+        ctx.fillText(m.labels[idx], xPos, yPos-12);
       });
       ctx.restore();
     }
   };
 
-  new Chart(document.getElementById('sipChart'),{
+  const sipChart = new Chart(document.getElementById('sipChart'),{
     type:'line',
     plugins:[milestonePlugin],
-    data:{
-      labels:years,
-      datasets:[{
-        label:'Corpus',
-        data:corpus,
-        borderColor:'#F5C842',
-        borderWidth:2.5,
-        pointRadius:ptRadius,
-        pointBackgroundColor:ptBg,
-        pointBorderColor:ptBorder,
-        pointBorderWidth:2,
-        tension:0.4,
-        fill:true,
-        backgroundColor:(ctx)=>{
-          const g=ctx.chart.ctx.createLinearGradient(0,0,0,220);
-          g.addColorStop(0,'rgba(245,200,66,0.22)');
-          g.addColorStop(1,'rgba(245,200,66,0)');
-          return g;
-        }
-      }]
-    },
+    data:{labels:years, datasets:[buildDataset(14,C[14],M[14])]},
     options:{
       responsive:true,
       plugins:{
         legend:{display:false},
         tooltip:{
-          backgroundColor:'#1A1A1A',
-          titleColor:'#fff',
-          bodyColor:'#F5C842',
-          padding:10,
-          cornerRadius:8,
+          backgroundColor:'#1A1A1A', titleColor:'#fff', bodyColor:'#F5C842', padding:10, cornerRadius:8,
           callbacks:{
             title: ctx=>'Mar '+ctx[0].label,
             label: ctx=>{
               const l=ctx.parsed.y;
-              return l>=100?'₹'+(l/100).toFixed(2)+' Cr':'₹'+l.toFixed(2)+' L';
+              const name = ctx.dataset.label||'';
+              const prefix = currentRate==='all' ? name+': ' : '';
+              return prefix + fmtL(l);
             }
           }
         }
@@ -1250,6 +1271,70 @@ function updateBalanceBars(savingsRaw, efCurrent, onetime){
       }
     }
   });
+
+  // Chart rate titles
+  const CHART_INFO = {
+    10:'SIP Corpus Growth — 10% XIRR (Conservative) · ₹4.15 Cr by Mar 2049 · First ₹1Cr: Sep 2037',
+    12:'SIP Corpus Growth — 12% XIRR (Moderate) · ₹5.42 Cr by Mar 2049 · First ₹1Cr: Mar 2037',
+    14:'SIP Corpus Growth — 14% XIRR (Optimistic) · ₹7.10 Cr by Mar 2049 · First ₹1Cr: Sep 2036 · First ₹5Cr: Jul 2046',
+    all:'SIP Corpus Growth — All Scenarios · 10% / 12% / 14% XIRR Comparison'
+  };
+
+  window.setChartRate = function(rate){
+    currentRate = rate;
+    ['10','12','14','all'].forEach(r=>document.getElementById('chart-btn-'+r)?.classList.remove('rate-btn-active'));
+    document.getElementById('chart-btn-'+rate)?.classList.add('rate-btn-active');
+    document.getElementById('chart-title').textContent = CHART_INFO[rate]||'';
+    if(rate==='all'){
+      sipChart.data.datasets = buildMultiDatasets();
+      sipChart.options.plugins.legend.display = true;
+      sipChart.options.plugins.legend.labels = {color:'#6B6B6B',font:{size:11,family:'Inter'},boxWidth:14};
+    } else {
+      sipChart.data.datasets = [buildDataset(rate,C[rate],M[rate])];
+      sipChart.options.plugins.legend.display = false;
+    }
+    sipChart.update();
+  };
+
+  // Corpus card data per rate
+  const CORPUS_DATA = {
+    10:{big:'₹4.15 Cr',title:'Corpus Projections — 10% XIRR · Conservative',swr57:'₹1,38,444',pv:'₹1.09 Cr',c55:'₹3.43 Cr',swr55:'₹1,14,416',diff:'+₹0.72 Cr ↑',cr20l:'−20% → ₹3.32 Cr',cr20s:'₹1,10,755/mo',cr30l:'−30% → ₹2.91 Cr',cr30s:'₹96,911/mo',cr50l:'−50% → ₹2.08 Cr',cr50s:'₹69,222/mo'},
+    12:{big:'₹5.42 Cr',title:'Corpus Projections — 12% XIRR · Moderate',swr57:'₹1,80,793',pv:'₹1.42 Cr',c55:'₹4.32 Cr',swr55:'₹1,44,127',diff:'+₹1.10 Cr ↑',cr20l:'−20% → ₹4.34 Cr',cr20s:'₹1,44,634/mo',cr30l:'−30% → ₹3.80 Cr',cr30s:'₹1,26,555/mo',cr50l:'−50% → ₹2.71 Cr',cr50s:'₹90,396/mo'},
+    14:{big:'₹7.10 Cr',title:'Corpus Projections — 14% XIRR · Verified',swr57:'₹2,36,722',pv:'₹1.86 Cr',c55:'₹5.46 Cr',swr55:'₹1,82,150',diff:'+₹1.64 Cr ↑',cr20l:'−20% → ₹5.68 Cr',cr20s:'₹1,89,378/mo',cr30l:'−30% → ₹4.97 Cr',cr30s:'₹1,65,706/mo',cr50l:'−50% → ₹3.55 Cr',cr50s:'₹1,18,361/mo'}
+  };
+
+  window.setCorpusRate = function(rate){
+    const d = CORPUS_DATA[rate];
+    if(!d) return;
+    [10,12,14].forEach(r=>document.getElementById('rate-btn-'+r)?.classList.remove('rate-btn-active'));
+    document.getElementById('rate-btn-'+rate)?.classList.add('rate-btn-active');
+    document.getElementById('corpus-card-title').textContent = d.title;
+    document.getElementById('corpus-big').textContent = d.big;
+    document.getElementById('cp-swr57').textContent = d.swr57;
+    document.getElementById('cp-pv').textContent = d.pv;
+    document.getElementById('cp-55').textContent = d.c55;
+    document.getElementById('cp-swr55').textContent = d.swr55;
+    document.getElementById('cp-diff').textContent = d.diff;
+    document.getElementById('cp-cr20-label').textContent = d.cr20l;
+    document.getElementById('cp-cr20-swr').textContent = d.cr20s;
+    document.getElementById('cp-cr30-label').textContent = d.cr30l;
+    document.getElementById('cp-cr30-swr').textContent = d.cr30s;
+    document.getElementById('cp-cr50-label').textContent = d.cr50l;
+    document.getElementById('cp-cr50-swr').textContent = d.cr50s;
+    // Also sync chart
+    setChartRate(rate);
+  };
+
+  // Current SIP amount (Nov 2026 active) → sync fund allocation amounts
+  (function(){
+    const sip = 15750;
+    document.getElementById('alloc-sip-amt').textContent = '₹'+sip.toLocaleString('en-IN');
+    document.getElementById('alloc-lc').textContent = '₹'+(sip*0.40).toLocaleString('en-IN');
+    document.getElementById('alloc-mc').textContent = '₹'+(sip*0.30).toLocaleString('en-IN');
+    document.getElementById('alloc-sc').textContent = '₹'+(sip*0.20).toLocaleString('en-IN');
+    document.getElementById('alloc-ig').textContent = '₹'+(sip*0.10).toLocaleString('en-IN');
+  })();
+
 })();
 
 // ── PILL TABS ──
