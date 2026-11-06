@@ -3,65 +3,73 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 
 <style>
-/* ─── DESIGN TOKENS ─────────────────────────────────────────────────── */
+/* ─── DESIGN TOKENS — warm-ink neutral ramp ─────────────────────────── */
 :root {
-  /* Layout: sticky sidebar nav + scrollable content on desktop, bottom tabs on mobile */
-  --bg:        #f0f2f5;
-  --surface:   #ffffff;
-  --surface2:  #f7f8fa;
-  --border:    #e4e7ec;
-  --fg:        #111827;
-  --fg2:       #4b5563;
-  --fg3:       #9ca3af;
-  --accent:    #2563eb;
-  --accent-lt: #eff4ff;
-  --green:     #059669;
-  --green-lt:  #ecfdf5;
+  /* Warm-ink light surfaces */
+  --bg:        #f7f4ee;
+  --surface:   #fdfbf7;
+  --surface2:  #efe9df;
+  --fg:        #1f1b16;
+  --fg2:       #5e554a;
+  --fg3:       #7b7266;
+  /* Hairline: fg at 8% opacity */
+  --border:    rgba(31,27,22,0.08);
+  /* Amber accent only */
+  --accent:    #b45309;
+  --accent-lt: rgba(180,83,9,0.08);
+  /* Semantic */
+  --green:     #16a34a;
+  --green-lt:  rgba(22,163,74,0.08);
   --red:       #dc2626;
-  --red-lt:    #fef2f2;
-  --gold:      #d97706;
-  --gold-lt:   #fffbeb;
+  --red-lt:    rgba(220,38,38,0.08);
+  /* Retained for chart colors — not used decoratively */
+  --gold:      #b45309;
+  --gold-lt:   rgba(180,83,9,0.08);
   --purple:    #7c3aed;
-  --purple-lt: #f5f3ff;
+  --purple-lt: rgba(124,58,237,0.08);
   --teal:      #0891b2;
   --radius:    14px;
   --radius-sm: 8px;
-  --shadow:    0 1px 3px rgba(0,0,0,.08), 0 4px 12px rgba(0,0,0,.04);
-  --shadow-lg: 0 4px 16px rgba(0,0,0,.12);
+  --shadow:    0 1px 2px rgba(0,0,0,0.05);
+  --shadow-lg: 0 8px 24px rgba(0,0,0,0.06);
   color-scheme: light;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --bg:        #0f1117;
-    --surface:   #1a1d27;
-    --surface2:  #21253a;
-    --border:    #2d3148;
-    --fg:        #f0f2f5;
-    --fg2:       #9ca3af;
-    --fg3:       #6b7280;
-    --accent:    #4f8ef7;
-    --accent-lt: #1e2a4a;
-    --green:     #10b981;
-    --green-lt:  #0a2e20;
-    --red:       #f87171;
-    --red-lt:    #2e0f0f;
-    --gold:      #fbbf24;
-    --gold-lt:   #2e1f00;
+    /* Warm-ink dark surfaces */
+    --bg:        #161513;
+    --surface:   #1c1a18;
+    --surface2:  #262421;
+    --fg:        #efe9de;
+    --fg2:       #aaa398;
+    --fg3:       #8a847a;
+    --border:    rgba(239,233,222,0.08);
+    --accent:    #f59e0b;
+    --accent-lt: rgba(245,158,11,0.10);
+    --green:     #4cc38a;
+    --green-lt:  rgba(76,195,138,0.10);
+    --red:       #e5484d;
+    --red-lt:    rgba(229,72,77,0.10);
+    --gold:      #f59e0b;
+    --gold-lt:   rgba(245,158,11,0.10);
     --purple:    #a78bfa;
-    --purple-lt: #1e1535;
+    --purple-lt: rgba(167,139,250,0.10);
     --teal:      #22d3ee;
-    --shadow:    0 1px 3px rgba(0,0,0,.3), 0 4px 12px rgba(0,0,0,.2);
-    --shadow-lg: 0 4px 16px rgba(0,0,0,.4);
+    --shadow:    none;
+    --shadow-lg: none;
     color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
-  --bg:#0f1117;--surface:#1a1d27;--surface2:#21253a;--border:#2d3148;
-  --fg:#f0f2f5;--fg2:#9ca3af;--fg3:#6b7280;--accent:#4f8ef7;--accent-lt:#1e2a4a;
-  --green:#10b981;--green-lt:#0a2e20;--red:#f87171;--red-lt:#2e0f0f;
-  --gold:#fbbf24;--gold-lt:#2e1f00;--purple:#a78bfa;--purple-lt:#1e1535;
-  --teal:#22d3ee;--shadow:0 1px 3px rgba(0,0,0,.3),0 4px 12px rgba(0,0,0,.2);
-  --shadow-lg:0 4px 16px rgba(0,0,0,.4);color-scheme:dark;
+  --bg:#161513;--surface:#1c1a18;--surface2:#262421;
+  --fg:#efe9de;--fg2:#aaa398;--fg3:#8a847a;
+  --border:rgba(239,233,222,0.08);
+  --accent:#f59e0b;--accent-lt:rgba(245,158,11,0.10);
+  --green:#4cc38a;--green-lt:rgba(76,195,138,0.10);
+  --red:#e5484d;--red-lt:rgba(229,72,77,0.10);
+  --gold:#f59e0b;--gold-lt:rgba(245,158,11,0.10);
+  --purple:#a78bfa;--purple-lt:rgba(167,139,250,0.10);
+  --teal:#22d3ee;--shadow:none;--shadow-lg:none;color-scheme:dark;
 }
 
 /* ─── RESET & BASE ───────────────────────────────────────────────────── */
@@ -94,16 +102,17 @@ input, select, textarea { font-family: inherit; }
   align-items: center;
   gap: 12px;
   height: 56px;
-  box-shadow: var(--shadow);
 }
 .topbar-logo {
   width: 32px; height: 32px;
-  background: linear-gradient(135deg, var(--accent), var(--purple));
+  background: var(--surface2);
+  border: 1px solid var(--border);
   border-radius: 8px;
   display: flex; align-items: center; justify-content: center;
-  font-size: 16px; flex-shrink: 0;
+  flex-shrink: 0;
+  color: var(--accent);
 }
-.topbar-title { font-size: 15px; font-weight: 700; letter-spacing: -.3px; }
+.topbar-title { font-size: 15px; font-weight: 500; }
 .topbar-sub { font-size: 11px; color: var(--fg3); margin-top: 1px; }
 .topbar-right { margin-left: auto; display: flex; align-items: center; gap: 8px; }
 .theme-btn {
@@ -130,7 +139,6 @@ input, select, textarea { font-family: inherit; }
   overflow-x: auto;
   scrollbar-width: none;
   padding: 0 16px;
-  box-shadow: 0 2px 6px rgba(0,0,0,.06);
 }
 .nav-tabs::-webkit-scrollbar { display: none; }
 .nav-tab {
@@ -142,7 +150,7 @@ input, select, textarea { font-family: inherit; }
   transition: all .2s;
   display: flex; align-items: center; gap: 6px;
 }
-.nav-tab .tab-icon { font-size: 14px; }
+.nav-tab .tab-icon { width: 15px; height: 15px; flex-shrink: 0; color: currentColor; }
 .nav-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
 .nav-tab:hover:not(.active) { color: var(--fg); background: var(--surface2); }
 
@@ -179,8 +187,7 @@ input, select, textarea { font-family: inherit; }
   margin-bottom: 16px;
 }
 .card-title {
-  font-size: 13px; font-weight: 600; color: var(--fg2);
-  text-transform: uppercase; letter-spacing: .6px;
+  font-size: 13px; font-weight: 500; color: var(--fg2);
 }
 .card-action {
   font-size: 12px; color: var(--accent);
@@ -207,18 +214,18 @@ input, select, textarea { font-family: inherit; }
   box-shadow: var(--shadow);
   position: relative;
   overflow: hidden;
-  transition: transform .2s, box-shadow .2s;
+  transition: background 150ms cubic-bezier(0.22,1,0.36,1);
 }
-.kpi:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+.kpi:hover { background: var(--surface2); }
 .kpi-stripe {
   position: absolute; left: 0; top: 0; bottom: 0;
-  width: 4px; border-radius: var(--radius) 0 0 var(--radius);
+  width: 3px; border-radius: var(--radius) 0 0 var(--radius);
 }
-.kpi-label { font-size: 11px; font-weight: 600; color: var(--fg3); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 6px; }
-.kpi-value { font-size: 22px; font-weight: 800; letter-spacing: -.5px; font-variant-numeric: tabular-nums; }
+.kpi-label { font-size: 11px; font-weight: 500; color: var(--fg3); margin-bottom: 6px; }
+.kpi-value { font-size: 22px; font-weight: 500; font-variant-numeric: tabular-nums; font-family: 'JetBrains Mono', monospace; }
 .kpi-sub { font-size: 12px; color: var(--fg3); margin-top: 4px; line-height: 1.5; }
-.kpi-formula { font-size: 9.5px; color: var(--fg3); opacity: .6; margin-top: 6px; font-family: 'JetBrains Mono', monospace; letter-spacing: .2px; border-top: 1px solid var(--border); padding-top: 5px; }
-.kpi-icon { position: absolute; right: 16px; top: 50%; transform: translateY(-50%); font-size: 28px; opacity: .15; }
+.kpi-formula { font-size: 9.5px; color: var(--fg3); opacity: .7; margin-top: 6px; font-family: 'JetBrains Mono', monospace; border-top: 1px solid var(--border); padding-top: 5px; }
+.kpi-icon { display: none; }
 
 /* Colors */
 .c-blue { color: var(--accent); }
@@ -251,18 +258,18 @@ input, select, textarea { font-family: inherit; }
 .prog { margin: 8px 0; }
 .prog-row { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 5px; }
 .prog-track { height: 7px; background: var(--surface2); border-radius: 4px; overflow: hidden; border: 1px solid var(--border); }
-.prog-fill { height: 100%; border-radius: 4px; transition: width .8s cubic-bezier(.4,0,.2,1); }
+.prog-fill { height: 100%; border-radius: 4px; transition: width 400ms cubic-bezier(0.22,1,0.36,1); }
 
 /* TABLES */
 .tbl-wrap { overflow-x: auto; border-radius: var(--radius-sm); }
 table { width: 100%; border-collapse: collapse; font-size: 13px; }
-th { font-size: 11px; font-weight: 600; color: var(--fg3); text-transform: uppercase; letter-spacing: .4px; padding: 10px 14px; text-align: left; border-bottom: 2px solid var(--border); white-space: nowrap; }
+th { font-size: 11px; font-weight: 500; color: var(--fg3); padding: 10px 14px; text-align: left; border-bottom: 1px solid var(--border); white-space: nowrap; font-family: 'JetBrains Mono', monospace; }
 td { padding: 11px 14px; border-bottom: 1px solid var(--border); vertical-align: middle; }
 tbody tr:last-child td { border-bottom: none; }
 tbody tr { transition: background .15s; }
 tbody tr:hover { background: var(--surface2); }
 .td-r { text-align: right; font-variant-numeric: tabular-nums; }
-.td-bold { font-weight: 700; }
+.td-bold { font-weight: 500; }
 
 /* CHART WRAPPER */
 .chart-box { position: relative; }
@@ -288,7 +295,7 @@ tbody tr:hover { background: var(--surface2); }
 .alert-success { background: var(--green-lt); border-color: var(--green); color: var(--green); }
 .alert-warn { background: var(--gold-lt); border-color: var(--gold); color: var(--gold); }
 .alert-danger { background: var(--red-lt); border-color: var(--red); color: var(--red); }
-.alert strong { font-weight: 700; }
+.alert strong { font-weight: 500; }
 
 /* FORMS */
 .form-group { margin-bottom: 14px; }
@@ -314,7 +321,7 @@ tbody tr:hover { background: var(--surface2); }
 .r-row { display: flex; justify-content: space-between; align-items: center; padding: 9px 14px; border-bottom: 1px solid var(--border); font-size: 13px; }
 .r-row:last-child { border-bottom: none; }
 .r-row span:first-child { color: var(--fg2); }
-.r-row.total { background: var(--surface); font-weight: 700; }
+.r-row.total { background: var(--surface); font-weight: 500; }
 
 /* TIMELINE */
 .timeline { padding-left: 24px; position: relative; }
@@ -322,15 +329,15 @@ tbody tr:hover { background: var(--surface2); }
 .tl-item { position:relative; margin-bottom:20px; }
 .tl-dot { position:absolute; left:-18px; top:4px; width:16px; height:16px; border-radius:50%; border:3px solid var(--bg); }
 .tl-dot.done { background:var(--green); }
-.tl-dot.now { background:var(--accent); box-shadow:0 0 0 4px rgba(79,142,247,.25); }
+.tl-dot.now { background:var(--accent); outline: 2px solid var(--accent); outline-offset: 2px; }
 .tl-dot.next { background:var(--gold); }
 .tl-dot.future { background:var(--border); }
-.tl-date { font-size:13px; color:var(--fg2); font-weight:800; text-transform:uppercase; letter-spacing:.5px; }
+.tl-date { font-size:13px; color:var(--fg2); font-weight:500; font-family:'JetBrains Mono',monospace; }
 .tl-title { font-size:14px; font-weight:600; margin-top:2px; }
 .tl-amt { font-size:12px; color:var(--fg3); }
 .tl-item.tl-this-year { background:var(--accent-lt); border-radius:10px; padding:8px 10px 8px 0; margin-left:-4px; }
 .tl-item.tl-achieved-early { background:var(--green-lt); border-radius:10px; padding:8px 10px 8px 0; margin-left:-4px; }
-.tl-badge { display:inline-block; font-size:10px; font-weight:700; padding:1px 6px; border-radius:99px; margin-left:6px; vertical-align:middle; }
+.tl-badge { display:inline-block; font-size:10px; font-weight:500; padding:1px 6px; border-radius:99px; margin-left:6px; vertical-align:middle; }
 .tl-badge.early { background:var(--green); color:#fff; }
 .tl-badge.this-year { background:var(--accent); color:#fff; }
 /* Floor selector */
@@ -388,23 +395,40 @@ tbody tr:hover { background: var(--surface2); }
 <!-- TOPBAR -->
 <div class="app">
 <div class="topbar">
-  <div class="topbar-logo">💰</div>
+  <div class="topbar-logo">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2h8a2 2 0 0 1 2 2v.5"/><path d="M6 2v20"/><path d="M6 12h8"/><path d="M14 2a4 4 0 0 1 4 4c0 2.5-2 4-4 4H6"/></svg>
+  </div>
   <div>
     <div class="topbar-title">Ajith Finance</div>
     <div class="topbar-sub">Senior Consultant · Systech Solutions · Chennai</div>
   </div>
   <div class="topbar-right">
     <div class="date-chip" id="hdr-date"></div>
-    <button class="theme-btn" id="theme-btn" title="Toggle theme">🌙</button>
+    <button class="theme-btn" id="theme-btn" title="Toggle theme">
+      <svg id="theme-icon-moon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      <svg id="theme-icon-sun" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="display:none"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+    </button>
   </div>
 </div>
 
 <!-- NAV TABS -->
 <div class="nav-tabs" id="nav-tabs">
-  <button class="nav-tab active" onclick="showPage('dashboard',this)"><span class="tab-icon">📊</span>Dashboard</button>
-  <button class="nav-tab" onclick="showPage('loans',this)"><span class="tab-icon">💳</span>Loans</button>
-  <button class="nav-tab" onclick="showPage('sip',this)"><span class="tab-icon">📈</span>SIP & MF</button>
-  <button class="nav-tab" onclick="showPage('tracker',this);loadHistory()"><span class="tab-icon">📋</span>History</button>
+  <button class="nav-tab active" onclick="showPage('dashboard',this)">
+    <svg class="tab-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
+    Dashboard
+  </button>
+  <button class="nav-tab" onclick="showPage('loans',this)">
+    <svg class="tab-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+    Loans
+  </button>
+  <button class="nav-tab" onclick="showPage('sip',this)">
+    <svg class="tab-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+    SIP &amp; MF
+  </button>
+  <button class="nav-tab" onclick="showPage('tracker',this);loadHistory()">
+    <svg class="tab-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+    History
+  </button>
 </div>
 
 <!-- CONTENT -->
@@ -418,22 +442,22 @@ tbody tr:hover { background: var(--surface2); }
     <label>Viewing month:</label>
     <select class="ctrl-select" id="dash-month" onchange="onMonthChange()"></select>
     <span class="phase-chip" id="dash-phase">—</span>
-    <span id="actuals-badge" class="tag tag-green" style="display:none">✏️ Actuals applied</span>
+    <span id="actuals-badge" class="tag tag-green" style="display:none">Actuals applied</span>
   </div>
 
   <!-- LIVE ACTUALS PANEL -->
-  <div class="card mb12" id="actuals-panel" style="border:2px solid var(--accent);background:var(--accent-lt)">
+  <div class="card mb12" id="actuals-panel" style="border-left:3px solid var(--accent)">
     <div class="flex-b mb12">
       <div style="display:flex;align-items:center;gap:8px">
-        <span style="font-size:18px">✏️</span>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color:var(--accent);flex-shrink:0"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
         <div>
-          <div style="font-size:13px;font-weight:700;color:var(--accent)">This Month Actuals</div>
+          <div style="font-size:13px;font-weight:500;color:var(--accent)">This month actuals</div>
           <div class="small">Override planned numbers — dashboard updates live as you type</div>
         </div>
       </div>
       <div style="display:flex;gap:8px">
-        <button class="btn btn-primary btn-sm" onclick="saveActualsFromDash()">💾 Save</button>
-        <button class="btn btn-sm" style="background:var(--surface2);border:1px solid var(--border)" onclick="clearActuals()">✕ Clear</button>
+        <button class="btn btn-primary btn-sm" onclick="saveActualsFromDash()">Save</button>
+        <button class="btn btn-sm" style="background:var(--surface2);border:1px solid var(--border)" onclick="clearActuals()">Clear</button>
       </div>
     </div>
     <!-- V74: Simplified actuals — only 3 fields needed on 6th of every month -->
@@ -441,12 +465,13 @@ tbody tr:hover { background: var(--surface2); }
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:12px">
 
       <!-- 1. HDFC Savings Balance -->
-      <div class="form-group" style="margin:0;background:var(--accent-lt);border:1.5px solid var(--accent);border-radius:var(--radius-sm);padding:12px">
-        <label class="form-label" style="font-size:12px;font-weight:700;color:var(--accent);margin-bottom:4px">
-          🏦 HDFC Savings Balance (₹)
+      <div class="form-group" style="margin:0;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px">
+        <label class="form-label" style="font-size:12px;font-weight:500;color:var(--accent);margin-bottom:4px;display:flex;align-items:center;gap:6px">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          HDFC Savings Balance (₹)
         </label>
         <input class="form-input" id="act-savings-bal" type="number" placeholder="e.g. 30,000"
-               style="font-size:18px;font-weight:800;border:2px solid var(--accent);margin-bottom:4px"
+               style="font-size:18px;font-weight:500;font-family:'JetBrains Mono',monospace;font-variant-numeric:tabular-nums;margin-bottom:4px"
                oninput="renderDash()">
         <div style="font-size:10px;color:var(--fg3)">What you see in the HDFC app · Enter on 6th after all EMIs cleared</div>
         <div style="margin-top:4px">
@@ -455,23 +480,25 @@ tbody tr:hover { background: var(--surface2); }
       </div>
 
       <!-- 2. Loan EF (Flexi FD) Balance -->
-      <div class="form-group" style="margin:0;background:var(--green-lt);border:1.5px solid var(--green);border-radius:var(--radius-sm);padding:12px">
-        <label class="form-label" style="font-size:12px;font-weight:700;color:var(--green);margin-bottom:4px">
-          💰 Loan EF — Flexi FD Balance (₹)
+      <div class="form-group" style="margin:0;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px">
+        <label class="form-label" style="font-size:12px;font-weight:500;color:var(--green);margin-bottom:4px;display:flex;align-items:center;gap:6px">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
+          Loan EF — Flexi FD Balance (₹)
         </label>
         <input class="form-input" id="act-lef-bal" type="number" placeholder="0"
-               style="font-size:18px;font-weight:800;border:2px solid var(--green);margin-bottom:4px"
+               style="font-size:18px;font-weight:500;font-family:'JetBrains Mono',monospace;font-variant-numeric:tabular-nums;margin-bottom:4px"
                oninput="renderDash()">
         <div style="font-size:10px;color:var(--fg3)">Your actual HDFC Flexi FD balance · Starts at 0 · Grows each month</div>
       </div>
 
       <!-- 3. One-time Expense -->
-      <div class="form-group" style="margin:0;background:var(--gold-lt);border:1.5px solid var(--gold);border-radius:var(--radius-sm);padding:12px">
-        <label class="form-label" style="font-size:12px;font-weight:700;color:var(--gold);margin-bottom:4px">
-          🔖 One-time Expense this month (₹)
+      <div class="form-group" style="margin:0;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px">
+        <label class="form-label" style="font-size:12px;font-weight:500;color:var(--gold);margin-bottom:4px;display:flex;align-items:center;gap:6px">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+          One-time expense this month (₹)
         </label>
         <input class="form-input" id="act-onetime" type="number" placeholder="0"
-               style="font-size:18px;font-weight:800;border:2px solid var(--gold);margin-bottom:4px"
+               style="font-size:18px;font-weight:500;font-family:'JetBrains Mono',monospace;font-variant-numeric:tabular-nums;margin-bottom:4px"
                oninput="renderDash()">
         <div style="font-size:10px;color:var(--fg3)">Deducted before split · e.g. insurance, laptop EMI</div>
       </div>
@@ -486,7 +513,10 @@ tbody tr:hover { background: var(--surface2); }
     <!-- Notes row -->
     <div style="display:grid;grid-template-columns:1fr;gap:12px">
       <div class="form-group" style="margin:0">
-        <label class="form-label" style="font-size:11px">📝 Notes (optional)</label>
+        <label class="form-label" style="font-size:11px;display:flex;align-items:center;gap:6px">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+          Notes (optional)
+        </label>
         <input class="form-input" id="act-notes" type="text" placeholder="e.g. Festival spend, bonus received..." style="font-size:13px">
       </div>
     </div>
@@ -505,10 +535,10 @@ tbody tr:hover { background: var(--surface2); }
 
   <!-- Row 1: 4 KPI tiles — Total Income, Total EMIs, Fixed Expenses, Projected Free Cash -->
   <div class="g4 mb12">
-    <div class="kpi"><div class="kpi-stripe bg-blue"></div><div class="kpi-label">Total Income</div><div class="kpi-value c-blue" id="d-sal">—</div><div class="kpi-sub" id="d-sal-sub">Salary only</div><div class="kpi-icon">💰</div><div class="kpi-formula" id="d-sal-formula">Salary + Rent</div></div>
-    <div class="kpi"><div class="kpi-stripe bg-red"></div><div class="kpi-label">Total EMIs</div><div class="kpi-value c-red" id="d-emi">—</div><div class="kpi-sub" id="d-emi-pct">% of income</div><div class="kpi-icon">🏦</div><div class="kpi-formula">Sum of active loan EMIs</div></div>
-    <div class="kpi"><div class="kpi-stripe bg-gold"></div><div class="kpi-label">Fixed Expenses</div><div class="kpi-value c-gold" id="d-fix">—</div><div class="kpi-sub" id="d-fix-sub">Insurance + CC + SIP + misc</div><div class="kpi-icon">📋</div><div class="kpi-formula">Ins + Health + SIP + CC + Misc</div></div>
-    <div class="kpi"><div class="kpi-stripe bg-teal"></div><div class="kpi-label">Spendable Cash</div><div class="kpi-value" id="d-free">—</div><div class="kpi-sub" id="d-free-sub">Savings − Buffer − Loan EF</div><div class="kpi-icon">💵</div><div class="kpi-formula">Actual if entered · else projected</div></div>
+    <div class="kpi"><div class="kpi-stripe bg-blue"></div><div class="kpi-label">Total income</div><div class="kpi-value c-blue" id="d-sal">—</div><div class="kpi-sub" id="d-sal-sub">Salary only</div><div class="kpi-formula" id="d-sal-formula">Salary + Rent</div></div>
+    <div class="kpi"><div class="kpi-stripe bg-red"></div><div class="kpi-label">Total EMIs</div><div class="kpi-value c-red" id="d-emi">—</div><div class="kpi-sub" id="d-emi-pct">% of income</div><div class="kpi-formula">Sum of active loan EMIs</div></div>
+    <div class="kpi"><div class="kpi-stripe bg-gold"></div><div class="kpi-label">Fixed expenses</div><div class="kpi-value c-gold" id="d-fix">—</div><div class="kpi-sub" id="d-fix-sub">Insurance + CC + SIP + misc</div><div class="kpi-formula">Ins + Health + SIP + CC + Misc</div></div>
+    <div class="kpi" style="border-left:3px solid var(--accent)"><div class="kpi-label">Spendable cash</div><div class="kpi-value" id="d-free">—</div><div class="kpi-sub" id="d-free-sub">Savings − Buffer − Loan EF</div><div class="kpi-formula">Actual if entered · else projected</div></div>
   </div>
   <!-- Hidden spans — values still computed by renderDash(), used by Loans page & snapshot -->
   <span id="cash-kpi-row" style="display:none"></span>
@@ -530,35 +560,35 @@ tbody tr:hover { background: var(--surface2); }
   <span id="d-gef-formula" style="display:none"></span>
 
   <!-- LAMF EF Banner -->
-  <div class="card mb12" style="padding:12px 16px;background:var(--accent-lt);border:1px solid var(--accent)">
-    <div style="font-size:12px;font-weight:700;color:var(--accent);margin-bottom:4px">🛡️ LAMF EMERGENCY FUND — ACTIVE</div>
-    <div style="font-size:12px;color:var(--fg2)">₹20,000 drawn Nov 2026 @ 10.40% p.a. · Interest: ₹173/mo · <strong>SIP continues uninterrupted ✅</strong></div>
+  <div class="card mb12" style="padding:12px 16px;border-left:3px solid var(--accent)">
+    <div style="font-size:12px;font-weight:500;color:var(--accent);margin-bottom:4px">LAMF emergency fund — active</div>
+    <div style="font-size:12px;color:var(--fg2)">₹20,000 drawn Nov 2026 @ 10.40% p.a. · Interest: ₹173/mo · SIP continues uninterrupted</div>
     <div style="font-size:11px;color:var(--fg3);margin-top:4px">Total LAMF balance: ₹55,000 (₹35k existing + ₹20k new) · Plan: Close Dec 2027 when CRED frees up</div>
   </div>
 
   <!-- EF Status Card — Unified Savings Account (two-zone) + Flexi FD for Loan EF -->
   <div id="ef-status-card" class="card mb12" style="padding:14px 18px">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:6px">
-      <div style="font-size:12px;font-weight:700;color:var(--fg2);letter-spacing:.04em">💰 EMERGENCY FUND STATUS</div>
+      <div style="font-size:12px;font-weight:500;color:var(--fg2)">Emergency fund status</div>
       <div style="display:flex;align-items:center;gap:6px">
         <span id="ef-src-badge" style="font-size:10px;padding:2px 8px;border-radius:99px;background:var(--surface2);color:var(--fg3)">projected</span>
-        <button id="lef-repay-btn" onclick="openRepayModal()" style="display:none;padding:3px 10px;border-radius:99px;background:var(--green);color:#fff;font-size:11px;font-weight:700;cursor:pointer">⚡ Prepay</button>
+        <button id="lef-repay-btn" onclick="openRepayModal()" style="display:none;padding:3px 10px;border-radius:6px;background:var(--green);color:#fff;font-size:11px;font-weight:500;cursor:pointer">Prepay</button>
       </div>
     </div>
 
     <!-- Savings Account progress bar -->
     <div style="margin-bottom:14px">
       <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px">
-        <div style="font-size:12px;font-weight:600;color:var(--fg2)">🏦 Savings Account</div>
-        <div style="font-size:13px;font-weight:700;font-variant-numeric:tabular-nums" id="sav-status-label">₹0 / ₹1,50,000</div>
+        <div style="font-size:12px;font-weight:500;color:var(--fg2)">Savings account</div>
+        <div style="font-size:13px;font-weight:500;font-variant-numeric:tabular-nums;font-family:'JetBrains Mono',monospace" id="sav-status-label">₹0 / ₹1,50,000</div>
       </div>
       <!-- Two-zone bar: 0→₹20K (gold/buffer) then ₹20K→₹1.5L (green/growth) — same height as Flexi FD bar -->
       <div style="height:12px;border-radius:99px;background:var(--surface2);overflow:hidden;border:1px solid var(--border);position:relative">
         <!-- Buffer zone divider at 13.33% (₹20K / ₹1.5L) -->
         <div style="position:absolute;left:13.33%;top:0;height:100%;width:2px;background:var(--surface);z-index:2;pointer-events:none"></div>
         <!-- Fill layers -->
-        <div id="sav-bar-buf"  style="position:absolute;left:0;top:0;height:100%;width:0%;background:var(--gold);border-radius:99px 0 0 99px;transition:width .5s ease"></div>
-        <div id="sav-bar-grow" style="position:absolute;left:0;top:0;height:100%;width:0%;background:linear-gradient(90deg,var(--gold),var(--green));border-radius:99px;transition:width .5s ease"></div>
+        <div id="sav-bar-buf"  style="position:absolute;left:0;top:0;height:100%;width:0%;background:var(--accent);border-radius:99px 0 0 99px;transition:width 400ms cubic-bezier(0.22,1,0.36,1)"></div>
+        <div id="sav-bar-grow" style="position:absolute;left:0;top:0;height:100%;width:0%;background:var(--green);border-radius:99px;transition:width 400ms cubic-bezier(0.22,1,0.36,1)"></div>
       </div>
       <div style="display:flex;justify-content:space-between;margin-top:4px">
         <div style="font-size:10px;color:var(--gold);font-weight:600">₹0 ← Buffer → ₹20K</div>
@@ -573,8 +603,8 @@ tbody tr:hover { background: var(--surface2); }
     <!-- Loan EF (Flexi FD) row — same bar height as Savings Account -->
     <div style="padding-top:12px;border-top:1px solid var(--border)">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
-        <div style="font-size:12px;font-weight:600;color:var(--fg2)">💳 Loan EF — Flexi FD <span style="font-size:10px;color:var(--fg3);font-weight:400">(HDFC, 6.5% p.a.)</span></div>
-        <div style="font-size:13px;font-weight:700;font-variant-numeric:tabular-nums" id="lef-status-label">₹0 / —</div>
+        <div style="font-size:12px;font-weight:500;color:var(--fg2)">Loan EF — Flexi FD <span style="font-size:10px;color:var(--fg3);font-weight:400">(HDFC, 6.5% p.a.)</span></div>
+        <div style="font-size:13px;font-weight:500;font-variant-numeric:tabular-nums;font-family:'JetBrains Mono',monospace" id="lef-status-label">₹0 / —</div>
       </div>
       <div style="height:12px;border-radius:99px;background:var(--surface2);overflow:hidden;border:1px solid var(--border)">
         <div id="lef-status-bar" style="height:100%;border-radius:99px;width:0%;background:var(--accent);transition:width .5s ease"></div>
@@ -587,7 +617,7 @@ tbody tr:hover { background: var(--surface2); }
 
     <!-- Monthly Instruction Card -->
     <div id="ef-instruction-card" style="margin-top:12px;padding:12px 14px;background:var(--surface2);border-radius:var(--radius-sm);border:1.5px solid var(--accent);display:none">
-      <div style="font-size:11px;font-weight:700;color:var(--accent);letter-spacing:.04em;margin-bottom:8px">📋 THIS MONTH'S TRANSFER PLAN</div>
+      <div style="font-size:11px;font-weight:500;color:var(--accent);margin-bottom:8px">This month's transfer plan</div>
       <div id="ef-instruction-body" style="font-size:13px;line-height:1.9;color:var(--fg)"></div>
     </div>
 
@@ -595,10 +625,10 @@ tbody tr:hover { background: var(--surface2); }
     <div id="ef-leakage-banner" style="display:none;margin-top:10px;padding:8px 12px;background:var(--gold-lt);border:1px solid var(--gold);border-radius:6px;font-size:12px;color:var(--fg2)"></div>
 
     <!-- Alerts (legacy + new) -->
-    <div id="ef-alert-floor" style="display:none;margin-top:10px;padding:8px 12px;background:var(--gold-lt);border:1px solid var(--gold);border-radius:6px;font-size:12px;font-weight:600;color:var(--gold)">⏸ EF allocation paused — select ✅ Yes or ⚠️ Deduct in the Actuals panel to allocate this month.</div>
+    <div id="ef-alert-floor" style="display:none;margin-top:10px;padding:8px 12px;background:var(--gold-lt);border-left:3px solid var(--gold);border-radius:6px;font-size:12px;font-weight:500;color:var(--gold)">EF allocation paused — select Yes or Deduct in the Actuals panel to allocate this month.</div>
     <div id="ef-alert-deduct" style="display:none"></div>
-    <div id="ef-alert-lef" style="display:none;margin-top:10px;padding:8px 12px;background:var(--green-lt);border:1px solid var(--green);border-radius:6px;font-size:12px;font-weight:600;color:var(--green)">⚡ Loan EF ready! <span id="ef-alert-lef-loan"></span> — Hit <strong>⚡ Prepay</strong> above.</div>
-    <div id="ef-alert-gef" style="display:none;margin-top:8px;padding:8px 12px;background:var(--green-lt);border:1px solid var(--green);border-radius:6px;font-size:12px;font-weight:600;color:var(--green)">🏁 Savings target ₹1.5L reached — new surplus goes straight to Flexi FD (Loan EF).</div>
+    <div id="ef-alert-lef" style="display:none;margin-top:10px;padding:8px 12px;background:var(--green-lt);border-left:3px solid var(--green);border-radius:6px;font-size:12px;font-weight:500;color:var(--green)">Loan EF ready! <span id="ef-alert-lef-loan"></span> — Use Prepay above.</div>
+    <div id="ef-alert-gef" style="display:none;margin-top:8px;padding:8px 12px;background:var(--green-lt);border-left:3px solid var(--green);border-radius:6px;font-size:12px;font-weight:500;color:var(--green)">Savings target ₹1.5L reached — new surplus goes straight to Flexi FD (Loan EF).</div>
     <!-- Legacy compat IDs (referenced by old JS paths, now unused visually) -->
     <div id="lef-source-badge" style="display:none"></div>
     <div id="gef-source-badge" style="display:none"></div>
@@ -615,11 +645,11 @@ tbody tr:hover { background: var(--surface2); }
   <!-- Repay Modal -->
   <div id="repay-modal" style="display:none;position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;padding:16px">
     <div style="background:var(--surface);border-radius:var(--radius);padding:24px;max-width:400px;width:100%;box-shadow:var(--shadow-lg)">
-      <div style="font-size:16px;font-weight:700;margin-bottom:4px">⚡ Confirm Loan Prepayment</div>
+      <div style="font-size:16px;font-weight:500;margin-bottom:4px">Confirm loan prepayment</div>
       <div style="font-size:12px;color:var(--fg3);margin-bottom:16px">This marks the loan as paid and resets your Loan EF</div>
       <div id="repay-modal-body" style="font-size:13px;line-height:1.8;margin-bottom:18px"></div>
       <div style="display:flex;gap:10px">
-        <button onclick="confirmRepay()" style="flex:1;padding:10px;border-radius:var(--radius-sm);background:var(--green);color:#fff;font-weight:700;font-size:13px">✅ Yes, Mark as Repaid</button>
+        <button onclick="confirmRepay()" style="flex:1;padding:10px;border-radius:var(--radius-sm);background:var(--green);color:#fff;font-weight:500;font-size:13px">Yes, mark as repaid</button>
         <button onclick="closeRepayModal()" style="flex:1;padding:10px;border-radius:var(--radius-sm);background:var(--surface2);color:var(--fg);font-weight:600;font-size:13px">Cancel</button>
       </div>
     </div>
@@ -628,11 +658,11 @@ tbody tr:hover { background: var(--surface2); }
   <!-- Undo Repay Modal -->
   <div id="undo-modal" style="display:none;position:fixed;inset:0;z-index:1001;background:rgba(0,0,0,.55);align-items:center;justify-content:center;padding:16px">
     <div style="background:var(--surface);border-radius:var(--radius);padding:24px;max-width:400px;width:100%;box-shadow:var(--shadow-lg)">
-      <div style="font-size:16px;font-weight:700;margin-bottom:4px">↩ Undo Loan Repayment</div>
+      <div style="font-size:16px;font-weight:500;margin-bottom:4px">Undo loan repayment</div>
       <div style="font-size:12px;color:var(--fg3);margin-bottom:16px">This restores the loan to active and reverts the LEF override</div>
       <div id="undo-modal-body" style="font-size:13px;line-height:1.8;margin-bottom:18px"></div>
       <div style="display:flex;gap:10px">
-        <button onclick="confirmUndo()" style="flex:1;padding:10px;border-radius:var(--radius-sm);background:var(--gold);color:#fff;font-weight:700;font-size:13px">↩ Yes, Undo Repayment</button>
+        <button onclick="confirmUndo()" style="flex:1;padding:10px;border-radius:var(--radius-sm);background:var(--accent);color:#fff;font-weight:500;font-size:13px">Yes, undo repayment</button>
         <button onclick="closeUndoModal()" style="flex:1;padding:10px;border-radius:var(--radius-sm);background:var(--surface2);color:var(--fg);font-weight:600;font-size:13px">Cancel</button>
       </div>
     </div>
@@ -641,8 +671,8 @@ tbody tr:hover { background: var(--surface2); }
   <!-- Goals EF Progress Bar (kept for backward compat, now hidden — EF Status card above replaces it) -->
   <div id="gef-progress-card" class="card mb12" style="padding:14px 18px;display:none">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
-      <div style="font-size:12px;font-weight:600;color:var(--fg2);letter-spacing:.04em">🎯 GOALS EF PROGRESS</div>
-      <div style="font-size:12px;font-weight:700" id="gef-progress-label">₹0 / ₹1,50,000</div>
+      <div style="font-size:12px;font-weight:500;color:var(--fg2)">Goals EF progress</div>
+      <div style="font-size:12px;font-weight:500;font-family:'JetBrains Mono',monospace" id="gef-progress-label">₹0 / ₹1,50,000</div>
     </div>
     <div style="height:10px;border-radius:99px;background:var(--surface2);overflow:hidden;border:1px solid var(--border)">
       <div id="gef-progress-bar" style="height:100%;border-radius:99px;width:0%;background:var(--purple);transition:width .5s ease,background .4s"></div>
@@ -656,14 +686,14 @@ tbody tr:hover { background: var(--surface2); }
   <!-- Live Snapshot — loan balances + EF totals, always visible -->
   <div id="snapshot-panel" class="card mb12">
     <div class="card-head">
-      <div class="card-title">📸 This Month's Snapshot</div>
+      <div class="card-title">This month's snapshot</div>
       <span class="tag tag-blue" id="snap-date-tag">—</span>
     </div>
     <!-- Plain-language legend -->
     <div style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:10px;padding:9px 12px;background:var(--surface2);border-radius:var(--radius-sm);border:1px solid var(--border)">
-      <div style="font-size:11.5px;color:var(--fg2)">📅 <strong>Planned Close</strong> — When this loan ends if you pay only the EMI, nothing extra.</div>
-      <div style="font-size:11.5px;color:var(--fg2)">⚡ <strong>Actual Close</strong> — When it ends if your saved Loan EF is used as a lump prepayment.</div>
-      <div style="font-size:11.5px;color:var(--fg2)">📊 <strong>Δ Months</strong> — How many months earlier (green ▲) or later (red ▼) vs the plan.</div>
+      <div style="font-size:11.5px;color:var(--fg2)"><strong>Planned close</strong> — When this loan ends if you pay only the EMI, nothing extra.</div>
+      <div style="font-size:11.5px;color:var(--fg2)"><strong>Actual close</strong> — When it ends if your saved Loan EF is used as a lump prepayment.</div>
+      <div style="font-size:11.5px;color:var(--fg2)"><strong>Δ Months</strong> — How many months earlier (green ▲) or later (red ▼) vs the plan.</div>
     </div>
     <div style="overflow-x:auto">
       <table id="snap-table">
@@ -672,7 +702,7 @@ tbody tr:hover { background: var(--surface2); }
             <th>Loan</th>
             <th class="td-r">Remaining Balance</th>
             <th class="td-r">Planned Close</th>
-            <th class="td-r">Actual Close ⚡</th>
+            <th class="td-r">Actual close</th>
             <th class="td-r">Δ Months</th>
           </tr>
         </thead>
@@ -681,14 +711,14 @@ tbody tr:hover { background: var(--surface2); }
     </div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px">
       <div style="background:var(--green-lt);border-radius:var(--radius-sm);padding:14px">
-        <div style="font-size:11px;font-weight:600;color:var(--fg3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">🏦 Loan EF — Accumulated</div>
-        <div style="font-size:22px;font-weight:800;color:var(--green);font-variant-numeric:tabular-nums" id="snap-lef-total">—</div>
+        <div style="font-size:11px;font-weight:500;color:var(--fg3);margin-bottom:4px">Loan EF — accumulated</div>
+        <div style="font-size:22px;font-weight:500;color:var(--green);font-variant-numeric:tabular-nums;font-family:'JetBrains Mono',monospace" id="snap-lef-total">—</div>
         <div style="font-size:12px;color:var(--fg3);margin-top:4px" id="snap-lef-this">+ ₹0 this month</div>
         <div style="font-size:9.5px;color:var(--fg3);opacity:.6;margin-top:6px;font-family:'JetBrains Mono',monospace;border-top:1px solid var(--border);padding-top:5px">Sum of all saved months + this month's allocation</div>
       </div>
       <div style="background:var(--green-lt);border-radius:var(--radius-sm);padding:14px">
-        <div style="font-size:11px;font-weight:600;color:var(--fg3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">🏦 Savings Account — Balance</div>
-        <div style="font-size:22px;font-weight:800;color:var(--green);font-variant-numeric:tabular-nums" id="snap-gef-total">—</div>
+        <div style="font-size:11px;font-weight:500;color:var(--fg3);margin-bottom:4px">Savings account — balance</div>
+        <div style="font-size:22px;font-weight:500;color:var(--green);font-variant-numeric:tabular-nums;font-family:'JetBrains Mono',monospace" id="snap-gef-total">—</div>
         <div style="font-size:12px;color:var(--fg3);margin-top:4px" id="snap-gef-this">+ ₹0 this month</div>
         <div style="font-size:9.5px;color:var(--fg3);opacity:.6;margin-top:6px;font-family:'JetBrains Mono',monospace;border-top:1px solid var(--border);padding-top:5px">Actual balance if entered · else projected</div>
       </div>
@@ -726,12 +756,12 @@ tbody tr:hover { background: var(--surface2); }
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;min-width:0">
       <!-- Left: auto milestones -->
       <div style="border-right:1px solid var(--border);padding-right:16px;min-width:0">
-        <div style="font-size:11px;font-weight:700;letter-spacing:.06em;color:var(--fg3);text-transform:uppercase;margin-bottom:10px">🏆 Milestones</div>
+        <div style="font-size:11px;font-weight:500;color:var(--fg3);margin-bottom:10px">Milestones</div>
         <div class="timeline" id="d-milestones"></div>
       </div>
       <!-- Right: action reminders -->
       <div style="padding-left:16px;min-width:0">
-        <div style="font-size:11px;font-weight:700;letter-spacing:.06em;color:var(--fg3);text-transform:uppercase;margin-bottom:10px">🔔 Action Reminders</div>
+        <div style="font-size:11px;font-weight:500;color:var(--fg3);margin-bottom:10px">Action reminders</div>
         <div class="timeline" id="d-reminders"></div>
       </div>
     </div>
@@ -749,10 +779,10 @@ tbody tr:hover { background: var(--surface2); }
 
   <!-- 4 KPI tiles — same format as Dashboard -->
   <div class="g4 mb12">
-    <div class="kpi"><div class="kpi-stripe bg-red"></div><div class="kpi-label">Total Debt</div><div class="kpi-value c-red" id="l-total-debt">—</div><div class="kpi-sub" id="l-total-debt-sub">across all loans</div><div class="kpi-icon">🏦</div><div class="kpi-formula">Sum of all outstanding balances</div></div>
-    <div class="kpi"><div class="kpi-stripe bg-teal"></div><div class="kpi-label">EMIs This Month</div><div class="kpi-value c-teal" id="l-cash">—</div><div class="kpi-sub" id="l-cash-sub">active loans</div><div class="kpi-icon">📅</div><div class="kpi-formula" id="l-cash-formula">Sum of active loan EMIs</div></div>
-    <div class="kpi"><div class="kpi-stripe bg-purple"></div><div class="kpi-label">Loan EF Allocation</div><div class="kpi-value c-purple" id="l-lef">—</div><div class="kpi-sub" id="l-lef-sub">avalanche prepayment pool</div><div class="kpi-icon">⚡</div><div class="kpi-formula" id="l-lef-formula">50% free cash → Flexi FD (₹20k–₹1.5L zone)</div></div>
-    <div class="kpi"><div class="kpi-stripe bg-green"></div><div class="kpi-label">EF Pool Remaining</div><div class="kpi-value c-green" id="l-lef-remain">—</div><div class="kpi-sub" id="l-lef-remain-sub">after avalanche prepay</div><div class="kpi-icon">💰</div><div class="kpi-formula" id="l-lef-remain-formula">Loan EF − loans wiped</div></div>
+    <div class="kpi"><div class="kpi-stripe bg-red"></div><div class="kpi-label">Total debt</div><div class="kpi-value c-red" id="l-total-debt">—</div><div class="kpi-sub" id="l-total-debt-sub">across all loans</div><div class="kpi-formula">Sum of all outstanding balances</div></div>
+    <div class="kpi"><div class="kpi-stripe bg-teal"></div><div class="kpi-label">EMIs this month</div><div class="kpi-value c-teal" id="l-cash">—</div><div class="kpi-sub" id="l-cash-sub">active loans</div><div class="kpi-formula" id="l-cash-formula">Sum of active loan EMIs</div></div>
+    <div class="kpi"><div class="kpi-stripe bg-purple"></div><div class="kpi-label">Loan EF allocation</div><div class="kpi-value c-purple" id="l-lef">—</div><div class="kpi-sub" id="l-lef-sub">avalanche prepayment pool</div><div class="kpi-formula" id="l-lef-formula">50% free cash → Flexi FD (₹20k–₹1.5L zone)</div></div>
+    <div class="kpi"><div class="kpi-stripe bg-green"></div><div class="kpi-label">EF pool remaining</div><div class="kpi-value c-green" id="l-lef-remain">—</div><div class="kpi-sub" id="l-lef-remain-sub">after avalanche prepay</div><div class="kpi-formula" id="l-lef-remain-formula">Loan EF − loans wiped</div></div>
   </div>
 
   <!-- Loan table -->
@@ -782,7 +812,7 @@ tbody tr:hover { background: var(--surface2); }
   <!-- Crossover chart card -->
   <div class="card">
     <div class="card-head">
-      <div class="card-title">📈 Loan Balance vs EF Accumulation</div>
+      <div class="card-title">Loan balance vs EF accumulation</div>
       <select class="ctrl-select" id="crossover-loan-sel" onchange="renderCrossoverChart()" style="font-size:11px;padding:3px 8px;height:auto">
         <option value="all">All Loans (Total)</option>
         <option value="solar">Solar Roof</option>
@@ -819,7 +849,7 @@ tbody tr:hover { background: var(--surface2); }
   <!-- ── 4 KPI tiles ── -->
   <div class="g4 mb12" id="sip-kpi-row">
     <!-- Tile 1: Active SIP -->
-    <div class="kpi"><div class="kpi-stripe bg-blue"></div><div class="kpi-label">Active SIP</div><div class="kpi-value c-blue" id="sip-k-amount">—</div><div class="kpi-sub" id="sip-k-phase">—</div><div class="kpi-icon">📈</div><div class="kpi-formula" id="sip-k-annual">Annual: —</div></div>
+    <div class="kpi"><div class="kpi-stripe bg-blue"></div><div class="kpi-label">Active SIP</div><div class="kpi-value c-blue" id="sip-k-amount">—</div><div class="kpi-sub" id="sip-k-phase">—</div><div class="kpi-formula" id="sip-k-annual">Annual: —</div></div>
     <!-- Tile 2: Equity / Gold Allocation (merged) -->
     <div class="kpi"><div class="kpi-stripe bg-green"></div><div class="kpi-label">Equity / Gold Allocation</div>
       <div style="display:flex;align-items:baseline;gap:4px;margin:4px 0 2px">
@@ -830,13 +860,12 @@ tbody tr:hover { background: var(--surface2); }
         <span style="font-size:13px;color:var(--fg3);font-weight:600">gold</span>
       </div>
       <div class="kpi-sub" id="sip-k-alloc-sub">—</div>
-      <div class="kpi-icon">⚖️</div>
       <div class="kpi-formula" id="sip-k-alloc-f">—</div>
     </div>
     <!-- Tile 3: Next Step-Up / Resume -->
-    <div class="kpi"><div class="kpi-stripe bg-purple"></div><div class="kpi-label" id="sip-k-next-label">Next Step-Up</div><div class="kpi-value c-purple" id="sip-k-next">—</div><div class="kpi-sub" id="sip-k-next-sub">—</div><div class="kpi-icon">🚀</div><div class="kpi-formula" id="sip-k-next-f">—</div></div>
+    <div class="kpi"><div class="kpi-stripe bg-purple"></div><div class="kpi-label" id="sip-k-next-label">Next step-up</div><div class="kpi-value c-purple" id="sip-k-next">—</div><div class="kpi-sub" id="sip-k-next-sub">—</div><div class="kpi-formula" id="sip-k-next-f">—</div></div>
     <!-- Tile 4: Projected Corpus at Retirement -->
-    <div class="kpi"><div class="kpi-stripe" style="background:var(--red)"></div><div class="kpi-label">Projected Corpus</div><div class="kpi-value" id="sip-k-corpus" style="color:var(--red)">—</div><div class="kpi-sub" id="sip-k-corpus-sub">—</div><div class="kpi-icon">🏆</div><div class="kpi-formula" id="sip-k-corpus-f">—</div></div>
+    <div class="kpi"><div class="kpi-stripe" style="background:var(--green)"></div><div class="kpi-label">Projected corpus</div><div class="kpi-value" id="sip-k-corpus" style="color:var(--green)">—</div><div class="kpi-sub" id="sip-k-corpus-sub">—</div><div class="kpi-formula" id="sip-k-corpus-f">—</div></div>
   </div>
 
   <!-- ── Active SIP Breakdown ── -->
@@ -854,7 +883,7 @@ tbody tr:hover { background: var(--surface2); }
           <canvas id="ch-sip-donut" width="200" height="200"></canvas>
           <div id="ch-sip-donut-center" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none">
             <div style="font-size:11px;color:var(--fg3);font-weight:600">Total / mo</div>
-            <div id="ch-sip-donut-total" style="font-size:16px;font-weight:700;color:var(--fg)">—</div>
+            <div id="ch-sip-donut-total" style="font-size:16px;font-weight:500;color:var(--fg);font-family:'JetBrains Mono',monospace;font-variant-numeric:tabular-nums">—</div>
           </div>
         </div>
         <div id="ch-sip-donut-legend" style="font-size:11px;color:var(--fg2);line-height:1.9;width:100%"></div>
@@ -864,14 +893,14 @@ tbody tr:hover { background: var(--surface2); }
 
   <!-- ── SIP Step-Up Schedule (below breakdown) ── -->
   <div class="card mt16">
-    <div class="card-head"><div class="card-title">📋 SIP Step-Up Schedule</div></div>
+    <div class="card-head"><div class="card-title">SIP step-up schedule</div></div>
     <div class="tbl-wrap" id="sip-table"></div>
   </div>
 
   <!-- ── SIP Growth Over Time + ₹10 Crore Projection (side by side) ── -->
   <div class="g2 mt16">
     <div class="card">
-      <div class="card-head"><div class="card-title">📈 SIP Growth Over Time</div></div>
+      <div class="card-head"><div class="card-title">SIP growth over time</div></div>
       <div class="chart-box" style="height:230px"><canvas id="ch-sip-step"></canvas></div>
     </div>
     <div class="card">
@@ -897,7 +926,7 @@ tbody tr:hover { background: var(--surface2); }
   <div class="card mt16">
     <div class="card-head" style="flex-wrap:wrap;gap:8px">
       <div>
-        <div class="card-title" id="title-glide">📉 Glide Path vs Pure Equity — 14% XIRR</div>
+        <div class="card-title" id="title-glide">Glide path vs pure equity — 14% XIRR</div>
         <span style="font-size:11.5px;color:var(--fg3);font-style:italic">Allocation drift + what you give up for safety</span>
       </div>
       <!-- XIRR toggle (mirrors ₹10 Cr card) -->
@@ -951,7 +980,7 @@ tbody tr:hover { background: var(--surface2); }
 
   <!-- ── Strategy Comparison (lowest priority) ── -->
   <div class="card mt16">
-    <div class="card-head"><div class="card-title">📊 Strategy Comparison — All Horizons (₹10 Cr Target)</div></div>
+    <div class="card-head"><div class="card-title">Strategy comparison — all horizons (₹10 Cr target)</div></div>
     <div class="alert" style="margin-bottom:12px;font-size:12px;background:var(--accent-lt);border:1px solid var(--accent);color:var(--fg2)">
       Exhaustive search across 19,000+ combinations within ₹41,724 affordability cap. 🏆 = Primary &nbsp;|&nbsp; ⭐ = Alternative
     </div>
@@ -981,7 +1010,7 @@ tbody tr:hover { background: var(--surface2); }
 
   <!-- Info banner -->
   <div class="alert alert-info mb12" style="display:flex;align-items:flex-start;gap:10px">
-    <span style="font-size:18px;flex-shrink:0">💡</span>
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color:var(--accent);flex-shrink:0"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
     <div>
       <strong>How to use:</strong> At month-end, go to <strong>Dashboard → This Month Actuals</strong>, fill in what really happened, and hit <strong>💾 Save</strong>. Your history builds here automatically. Use <strong>Export CSV</strong> to copy into Google Sheets any time.
     </div>
@@ -990,7 +1019,7 @@ tbody tr:hover { background: var(--surface2); }
   <!-- Variance chart -->
   <div class="card mb12">
     <div class="card-head">
-      <div class="card-title">📊 Actuals vs Plan — Last 6 Months</div>
+      <div class="card-title">Actuals vs plan — last 6 months</div>
     </div>
     <div class="chart-box" style="height:220px"><canvas id="ch-variance"></canvas></div>
   </div>
@@ -998,10 +1027,10 @@ tbody tr:hover { background: var(--surface2); }
   <!-- History table -->
   <div class="card">
     <div class="card-head" style="flex-wrap:wrap;gap:8px">
-      <div class="card-title">📋 Monthly History</div>
+      <div class="card-title">Monthly history</div>
       <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
         <span id="hist-count" class="small" style="color:var(--fg3)"></span>
-        <button class="btn btn-sm" style="background:var(--accent);color:#fff;border:none;padding:5px 14px;border-radius:6px;font-size:12px;cursor:pointer" onclick="exportCSV()">⬇️ Export CSV</button>
+        <button class="btn btn-sm" style="background:var(--accent);color:#fff;border:none;padding:5px 14px;border-radius:6px;font-size:12px;cursor:pointer" onclick="exportCSV()">Export CSV</button>
         <button class="btn btn-sm" style="background:var(--green);color:#fff;border:none;padding:5px 14px;border-radius:6px;font-size:12px;cursor:pointer" onclick="exportJSON()">📤 Export Data</button>
         <label class="btn btn-sm" style="background:var(--surface2);border:1px solid var(--border);padding:5px 14px;border-radius:6px;font-size:12px;cursor:pointer">
           📥 Import Data<input type="file" accept=".json,.csv" onchange="importJSON(event)" style="display:none">
@@ -1010,14 +1039,14 @@ tbody tr:hover { background: var(--surface2); }
       </div>
     </div>
     <div id="hist-msg" style="display:none;margin-top:8px;padding:8px 12px;border-radius:6px;font-size:12px;font-weight:600"></div>
-    <div id="gsheet-tip" style="display:none" class="alert alert-success mt8">✅ Formula copied! In Google Sheets: paste into any cell → it pulls your CSV data.</div>
+    <div id="gsheet-tip" style="display:none" class="alert alert-success mt8">Formula copied! In Google Sheets: paste into any cell → it pulls your CSV data.</div>
     <div class="tbl-wrap" id="u-history" style="margin-top:8px"></div>
   </div>
 
   <!-- Loan Events log -->
   <div class="card" id="loan-events-card" style="display:none">
     <div class="card-head" style="flex-wrap:wrap;gap:8px">
-      <div class="card-title">⚡ Loan Repayment Events</div>
+      <div class="card-title">Loan repayment events</div>
       <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
         <span class="small" style="color:var(--fg3)" id="loan-events-count"></span>
         <button class="btn btn-sm" style="background:var(--red);color:#fff;border:none;padding:5px 14px;border-radius:6px;font-size:12px;cursor:pointer" onclick="deleteAllLoanEvents()">🗑️ Delete All Events</button>
@@ -1250,7 +1279,7 @@ async function overlaySheetData(ym) {
     const ts = data.timestamp.getTime() > 0
       ? data.timestamp.toLocaleString('en-IN',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'})
       : 'latest';
-    badge.textContent = '📊 From Google Sheet · ' + ts;
+    badge.textContent = 'From Google Sheet · ' + ts;
     badge.style.display = 'inline-block';
   }
 
@@ -1325,11 +1354,11 @@ function undoPrepayLoan(key){
   const repayMonth = pd?.ym ? ymLabel(Array.isArray(pd.ym)?pd.ym:pd.ym.split('-').map(Number)) : 'unknown month';
   document.getElementById('undo-modal-body').innerHTML =
     `<div style="background:var(--surface2);border-radius:8px;padding:12px 14px;margin-bottom:8px">
-      <div>🏦 <strong>${loan?.name||key}</strong> will be restored to <strong style="color:var(--red)">active</strong></div>
+      <div><strong>${loan?.name||key}</strong> will be restored to <strong style="color:var(--red)">active</strong></div>
       <div style="margin-top:6px;color:var(--fg3);font-size:12px">Originally repaid: ${repayMonth} (${repayedOn})</div>
       <div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--border);font-size:12px">The LEF override for that month will be cleared and the EMI will be added back to future free-cash calculations.</div>
     </div>
-    <div style="font-size:12px;color:var(--fg3)">⚠️ This cannot be automatically re-done — you would need to repay again using the ⚡ Repay button.</div>`;
+    <div style="font-size:12px;color:var(--fg3)">This cannot be automatically re-done — you would need to repay again using the ⚡ Repay button.</div>`;
   const modal = document.getElementById('undo-modal');
   modal.style.display = 'flex';
 }
@@ -1472,8 +1501,8 @@ function openRepayModal(){
   const remainder = Math.max(0, lefTotal - loanBal);
   document.getElementById('repay-modal-body').innerHTML=
     `<div style="background:var(--surface2);border-radius:8px;padding:12px 14px;margin-bottom:8px">
-      <div>🏦 <strong>${loanName}</strong> current balance: <strong style="color:var(--red)">${INR(loanBal)}</strong></div>
-      <div>💰 Your Loan EF total: <strong style="color:var(--green)">${INR(lefTotal)}</strong></div>
+      <div><strong>${loanName}</strong> current balance: <strong style="color:var(--red)">${INR(loanBal)}</strong></div>
+      <div>Your Loan EF total: <strong style="color:var(--green)">${INR(lefTotal)}</strong></div>
       <div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--border)">After repayment, <strong>${INR(remainder)}</strong> stays in Loan EF${remainder>0?' and becomes the new LEF anchor':' (EF resets to ₹0)'}.</div>
       ${remainder>0?'<div style="font-size:11px;color:var(--fg3);margin-top:4px">The ₹'+INR(remainder)+' remainder will accumulate toward the next priority loan.</div>':''}
     </div>
@@ -1528,8 +1557,8 @@ function isDark(){
   return window.matchMedia('(prefers-color-scheme:dark)').matches;
 }
 function chartColors(){
-  return { grid: isDark()?'rgba(255,255,255,.07)':'rgba(0,0,0,.07)',
-           tick: isDark()?'#6b7280':'#9ca3af', bg: isDark()?'#1a1d27':'#ffffff' };
+  return { grid: isDark()?'rgba(239,233,222,.07)':'rgba(31,27,22,.06)',
+           tick: isDark()?'#8a847a':'#7b7266', bg: isDark()?'#1c1a18':'#fdfbf7' };
 }
 function mkChart(id,cfg){
   if(CHARTS[id]) CHARTS[id].destroy();
@@ -1542,7 +1571,7 @@ function baseLineOpts(title){
   const c=chartColors();
   return {
     responsive:true, maintainAspectRatio:false,
-    plugins:{legend:{display:false},tooltip:{mode:'index',intersect:false,backgroundColor:isDark()?'#21253a':'#fff',titleColor:isDark()?'#f0f2f5':'#111827',bodyColor:isDark()?'#9ca3af':'#4b5563',borderColor:isDark()?'#2d3148':'#e4e7ec',borderWidth:1}},
+    plugins:{legend:{display:false},tooltip:{mode:'index',intersect:false,backgroundColor:isDark()?'#262421':'#fdfbf7',titleColor:isDark()?'#efe9de':'#1f1b16',bodyColor:isDark()?'#aaa398':'#5e554a',borderColor:isDark()?'rgba(239,233,222,0.08)':'rgba(31,27,22,0.08)',borderWidth:1}},
     scales:{x:{grid:{color:c.grid},ticks:{color:c.tick,maxTicksLimit:12,font:{size:11}}},y:{grid:{color:c.grid},ticks:{color:c.tick,font:{size:11},callback:v=>INR(v)}}}
   };
 }
@@ -1590,7 +1619,11 @@ function toggleTheme(){
     calc80C(); calcRegime(); calcCC(); calcWiSIP(); rebalance(); loadVarianceChart();
   },50);
 }
-function updateThemeBtn(){ document.getElementById('theme-btn').textContent = isDark()?'☀️':'🌙'; }
+function updateThemeBtn(){
+  const moon = document.getElementById('theme-icon-moon');
+  const sun  = document.getElementById('theme-icon-sun');
+  if(moon && sun){ moon.style.display = isDark()?'none':'block'; sun.style.display = isDark()?'block':'none'; }
+}
 
 // ════════════════════════════════════════════════════════════════════
 // PAGE SWITCHING
@@ -1873,11 +1906,11 @@ function computeEFAllocationV74(savingsBal, onetimeExpense){
   }
 
   if(zone === 'buffer'){
-    instruction += '<div style="color:var(--gold);font-weight:700;font-size:14px">📌 Build buffer first — ₹'+Math.round(BUFFER - effective).toLocaleString('en-IN')+' short of ₹20K</div>'
+    instruction += '<div style="color:var(--gold);font-weight:500;font-size:14px">Build buffer first — ₹'+Math.round(BUFFER - effective).toLocaleString('en-IN')+' short of ₹20K</div>'
       +'<div style="margin-top:4px;font-size:12px;color:var(--fg2)">Keep all ₹'+Math.round(effective).toLocaleString('en-IN')+' in savings. <strong>No Flexi FD transfer this month.</strong></div>';
   } else if(zone === 'growth'){
     const surplus = effective - BUFFER;
-    instruction += '<div style="font-weight:700;font-size:14px;color:var(--green)">✅ Buffer safe — split the surplus of ₹'+Math.round(surplus).toLocaleString('en-IN')+'</div>'
+    instruction += '<div style="font-weight:500;font-size:14px;color:var(--green)">Buffer safe — split the surplus of ₹'+Math.round(surplus).toLocaleString('en-IN')+'</div>'
       +'<div style="margin-top:8px;display:flex;flex-direction:column;gap:6px">'
       +'<div style="padding:8px 12px;background:var(--green-lt);border-radius:6px;border-left:3px solid var(--green)">'
       +'🏦 <strong>Keep in Savings:</strong> ₹'+Math.round(postTransferSav).toLocaleString('en-IN')+' (₹20K buffer + ₹'+Math.round(surplus*0.5).toLocaleString('en-IN')+' growth)'
@@ -2389,7 +2422,7 @@ function renderDash(){
   const expBorderW = expData.map((_,i)=>i===expMaxIdx?4:2);
   mkChart('ch-donut',{
     type:'doughnut',
-    data:{labels:expLabels,datasets:[{data:expData,backgroundColor:expColors,borderWidth:expBorderW,borderColor:dk?'#1a1d27':'#fff',hoverOffset:6,offset:expOffset}]},
+    data:{labels:expLabels,datasets:[{data:expData,backgroundColor:expColors,borderWidth:expBorderW,borderColor:dk?'#1c1a18':'#fdfbf7',hoverOffset:6,offset:expOffset}]},
     options:{responsive:true,maintainAspectRatio:false,cutout:'65%',
       plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.label+': '+INR(c.raw)+' ('+Math.round(c.raw/expTotal*100)+'%)'},...ttOpts(dk)}}},
     plugins:[makeCenterPlugin('ch-donut','Total Income',INR(expTotal))]
@@ -2408,7 +2441,7 @@ function renderDash(){
   const debtBorderW = dBals.map((_,i)=>i===debtMaxIdx?4:2);
   mkChart('ch-debt-donut',{
     type:'doughnut',
-    data:{labels:dNames,datasets:[{data:dBals,backgroundColor:dColors,borderWidth:debtBorderW,borderColor:dk?'#1a1d27':'#fff',hoverOffset:6,offset:debtOffset}]},
+    data:{labels:dNames,datasets:[{data:dBals,backgroundColor:dColors,borderWidth:debtBorderW,borderColor:dk?'#1c1a18':'#fdfbf7',hoverOffset:6,offset:debtOffset}]},
     options:{responsive:true,maintainAspectRatio:false,cutout:'65%',
       plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.label+': '+INR(c.raw)}},...ttOpts(dk)}},
     plugins:[makeCenterPlugin('ch-debt-donut','Total Debt',INR(totalDebt))]
@@ -2938,8 +2971,8 @@ function renderLoans(){
       <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--fg3);margin-top:5px;flex-wrap:wrap;gap:4px 12px">
         <span><strong>${p}%</strong> paid off &nbsp;·&nbsp; ${INR(paid)} cleared of ${INR(l.orig)}</span>
         ${closed
-          ? `<span style="color:var(--green);font-weight:600">${isPrepaid?'⚡ Early repayment via Loan EF':'Loan fully repaid ✅'}</span>`
-          : `<span>⏳ <strong>${remaining}</strong> left &nbsp;·&nbsp; closes ${ymLabel(l.close)}</span>`
+          ? `<span style="color:var(--green);font-weight:500">${isPrepaid?'Early repayment via Loan EF':'Loan fully repaid'}</span>`
+          : `<span><strong>${remaining}</strong> left &nbsp;·&nbsp; closes ${ymLabel(l.close)}</span>`
         }
       </div>
       ${!closed ? `<div style="display:flex;gap:16px;font-size:11px;color:var(--fg3);margin-top:3px;flex-wrap:wrap">
@@ -2962,8 +2995,8 @@ function renderLoans(){
       : closed
         ? '<span class="tag tag-green">✅ Closed</span>'
         : bal<l.orig*.25
-          ? '<span class="tag tag-gold">🔥 Final stretch</span>'
-          : '<span class="tag tag-blue">🔄 Active</span>';
+          ? '<span class="tag tag-gold">Final stretch</span>'
+          : '<span class="tag tag-blue">Active</span>';
     const rowStyle=isPre?'opacity:0.55;':'';
     tbl+=`<tr style="${rowStyle}"><td class="td-bold">${l.name}</td><td>${l.rate===0?'0.00':(l.rate*1200).toFixed(2)}%</td><td class="td-r">${INR(l.orig)}</td><td class="td-r ${closed?'c-green':'c-red'}">${INR(bal)}</td><td class="td-r c-green">${INR(paid)}</td><td class="td-r">${isPre?'—':INR(l.emi)}</td><td>${ymLabel(l.close)}</td><td>${status}</td></tr>`;
   }
@@ -3034,7 +3067,7 @@ function renderCashFlow(){
   // Outflow donut
   const curFix=D.fixed;
   const emiFix=activeEMIs(NOW);
-  mkChart('ch-outflow',{type:'doughnut',data:{labels:['EMIs','Rent','Life Ins','Health','Family','CC Bill','Misc'],datasets:[{data:[emiFix,curFix.rent,curFix.lifeIns,curFix.health+curFix.active,curFix.family,curFix.cc,curFix.misc],backgroundColor:['#f87171','#fbbf24','#60a5fa','#34d399','#a78bfa','#fb923c','#94a3b8'],borderWidth:2,borderColor:isDark()?'#1a1d27':'#fff'}]},options:{responsive:true,maintainAspectRatio:false,cutout:'60%',plugins:{legend:{display:true,position:'bottom',labels:{color:c.tick,font:{size:10}}},tooltip:{callbacks:{label:ctx=>ctx.label+': '+INR(ctx.raw)},backgroundColor:isDark()?'#21253a':'#fff',titleColor:isDark()?'#f0f2f5':'#111',bodyColor:isDark()?'#9ca3af':'#444',borderColor:isDark()?'#2d3148':'#e4e7ec',borderWidth:1}}}});
+  mkChart('ch-outflow',{type:'doughnut',data:{labels:['EMIs','Rent','Life Ins','Health','Family','CC Bill','Misc'],datasets:[{data:[emiFix,curFix.rent,curFix.lifeIns,curFix.health+curFix.active,curFix.family,curFix.cc,curFix.misc],backgroundColor:['#f87171','#fbbf24','#60a5fa','#34d399','#a78bfa','#fb923c','#94a3b8'],borderWidth:2,borderColor:isDark()?'#1c1a18':'#fdfbf7'}]},options:{responsive:true,maintainAspectRatio:false,cutout:'60%',plugins:{legend:{display:true,position:'bottom',labels:{color:c.tick,font:{size:10}}},tooltip:{callbacks:{label:ctx=>ctx.label+': '+INR(ctx.raw)},backgroundColor:isDark()?'#262421':'#fdfbf7',titleColor:isDark()?'#efe9de':'#1f1b16',bodyColor:isDark()?'#aaa398':'#5e554a',borderColor:isDark()?'rgba(239,233,222,0.08)':'rgba(31,27,22,0.08)',borderWidth:1}}}});
 
   // EF accumulation
   let lef=0,gef=0;
@@ -3082,19 +3115,19 @@ function renderGoals(){
     html+=`<div class="card ${i>0?'mt16':''}">
       <div class="flex-b mb12">
         <div style="display:flex;align-items:center;gap:10px">
-          <div style="width:40px;height:40px;border-radius:10px;background:${g.color}22;display:flex;align-items:center;justify-content:center;font-size:20px">${g.icon}</div>
-          <div><div style="font-size:15px;font-weight:700">${g.name}</div><div class="small">Target: ${ymLabel(g.date)}</div></div>
+          <div style="width:32px;height:32px;border-radius:8px;background:var(--surface2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:14px">${g.icon}</div>
+          <div><div style="font-size:14px;font-weight:500">${g.name}</div><div class="small">Target: ${ymLabel(g.date)}</div></div>
         </div>
-        <span class="tag ${isActive?'tag-blue':'tag-gray'}">${isActive?'🔄 Saving Now':'⏳ Pending'}</span>
+        <span class="tag ${isActive?'tag-blue':'tag-gray'}">${isActive?'Saving now':'Pending'}</span>
       </div>
       <div class="g2">
         <div>
           <div class="small mb12">Target Amount</div>
-          <div style="font-size:22px;font-weight:800;color:${g.color}">${INR(g.amt)}</div>
+          <div style="font-size:22px;font-weight:500;color:${g.color};font-family:'JetBrains Mono',monospace;font-variant-numeric:tabular-nums">${INR(g.amt)}</div>
         </div>
         <div>
-          <div class="small mb12">Time to Goal</div>
-          <div style="font-size:22px;font-weight:800">${months2go} months</div>
+          <div class="small mb12">Time to goal</div>
+          <div style="font-size:22px;font-weight:500;font-family:'JetBrains Mono',monospace">${months2go} months</div>
         </div>
       </div>
     </div>`;
@@ -3248,7 +3281,7 @@ function renderCorpusChart() {
     legend:{display:true,position:'top',labels:{color:cc.tick,font:{size:11},usePointStyle:true,boxWidth:12}},
     tooltip:{mode:'index',intersect:false,
       callbacks:{label:ctx=>ctx.raw!=null?ctx.dataset.label+': ₹'+fmtCr(ctx.raw):''},
-      backgroundColor:isDark()?'#21253a':'#fff',titleColor:isDark()?'#f0f2f5':'#111',bodyColor:isDark()?'#9ca3af':'#444',borderColor:isDark()?'#2d3148':'#e4e7ec',borderWidth:1}
+      backgroundColor:isDark()?'#262421':'#fdfbf7',titleColor:isDark()?'#efe9de':'#1f1b16',bodyColor:isDark()?'#aaa398':'#5e554a',borderColor:isDark()?'rgba(239,233,222,0.08)':'rgba(31,27,22,0.08)',borderWidth:1}
   }}});
 
   // Summary line — show both plan final values
@@ -3742,7 +3775,7 @@ function renderGlideChart(){
       {label:'Debt/Gold %',data:debtData,borderColor:'#d97706',backgroundColor:'#d9770628',fill:true,tension:.4,borderWidth:2,pointRadius:0},
     ]},options:{...baseLineOpts(),plugins:{...baseLineOpts().plugins,
       legend:{display:true,position:'top',labels:{color:cc.tick,font:{size:11},usePointStyle:true}},
-      tooltip:{mode:'index',intersect:false,callbacks:{label:ctx=>ctx.dataset.label+': '+ctx.raw+'%'},backgroundColor:isDark()?'#21253a':'#fff',titleColor:isDark()?'#f0f2f5':'#111',bodyColor:isDark()?'#9ca3af':'#444',borderColor:isDark()?'#2d3148':'#e4e7ec',borderWidth:1}
+      tooltip:{mode:'index',intersect:false,callbacks:{label:ctx=>ctx.dataset.label+': '+ctx.raw+'%'},backgroundColor:isDark()?'#262421':'#fdfbf7',titleColor:isDark()?'#efe9de':'#1f1b16',bodyColor:isDark()?'#aaa398':'#5e554a',borderColor:isDark()?'rgba(239,233,222,0.08)':'rgba(31,27,22,0.08)',borderWidth:1}
     },scales:{
       x:{grid:{color:cc.grid},ticks:{color:cc.tick,font:{size:10}}},
       y:{min:0,max:100,grid:{color:cc.grid},ticks:{color:cc.tick,callback:v=>v+'%'},title:{display:true,text:'Allocation %',color:cc.tick,font:{size:11}}}
@@ -3821,7 +3854,7 @@ function renderGlideChart(){
       {label:'Glide Path + Gold',       data:glideData, borderColor:'#f59e0b',backgroundColor:'#f59e0b15',fill:true, tension:.4,borderWidth:2.5,pointRadius:0},
     ]},options:{...baseLineOpts(),plugins:{...baseLineOpts().plugins,
       legend:{display:true,position:'top',labels:{color:cc.tick,font:{size:11},usePointStyle:true}},
-      tooltip:{mode:'index',intersect:false,callbacks:{label:ctx=>ctx.dataset.label+': ₹'+fmtCr(ctx.raw)},backgroundColor:isDark()?'#21253a':'#fff',titleColor:isDark()?'#f0f2f5':'#111',bodyColor:isDark()?'#9ca3af':'#444',borderColor:isDark()?'#2d3148':'#e4e7ec',borderWidth:1}
+      tooltip:{mode:'index',intersect:false,callbacks:{label:ctx=>ctx.dataset.label+': ₹'+fmtCr(ctx.raw)},backgroundColor:isDark()?'#262421':'#fdfbf7',titleColor:isDark()?'#efe9de':'#1f1b16',bodyColor:isDark()?'#aaa398':'#5e554a',borderColor:isDark()?'rgba(239,233,222,0.08)':'rgba(31,27,22,0.08)',borderWidth:1}
     },scales:{
       x:{grid:{color:cc.grid},ticks:{color:cc.tick,font:{size:10}}},
       y:{grid:{color:cc.grid},ticks:{color:cc.tick,callback:v=>fmtCr(v)}}
@@ -3859,7 +3892,7 @@ function rebalance(){
   const debt=parseFloat(document.getElementById('mf-debt-f').value)||0;
   const t=total||(lc+mc+sc+flex+sect+debt)||1;
   const targets=[{n:'Large Cap',a:lc,t:.30,c:'#2563eb'},{n:'Mid Cap',a:mc,t:.25,c:'#7c3aed'},{n:'Small Cap',a:sc,t:.20,c:'#10b981'},{n:'Flexi/Multi',a:flex,t:.15,c:'#d97706'},{n:'Sectoral',a:sect,t:.05,c:'#f87171'},{n:'Debt',a:debt,t:.05,c:'#94a3b8'}];
-  mkChart('ch-mf-donut',{type:'doughnut',data:{labels:targets.map(x=>x.n),datasets:[{data:targets.map(x=>x.a||1),backgroundColor:targets.map(x=>x.c),borderWidth:2,borderColor:isDark()?'#1a1d27':'#fff'}]},options:{responsive:true,maintainAspectRatio:false,cutout:'60%',plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.label+': '+Math.round(c.raw/t*100)+'%'},backgroundColor:isDark()?'#21253a':'#fff',titleColor:isDark()?'#f0f2f5':'#111',bodyColor:isDark()?'#9ca3af':'#444',borderColor:isDark()?'#2d3148':'#e4e7ec',borderWidth:1}}}});
+  mkChart('ch-mf-donut',{type:'doughnut',data:{labels:targets.map(x=>x.n),datasets:[{data:targets.map(x=>x.a||1),backgroundColor:targets.map(x=>x.c),borderWidth:2,borderColor:isDark()?'#1c1a18':'#fdfbf7'}]},options:{responsive:true,maintainAspectRatio:false,cutout:'60%',plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.label+': '+Math.round(c.raw/t*100)+'%'},backgroundColor:isDark()?'#262421':'#fdfbf7',titleColor:isDark()?'#efe9de':'#1f1b16',bodyColor:isDark()?'#aaa398':'#5e554a',borderColor:isDark()?'rgba(239,233,222,0.08)':'rgba(31,27,22,0.08)',borderWidth:1}}}});
   if(!total&&!lc&&!mc) { document.getElementById('mf-result').innerHTML=''; return; }
   let html='<div class="result-box mt12">';
   targets.forEach(x=>{
@@ -3940,7 +3973,7 @@ function calcPrepay(){
   const newM=m,newI=l.emi*newM-(l.bal-amt);
   const saved=normalI-newI, moSaved=normalM-newM;
   document.getElementById('wi-prepay-result').innerHTML=`<div class="result-box"><div class="r-row"><span>Prepayment</span><span class="c-blue td-bold">${INR(amt)}</span></div><div class="r-row"><span>Normal payoff</span><span>${normalM} months</span></div><div class="r-row"><span>New payoff</span><span class="c-green td-bold">${newM} months</span></div><div class="r-row"><span>Time saved</span><span class="c-green td-bold">${moSaved} months</span></div><div class="r-row total"><span>Interest saved</span><span class="c-green">${INR(Math.max(0,saved))}</span></div></div>`;
-  mkChart('ch-prepay',{type:'bar',data:{labels:['Normal','With Prepay'],datasets:[{label:'Months',data:[normalM,newM],backgroundColor:['#f87171','#10b981'],borderRadius:6}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.raw+' months'},backgroundColor:isDark()?'#21253a':'#fff',titleColor:isDark()?'#f0f2f5':'#111',bodyColor:isDark()?'#9ca3af':'#444',borderColor:isDark()?'#2d3148':'#e4e7ec',borderWidth:1}},scales:{y:{grid:{color:chartColors().grid},ticks:{color:chartColors().tick}},x:{grid:{display:false},ticks:{color:chartColors().tick}}}}});
+  mkChart('ch-prepay',{type:'bar',data:{labels:['Normal','With Prepay'],datasets:[{label:'Months',data:[normalM,newM],backgroundColor:['#f87171','#10b981'],borderRadius:6}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.raw+' months'},backgroundColor:isDark()?'#262421':'#fdfbf7',titleColor:isDark()?'#efe9de':'#1f1b16',bodyColor:isDark()?'#aaa398':'#5e554a',borderColor:isDark()?'rgba(239,233,222,0.08)':'rgba(31,27,22,0.08)',borderWidth:1}},scales:{y:{grid:{color:chartColors().grid},ticks:{color:chartColors().tick}},x:{grid:{display:false},ticks:{color:chartColors().tick}}}}});
 }
 
 function calcCC(){
@@ -3948,7 +3981,7 @@ function calcCC(){
   const newCC=parseFloat(document.getElementById('wi-cc').value)||35000;
   const diff=35000-newCC, months=26, total=diff*months;
   document.getElementById('wi-cc-result').innerHTML=`<div class="result-box"><div class="r-row"><span>Current CC</span><span>₹35,000/mo</span></div><div class="r-row"><span>New CC</span><span class="${diff>=0?'c-green':'c-red'} td-bold">${INR(newCC)}/mo</span></div><div class="r-row"><span>Monthly diff</span><span class="${diff>=0?'c-green':'c-red'}">${diff>=0?'+':''}${INR(diff)}</span></div><div class="r-row total"><span>Saving until Dec-2028</span><span class="${diff>=0?'c-green':'c-red'}">${INR(total)}</span></div></div>`;
-  mkChart('ch-cc',{type:'doughnut',data:{labels:['CC Bill','Other Fixed','Free Cash'],datasets:[{data:[newCC,fixedTotal()-35000,Math.max(0,getSalary(NOW)-activeEMIs(NOW)-fixedTotal()+35000-newCC)],backgroundColor:['#fb923c','#fbbf24','#10b981'],borderWidth:2,borderColor:isDark()?'#1a1d27':'#fff'}]},options:{responsive:true,maintainAspectRatio:false,cutout:'60%',plugins:{legend:{display:true,position:'bottom',labels:{color:chartColors().tick,font:{size:10}}},tooltip:{callbacks:{label:c=>c.label+': '+INR(c.raw)},backgroundColor:isDark()?'#21253a':'#fff',titleColor:isDark()?'#f0f2f5':'#111',bodyColor:isDark()?'#9ca3af':'#444',borderColor:isDark()?'#2d3148':'#e4e7ec',borderWidth:1}}}});
+  mkChart('ch-cc',{type:'doughnut',data:{labels:['CC Bill','Other Fixed','Free Cash'],datasets:[{data:[newCC,fixedTotal()-35000,Math.max(0,getSalary(NOW)-activeEMIs(NOW)-fixedTotal()+35000-newCC)],backgroundColor:['#fb923c','#fbbf24','#10b981'],borderWidth:2,borderColor:isDark()?'#1c1a18':'#fdfbf7'}]},options:{responsive:true,maintainAspectRatio:false,cutout:'60%',plugins:{legend:{display:true,position:'bottom',labels:{color:chartColors().tick,font:{size:10}}},tooltip:{callbacks:{label:c=>c.label+': '+INR(c.raw)},backgroundColor:isDark()?'#262421':'#fdfbf7',titleColor:isDark()?'#efe9de':'#1f1b16',bodyColor:isDark()?'#aaa398':'#5e554a',borderColor:isDark()?'rgba(239,233,222,0.08)':'rgba(31,27,22,0.08)',borderWidth:1}}}});
 }
 
 function calcWiSIP(){
@@ -3965,7 +3998,7 @@ function calcWiSIP(){
   const yLabels=Array.from({length:yrs},(_,i)=>i+1+'yr');
   const yCorpus=Array.from({length:yrs},(_,i)=>{ const ni=(i+1)*12; return extra*((Math.pow(1+r,ni)-1)/r)*(1+r); });
   const yInv=Array.from({length:yrs},(_,i)=>extra*(i+1)*12);
-  mkChart('ch-wisip',{type:'line',data:{labels:yLabels,datasets:[{label:'Corpus',data:yCorpus,borderColor:'#10b981',backgroundColor:'#10b98118',fill:true,tension:.4,borderWidth:2,pointRadius:0},{label:'Invested',data:yInv,borderColor:'#4f8ef7',backgroundColor:'transparent',borderDash:[4,3],tension:.4,borderWidth:1.5,pointRadius:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,position:'top',labels:{color:chartColors().tick,font:{size:10},usePointStyle:true}},tooltip:{mode:'index',intersect:false,callbacks:{label:c=>c.dataset.label+': '+INR(c.raw)},backgroundColor:isDark()?'#21253a':'#fff',titleColor:isDark()?'#f0f2f5':'#111',bodyColor:isDark()?'#9ca3af':'#444',borderColor:isDark()?'#2d3148':'#e4e7ec',borderWidth:1}},scales:{x:{grid:{color:chartColors().grid},ticks:{color:chartColors().tick}},y:{grid:{color:chartColors().grid},ticks:{color:chartColors().tick,callback:v=>INR(v)}}}}});
+  mkChart('ch-wisip',{type:'line',data:{labels:yLabels,datasets:[{label:'Corpus',data:yCorpus,borderColor:'#10b981',backgroundColor:'#10b98118',fill:true,tension:.4,borderWidth:2,pointRadius:0},{label:'Invested',data:yInv,borderColor:'#4f8ef7',backgroundColor:'transparent',borderDash:[4,3],tension:.4,borderWidth:1.5,pointRadius:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,position:'top',labels:{color:chartColors().tick,font:{size:10},usePointStyle:true}},tooltip:{mode:'index',intersect:false,callbacks:{label:c=>c.dataset.label+': '+INR(c.raw)},backgroundColor:isDark()?'#262421':'#fdfbf7',titleColor:isDark()?'#efe9de':'#1f1b16',bodyColor:isDark()?'#aaa398':'#5e554a',borderColor:isDark()?'rgba(239,233,222,0.08)':'rgba(31,27,22,0.08)',borderWidth:1}},scales:{x:{grid:{color:chartColors().grid},ticks:{color:chartColors().tick}},y:{grid:{color:chartColors().grid},ticks:{color:chartColors().tick,callback:v=>INR(v)}}}}});
 }
 
 function calcNewLoan(){
@@ -3989,7 +4022,7 @@ function calc80C(){
   const ppf=parseFloat(document.getElementById('t-ppf').value)||0;
   const total=elss+lic+ppf, eligible=Math.min(total,150000), excess=Math.max(0,total-150000);
   document.getElementById('t-80c-result').innerHTML=`<div class="result-box"><div class="r-row"><span>ELSS</span><span>${INR(elss)}</span></div><div class="r-row"><span>Life Insurance</span><span>${INR(lic)}</span></div><div class="r-row"><span>PPF/EPF</span><span>${INR(ppf)}</span></div>${excess>0?`<div class="r-row"><span class="c-red">Excess (not eligible)</span><span class="c-red">${INR(excess)}</span></div>`:''}<div class="r-row total"><span>80C Deduction</span><span class="c-green">${INR(eligible)} / ₹1,50,000</span></div></div>`;
-  mkChart('ch-80c',{type:'bar',data:{labels:['ELSS','Life Ins','PPF','Limit'],datasets:[{data:[Math.min(elss,150000),Math.min(lic,150000-Math.min(elss,150000)),Math.min(ppf,150000-Math.min(elss,150000)-Math.min(lic,150000)),150000],backgroundColor:['#4f8ef7','#10b981','#fbbf24','#f8717122'],borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>INR(c.raw)},backgroundColor:isDark()?'#21253a':'#fff',titleColor:isDark()?'#f0f2f5':'#111',bodyColor:isDark()?'#9ca3af':'#444',borderColor:isDark()?'#2d3148':'#e4e7ec',borderWidth:1}},scales:{x:{max:200000,grid:{color:chartColors().grid},ticks:{color:chartColors().tick,callback:v=>INR(v)}},y:{grid:{display:false},ticks:{color:chartColors().tick}}}}});
+  mkChart('ch-80c',{type:'bar',data:{labels:['ELSS','Life Ins','PPF','Limit'],datasets:[{data:[Math.min(elss,150000),Math.min(lic,150000-Math.min(elss,150000)),Math.min(ppf,150000-Math.min(elss,150000)-Math.min(lic,150000)),150000],backgroundColor:['#4f8ef7','#10b981','#fbbf24','#f8717122'],borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>INR(c.raw)},backgroundColor:isDark()?'#262421':'#fdfbf7',titleColor:isDark()?'#efe9de':'#1f1b16',bodyColor:isDark()?'#aaa398':'#5e554a',borderColor:isDark()?'rgba(239,233,222,0.08)':'rgba(31,27,22,0.08)',borderWidth:1}},scales:{x:{max:200000,grid:{color:chartColors().grid},ticks:{color:chartColors().tick,callback:v=>INR(v)}},y:{grid:{display:false},ticks:{color:chartColors().tick}}}}});
 }
 
 function calcCG(){
@@ -4016,7 +4049,7 @@ function calcRegime(){
   const newTax=slabNew(Math.max(0,gross-75000));
   const oc=oldTax*1.04, nc=newTax*1.04, better=oc<=nc?'Old':'New', save=Math.abs(oc-nc);
   document.getElementById('t-regime-result').innerHTML=`<div class="result-box"><div class="r-row"><span></span><span class="td-bold">Old Regime</span><span class="td-bold">New Regime</span></div><div class="r-row"><span>Income Tax</span><span>${INR(oldTax)}</span><span>${INR(newTax)}</span></div><div class="r-row"><span>+ 4% Cess</span><span>${INR(oldTax*.04)}</span><span>${INR(newTax*.04)}</span></div><div class="r-row total"><span>Total Tax</span><span class="${better==='Old'?'c-green':'c-red'} td-bold">${INR(oc)}</span><span class="${better==='New'?'c-green':'c-red'} td-bold">${INR(nc)}</span></div></div><div class="alert alert-success mt12">✅ <strong>${better} Regime</strong> saves <strong>${INR(save)}</strong></div>`;
-  mkChart('ch-regime',{type:'bar',data:{labels:['Old Regime','New Regime'],datasets:[{data:[Math.round(oc),Math.round(nc)],backgroundColor:[better==='Old'?'#10b981':'#f87171',better==='New'?'#10b981':'#f87171'],borderRadius:6}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>INR(c.raw)},backgroundColor:isDark()?'#21253a':'#fff',titleColor:isDark()?'#f0f2f5':'#111',bodyColor:isDark()?'#9ca3af':'#444',borderColor:isDark()?'#2d3148':'#e4e7ec',borderWidth:1}},scales:{y:{grid:{color:chartColors().grid},ticks:{color:chartColors().tick,callback:v=>INR(v)}},x:{grid:{display:false},ticks:{color:chartColors().tick}}}}});
+  mkChart('ch-regime',{type:'bar',data:{labels:['Old Regime','New Regime'],datasets:[{data:[Math.round(oc),Math.round(nc)],backgroundColor:[better==='Old'?'#10b981':'#f87171',better==='New'?'#10b981':'#f87171'],borderRadius:6}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>INR(c.raw)},backgroundColor:isDark()?'#262421':'#fdfbf7',titleColor:isDark()?'#efe9de':'#1f1b16',bodyColor:isDark()?'#aaa398':'#5e554a',borderColor:isDark()?'rgba(239,233,222,0.08)':'rgba(31,27,22,0.08)',borderWidth:1}},scales:{y:{grid:{color:chartColors().grid},ticks:{color:chartColors().tick,callback:v=>INR(v)}},x:{grid:{display:false},ticks:{color:chartColors().tick}}}}});
 }
 function slabOld(i){if(i<=250000)return 0;let t=0;if(i>1000000)t+=(i-1000000)*.30;if(i>500000)t+=Math.min(i-500000,500000)*.20;if(i>250000)t+=Math.min(i-250000,250000)*.05;return t;}
 function slabNew(i){const s=[[0,300000,0],[300000,600000,.05],[600000,900000,.10],[900000,1200000,.15],[1200000,1500000,.20],[1500000,Infinity,.30]];let t=0;s.forEach(([lo,hi,r])=>{if(i>lo)t+=Math.min(i-lo,hi-lo)*r;});return i<=700000?0:t;}
@@ -4303,7 +4336,7 @@ function loadVarianceChart(hist){
     {label:'Actual Free Cash',data:actFCs,backgroundColor:'#10b981',borderRadius:4},
     {label:'Projected Free Cash',data:projFCs,backgroundColor:'#4f8ef755',borderRadius:4},
     {label:'Actual CC',data:recent.map(h=>h.cc??35000),backgroundColor:'#f87171',borderRadius:4,hidden:true},
-  ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,position:'top',labels:{color:chartColors().tick,font:{size:11},usePointStyle:true}},tooltip:{mode:'index',intersect:false,callbacks:{label:c=>c.dataset.label+': '+INR(c.raw)},backgroundColor:isDark()?'#21253a':'#fff',titleColor:isDark()?'#f0f2f5':'#111',bodyColor:isDark()?'#9ca3af':'#444',borderColor:isDark()?'#2d3148':'#e4e7ec',borderWidth:1}},scales:{x:{grid:{display:false},ticks:{color:chartColors().tick}},y:{grid:{color:chartColors().grid},ticks:{color:chartColors().tick,callback:v=>INR(v)}}}}});
+  ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,position:'top',labels:{color:chartColors().tick,font:{size:11},usePointStyle:true}},tooltip:{mode:'index',intersect:false,callbacks:{label:c=>c.dataset.label+': '+INR(c.raw)},backgroundColor:isDark()?'#262421':'#fdfbf7',titleColor:isDark()?'#efe9de':'#1f1b16',bodyColor:isDark()?'#aaa398':'#5e554a',borderColor:isDark()?'rgba(239,233,222,0.08)':'rgba(31,27,22,0.08)',borderWidth:1}},scales:{x:{grid:{display:false},ticks:{color:chartColors().tick}},y:{grid:{color:chartColors().grid},ticks:{color:chartColors().tick,callback:v=>INR(v)}}}}});
 }
 
 // ── CSV Export ──────────────────────────────────────────────────────
@@ -4343,7 +4376,7 @@ function copyGSheetFormula(){
   if(!tipEl) return;
   tipEl.style.display='block';
   tipEl.innerHTML='📋 <strong>How to get data into Google Sheets:</strong><br>' +
-    '1. Click <strong>⬇️ Export CSV</strong> — a .csv file downloads<br>' +
+    '1. Click <strong>Export CSV</strong> — a .csv file downloads<br>' +
     '2. In Google Sheets → <strong>File → Import → Upload</strong> the CSV<br>' +
     '3. Choose "Replace spreadsheet" or "Insert new sheet"<br>' +
     '<em>Tip: Do this monthly after saving actuals to keep a running log.</em>';
