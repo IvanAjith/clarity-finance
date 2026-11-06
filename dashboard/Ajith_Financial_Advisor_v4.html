@@ -750,7 +750,7 @@ tbody tr:hover { background: var(--surface2); }
   <!-- 4 KPI tiles — same format as Dashboard -->
   <div class="g4 mb12">
     <div class="kpi"><div class="kpi-stripe bg-red"></div><div class="kpi-label">Total Debt</div><div class="kpi-value c-red" id="l-total-debt">—</div><div class="kpi-sub" id="l-total-debt-sub">across all loans</div><div class="kpi-icon">🏦</div><div class="kpi-formula">Sum of all outstanding balances</div></div>
-    <div class="kpi"><div class="kpi-stripe bg-teal"></div><div class="kpi-label">Spendable Cash</div><div class="kpi-value c-teal" id="l-cash">—</div><div class="kpi-sub" id="l-cash-sub">Savings − Buffer − Loan EF</div><div class="kpi-icon">💵</div><div class="kpi-formula" id="l-cash-formula">Enter savings balance on Dashboard</div></div>
+    <div class="kpi"><div class="kpi-stripe bg-teal"></div><div class="kpi-label">EMIs This Month</div><div class="kpi-value c-teal" id="l-cash">—</div><div class="kpi-sub" id="l-cash-sub">active loans</div><div class="kpi-icon">📅</div><div class="kpi-formula" id="l-cash-formula">Sum of active loan EMIs</div></div>
     <div class="kpi"><div class="kpi-stripe bg-purple"></div><div class="kpi-label">Loan EF Allocation</div><div class="kpi-value c-purple" id="l-lef">—</div><div class="kpi-sub" id="l-lef-sub">avalanche prepayment pool</div><div class="kpi-icon">⚡</div><div class="kpi-formula" id="l-lef-formula">50% free cash → Flexi FD (₹20k–₹1.5L zone)</div></div>
     <div class="kpi"><div class="kpi-stripe bg-green"></div><div class="kpi-label">EF Pool Remaining</div><div class="kpi-value c-green" id="l-lef-remain">—</div><div class="kpi-sub" id="l-lef-remain-sub">after avalanche prepay</div><div class="kpi-icon">💰</div><div class="kpi-formula" id="l-lef-remain-formula">Loan EF − loans wiped</div></div>
   </div>
@@ -2805,17 +2805,17 @@ function renderLoans(){
   const lSpendable = Math.max(0, lV74.postTransferSav - 20000); // above buffer = spendable
   const surplus    = lV74.effective > 20000 ? lV74.effective - 20000 : 0; // for display only
 
-  set('l-cash', INR(lSpendable));
-  set('l-cash-sub', isActual
-    ? `−₹20k buffer −${INR(Math.round(lefVal))} EF = spendable ✅`
-    : 'Projected · enter savings balance on Dashboard');
-  set('l-cash-formula', isActual
-    ? `Savings ${INR(lSavBal)}${lOnetimeExpense>0?' −₹'+lOnetimeExpense.toLocaleString('en-IN')+' one-time':''} − Buffer ₹20k − Loan EF ${INR(Math.round(lefVal))}`
-    : 'Enter HDFC balance on Dashboard → 6th tab');
-
-  // Color the tile
+  // ── EMIs This Month tile ──
+  const lTotalEMI = activeEMIs(ym);
+  const loanOrder = ['cred','personal','car','solar','mfpledge'];
+  const loanShort = {cred:'CRED',personal:'Personal',car:'Car',solar:'Solar',mfpledge:'LAMF'};
+  const activeLoansThisMonth = loanOrder.filter(k => loanBal(k,ym) > 0 && D.loans[k].emi > 0);
+  const emiParts = activeLoansThisMonth.map(k => loanShort[k]+' '+INR(D.loans[k].emi));
+  set('l-cash', INR(lTotalEMI));
+  set('l-cash-sub', activeLoansThisMonth.length + ' active loan' + (activeLoansThisMonth.length !== 1 ? 's' : '') + ' paying EMI');
+  set('l-cash-formula', emiParts.join(' · ') || 'No active EMIs');
   const lCashEl = document.getElementById('l-cash');
-  if(lCashEl) lCashEl.className = 'kpi-value ' + (lSpendable > 5000 ? 'c-green' : lSpendable > 0 ? 'c-gold' : 'c-red');
+  if(lCashEl) lCashEl.className = 'kpi-value c-teal';
 
   set('l-lef', surplus>0 ? INR(lefVal) : '⏸ Waiting');
   set('l-lef-sub', surplus>0 ? '50% of surplus → Loan EF (Flexi FD)' : 'Need surplus above ₹20k');
