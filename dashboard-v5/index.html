@@ -277,30 +277,9 @@ body{font-family:'Inter',sans-serif;background:var(--bg);min-height:100vh;displa
   <!-- Quick View -->
   <div class="sec-label">Quick View</div>
   <ul class="qv-list">
-    <li onclick="openModal('modal-spendable')"><span class="qv-dot"></span> Spendable Cash</li>
+    <li onclick="openModal('modal-spendable')"><span class="qv-dot"></span> Cash Flow</li>
     <li onclick="openModal('modal-ef')"><span class="qv-dot g"></span> EF Progress</li>
     <li onclick="openModal('modal-sip')"><span class="qv-dot b"></span> SIP Target</li>
-  </ul>
-
-  <!-- Loan quick links -->
-  <div class="sec-label">My Loans</div>
-  <ul class="loan-nav-list">
-    <li onclick="navTo('loans')">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
-      Car Loan
-    </li>
-    <li onclick="navTo('loans')">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
-      CRED Loan ⚡
-    </li>
-    <li onclick="navTo('loans')">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-      Personal Loan
-    </li>
-    <li onclick="navTo('loans')">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
-      Solar Roof
-    </li>
   </ul>
 
   <div class="sidebar-footer">
@@ -346,8 +325,8 @@ body{font-family:'Inter',sans-serif;background:var(--bg);min-height:100vh;displa
           <div class="kpi-label-sm">Total EMIs</div>
         </div>
         <div class="kpi-item">
-          <div class="kpi-num green" id="d-free">₹8,169</div>
-          <div class="kpi-label-sm">Spendable Cash</div>
+          <div class="kpi-num green" id="d-free">₹1,995</div>
+          <div class="kpi-label-sm">Free Cash</div>
         </div>
         <div class="kpi-item">
           <div class="kpi-num amber">₹15,750</div>
@@ -383,14 +362,14 @@ body{font-family:'Inter',sans-serif;background:var(--bg);min-height:100vh;displa
       </div>
 
       <div class="pill-tabs">
-        <button class="pill active" data-tab="emis">EMIs</button>
+        <button class="pill" data-tab="emis">EMIs</button>
         <button class="pill" data-tab="goals">Goals</button>
-        <button class="pill" data-tab="sip">SIP</button>
-        <button class="pill" data-tab="actuals">Actuals</button>
+        <button class="pill" data-tab="sip">Funds</button>
+        <button class="pill active" data-tab="actuals">Actuals</button>
       </div>
 
       <!-- EMIs TAB -->
-      <div class="tab-content active" id="tab-emis">
+      <div class="tab-content" id="tab-emis">
         <div class="ev-card yel">
           <div class="ev-title amber">Car Loan — HDFC</div>
           <div class="ev-sub">Auto-debit · 9.25% p.a.</div>
@@ -408,9 +387,14 @@ body{font-family:'Inter',sans-serif;background:var(--bg);min-height:100vh;displa
           <div class="ev-footer"><div class="ev-chip">EMI</div><div class="ev-amt">₹6,883 / mo</div></div>
         </div>
         <div class="ev-card wht">
-          <div class="ev-title">Solar Roof + MF Pledge</div>
-          <div class="ev-sub">SBI 8.95% + 0% · closing Dec 2027</div>
-          <div class="ev-footer"><div class="ev-chip">EMI</div><div class="ev-amt">₹6,400 / mo</div></div>
+          <div class="ev-title">Solar Roof — SBI</div>
+          <div class="ev-sub">8.95% p.a. · closing Dec 2027</div>
+          <div class="ev-footer"><div class="ev-chip">EMI</div><div class="ev-amt">₹6,025 / mo</div></div>
+        </div>
+        <div class="ev-card wht">
+          <div class="ev-title">MF Pledge</div>
+          <div class="ev-sub">0% interest · ₹50K pledged · closing Dec 2027</div>
+          <div class="ev-footer"><div class="ev-chip">EMI</div><div class="ev-amt">₹375 / mo</div></div>
         </div>
       </div>
 
@@ -438,32 +422,54 @@ body{font-family:'Inter',sans-serif;background:var(--bg);min-height:100vh;displa
         </div>
       </div>
 
-      <!-- SIP TAB -->
+      <!-- FUNDS TAB -->
       <div class="tab-content" id="tab-sip">
+        <div style="font-size:11px;font-weight:600;color:var(--gray);letter-spacing:.03em;text-transform:uppercase;margin-bottom:2px;">Mutual Funds — ₹13,200/mo</div>
         <div class="ev-card yel">
-          <div class="ev-title amber">Current SIP — Active</div>
-          <div class="ev-sub">Oct 2026 → Mar 2027 (Push phase)</div>
-          <div class="ev-footer"><div class="ev-chip">Running</div><div class="ev-amt">₹15,750 / mo</div></div>
+          <div class="ev-title amber">Parag Parikh Flexi Cap</div>
+          <div class="ev-sub">Flexi Cap · international diversification</div>
+          <div class="ev-footer"><div class="ev-chip">Flexi Cap</div><div class="ev-amt">₹3,700 / mo</div></div>
         </div>
         <div class="ev-card wht">
-          <div class="ev-title">Step-Up → Apr 2027</div>
-          <div class="ev-sub">+20% increase · ₹18,900 / mo</div>
-          <div class="ev-footer"><div class="ev-chip">Upcoming</div><div class="ev-amt">₹18,900 / mo</div></div>
+          <div class="ev-title">ICICI Pru Large Cap</div>
+          <div class="ev-sub">Large Cap</div>
+          <div class="ev-footer"><div class="ev-chip">Large Cap</div><div class="ev-amt">₹2,250 / mo</div></div>
         </div>
         <div class="ev-card wht">
-          <div class="ev-title">Corpus Projection</div>
-          <div class="ev-sub">At 14% XIRR over 23 years</div>
-          <div class="ev-footer"><div class="ev-chip">Target</div><div class="ev-amt">₹10.1 Cr</div></div>
+          <div class="ev-title">Nippon India Mid Cap</div>
+          <div class="ev-sub">Mid Cap growth</div>
+          <div class="ev-footer"><div class="ev-chip">Mid Cap</div><div class="ev-amt">₹2,250 / mo</div></div>
         </div>
         <div class="ev-card wht">
-          <div class="ev-title">Debt-Free Date</div>
-          <div class="ev-sub">All loans closed · Dec 2028</div>
-          <div class="ev-footer"><div class="ev-chip">Milestone</div><div class="ev-amt">25 months</div></div>
+          <div class="ev-title">ICICI Pru Dynamic Term Bond</div>
+          <div class="ev-sub">Debt — duration play</div>
+          <div class="ev-footer"><div class="ev-chip">Debt</div><div class="ev-amt">₹2,000 / mo</div></div>
+        </div>
+        <div class="ev-card wht">
+          <div class="ev-title">HDFC Flexi Cap</div>
+          <div class="ev-sub">Flexi Cap</div>
+          <div class="ev-footer"><div class="ev-chip">Flexi Cap</div><div class="ev-amt">₹1,500 / mo</div></div>
+        </div>
+        <div class="ev-card wht">
+          <div class="ev-title">Nippon India Small Cap</div>
+          <div class="ev-sub">Small Cap high-growth</div>
+          <div class="ev-footer"><div class="ev-chip">Small Cap</div><div class="ev-amt">₹1,500 / mo</div></div>
+        </div>
+        <div style="font-size:11px;font-weight:600;color:var(--gray);letter-spacing:.03em;text-transform:uppercase;margin-top:6px;margin-bottom:2px;">Others</div>
+        <div class="ev-card wht">
+          <div class="ev-title">UTI Gold ETF</div>
+          <div class="ev-sub">Indian stock · gold allocation</div>
+          <div class="ev-footer"><div class="ev-chip">Gold ETF</div><div class="ev-amt">₹1,000 / mo</div></div>
+        </div>
+        <div class="ev-card wht">
+          <div class="ev-title">iShares Semiconductor ETF</div>
+          <div class="ev-sub">US stock · tech sector bet</div>
+          <div class="ev-footer"><div class="ev-chip">US ETF</div><div class="ev-amt">$1,500 / mo</div></div>
         </div>
       </div>
 
       <!-- ACTUALS TAB -->
-      <div class="tab-content" id="tab-actuals">
+      <div class="tab-content active" id="tab-actuals">
         <div style="font-size:12px;color:var(--gray);margin-bottom:4px;line-height:1.5;">Enter your numbers on the 6th of every month. Dashboard updates live.</div>
         <div class="input-section">
           <div class="input-row">
@@ -483,21 +489,28 @@ body{font-family:'Inter',sans-serif;background:var(--bg);min-height:100vh;displa
       </div>
     </div>
 
-    <!-- CENTRE CHART: Free Cash Waterfall -->
+    <!-- CENTRE CHART: Cash Flow Donut -->
     <div class="chart-card">
       <div class="big-kpi">
         <div>
           <div class="big-num"><sup>₹</sup><span id="centre-num">8,169</span></div>
-          <div class="big-label">Free Cash — Nov 2026</div>
+          <div class="big-label">Free Cash — <span id="centre-month-label">Nov 2026</span></div>
         </div>
-        <div class="arrow-btn">↗</div>
+        <button class="arrow-btn" onclick="openModal('modal-spendable')" title="See breakdown">↗</button>
       </div>
-      <canvas id="waterfallChart" height="145"></canvas>
-      <div class="legend-row" style="margin-top:4px;">
-        <div class="leg-item"><div class="leg-dot" style="background:#1A1A1A"></div>Income</div>
-        <div class="leg-item"><div class="leg-dot" style="background:#E5484D"></div>EMIs</div>
-        <div class="leg-item"><div class="leg-dot" style="background:#F5C842"></div>Fixed costs</div>
-        <div class="leg-item"><div class="leg-dot" style="background:#2CC084"></div>Free cash</div>
+      <div style="position:relative;display:flex;align-items:center;justify-content:center;height:145px;">
+        <canvas id="donutChart" style="max-height:145px;max-width:145px;"></canvas>
+        <div style="position:absolute;text-align:center;pointer-events:none;">
+          <div style="font-size:11px;color:var(--gray);font-weight:500;">of income</div>
+          <div style="font-size:18px;font-weight:800;color:var(--dark);" id="donut-pct">8%</div>
+          <div style="font-size:10px;color:var(--green);font-weight:600;">free</div>
+        </div>
+      </div>
+      <div class="legend-row" style="margin-top:4px;justify-content:center;">
+        <div class="leg-item"><div class="leg-dot" style="background:#E5484D"></div>EMIs 27%</div>
+        <div class="leg-item"><div class="leg-dot" style="background:#F5C842"></div>Fixed 56%</div>
+        <div class="leg-item"><div class="leg-dot" style="background:#9B9B9B"></div>SIP 15%</div>
+        <div class="leg-item"><div class="leg-dot" style="background:#2CC084"></div>Free ~1%</div>
       </div>
     </div>
 
@@ -846,22 +859,20 @@ body{font-family:'Inter',sans-serif;background:var(--bg);min-height:100vh;displa
 
 <!-- ════════ MODALS ════════ -->
 
-<!-- Spendable Cash -->
+<!-- Cash Flow -->
 <div class="modal-overlay" id="modal-spendable">
   <div class="modal-blur" onclick="closeModal('modal-spendable')"></div>
   <div class="modal-box">
     <button class="modal-close" onclick="closeModal('modal-spendable')">✕</button>
-    <div class="modal-title">Spendable Cash</div>
-    <div class="modal-sub">How your ₹8,169 free cash is calculated this month</div>
+    <div class="modal-title">Cash Flow</div>
+    <div class="modal-sub" id="modal-cf-sub">How your monthly ₹1,01,720 is allocated</div>
     <div class="modal-row"><div class="mr-label">Monthly Income</div><div class="mr-val">₹1,01,720</div></div>
     <div class="modal-row"><div class="mr-label">Total EMIs</div><div class="mr-val r">− ₹27,561</div></div>
-    <div class="modal-row"><div class="mr-label">Rent</div><div class="mr-val r">− ₹10,000</div></div>
     <div class="modal-row"><div class="mr-label">Insurance (Life + Health)</div><div class="mr-val r">− ₹3,281</div></div>
     <div class="modal-row"><div class="mr-label">ActiveOne + Family Plan</div><div class="mr-val r">− ₹13,133</div></div>
     <div class="modal-row"><div class="mr-label">CC Bill + Misc</div><div class="mr-val r">− ₹40,000</div></div>
     <div class="modal-row"><div class="mr-label">SIP</div><div class="mr-val r">− ₹15,750</div></div>
-    <div class="modal-row" style="border-top:2px solid var(--border);margin-top:4px;padding-top:12px;"><div class="mr-label" style="font-weight:700;color:var(--dark);">Spendable Cash</div><div class="mr-val g" id="modal-free-val">₹8,169 (after safety buffer)</div></div>
-    <div class="modal-note">₹20,000 safety buffer is kept in HDFC every month. The number above is what's truly free to spend or save extra.</div>
+    <div class="modal-row" style="border-top:2px solid var(--border);margin-top:4px;padding-top:12px;"><div class="mr-label" style="font-weight:700;color:var(--dark);">Actual Spendable Cash</div><div class="mr-val g" id="modal-free-val">₹1,995</div></div>
   </div>
 </div>
 
@@ -958,27 +969,26 @@ body{font-family:'Inter',sans-serif;background:var(--bg);min-height:100vh;displa
   draw(22500, 150000);
 })();
 
-// ── WATERFALL (income breakdown) ──
+// ── CASH FLOW DONUT ──
 (function(){
-  // Income → EMIs → Fixed → Free cash
-  const labels  = ['Income','EMIs','Fixed costs','SIP','Free cash'];
-  const vals    = [101720, 27561, 66990, 15750, 8169]; // approx
-  const colors  = ['#1A1A1A','#E5484D','#F5C842','#9B9B9B','#2CC084'];
+  const income=101720, emis=27561, fixed=56990, sip=15750;
+  // fixed = ins 3281 + family/plan 13133 + cc+misc 40000 + (no rent)
+  const free = Math.max(0, income - emis - fixed - sip);
 
-  new Chart(document.getElementById('waterfallChart'),{
-    type:'bar',
+  window._donutChart = new Chart(document.getElementById('donutChart'),{
+    type:'doughnut',
     data:{
-      labels,
+      labels:['EMIs','Fixed costs','SIP','Free cash'],
       datasets:[{
-        data: vals,
-        backgroundColor: colors,
-        borderRadius: 7,
-        borderSkipped: false,
-        barThickness: 36,
+        data:[emis, fixed, sip, free],
+        backgroundColor:['#E5484D','#F5C842','#9B9B9B','#2CC084'],
+        borderWidth:0,
+        hoverOffset:6,
       }]
     },
     options:{
       responsive:true,
+      cutout:'68%',
       plugins:{
         legend:{display:false},
         tooltip:{
@@ -987,15 +997,25 @@ body{font-family:'Inter',sans-serif;background:var(--bg);min-height:100vh;displa
           bodyColor:'#F5C842',
           padding:10,
           cornerRadius:8,
-          callbacks:{label: ctx=>'₹'+Math.round(ctx.parsed.y).toLocaleString('en-IN')}
+          callbacks:{label: ctx=>'₹'+Math.round(ctx.parsed).toLocaleString('en-IN')+' ('+Math.round(ctx.parsed/income*100)+'%)'}
         }
-      },
-      scales:{
-        x:{grid:{display:false},ticks:{font:{size:11,family:'Inter'},color:'#A8A8A8'},border:{display:false}},
-        y:{display:false}
       }
     }
   });
+
+  // Set initial free-cash values
+  const pct = Math.round(free/income*100);
+  document.getElementById('donut-pct').textContent = pct+'%';
+  document.getElementById('d-free').textContent = '₹'+free.toLocaleString('en-IN');
+  document.getElementById('centre-num').textContent = free.toLocaleString('en-IN');
+  document.getElementById('modal-free-val').textContent = '₹'+free.toLocaleString('en-IN');
+
+  // Update month label
+  const mn=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const now=new Date();
+  const lbl = mn[now.getMonth()]+' '+now.getFullYear();
+  const el = document.getElementById('centre-month-label');
+  if(el) el.textContent = lbl;
 })();
 
 // ── LOAN BAR CHART ──
@@ -1119,20 +1139,33 @@ function applyActuals(){
   const lef     = parseFloat(document.getElementById('inp-lef').value)||0;
   const onetime = parseFloat(document.getElementById('inp-onetime').value)||0;
 
-  // EF gauge uses lef balance
+  // EF gauge uses Loan EF balance
   if(lef > 0 && window._drawGauge) window._drawGauge(lef, 150000);
 
-  // Spendable = income - emis - fixed - sip - onetime (what's above safety buffer)
+  // Free cash = income - emis - fixed costs - sip - one-time expense
   const income = 101720;
   const emis   = 27561;
-  const fixed  = 66990; // rent + ins + family + cc + misc
+  const fixed  = 56990; // ins 3281 + family 13133 + cc+misc 40000 (no rent)
   const sip    = 15750;
-  const raw    = income - emis - fixed - sip - onetime;
-  const free   = Math.max(0, raw - 20000); // above buffer
+  const free   = Math.max(0, income - emis - fixed - sip - onetime);
+  const pct    = Math.round(free/income*100);
 
+  // Update hero KPI
   document.getElementById('d-free').textContent = '₹'+Math.round(free).toLocaleString('en-IN');
+
+  // Update centre donut number + pct label
   document.getElementById('centre-num').textContent = Math.round(free).toLocaleString('en-IN');
-  document.getElementById('modal-free-val').textContent = '₹'+Math.round(free).toLocaleString('en-IN')+' (after safety buffer)';
+  const dpct = document.getElementById('donut-pct');
+  if(dpct) dpct.textContent = pct+'%';
+
+  // Update modal
+  document.getElementById('modal-free-val').textContent = '₹'+Math.round(free).toLocaleString('en-IN');
+
+  // Update donut chart data
+  if(window._donutChart){
+    window._donutChart.data.datasets[0].data[3] = free;
+    window._donutChart.update();
+  }
 
   // Flash confirmation
   const btn = document.querySelector('.save-btn');
