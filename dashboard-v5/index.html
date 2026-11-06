@@ -202,7 +202,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);min-height:100vh;displa
 .lpb-normal{background:rgba(44,192,132,.1);color:var(--green);}
 
 /* ── INVESTMENTS PAGE ── */
-.inv-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;}
+.inv-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;align-items:stretch;}
 .inv-card{background:var(--white);border-radius:var(--r);padding:18px 20px;box-shadow:var(--sh);}
 .inv-card-title{font-size:14px;font-weight:700;color:var(--dark);margin-bottom:14px;}
 .sip-row{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--border);}
@@ -842,7 +842,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);min-height:100vh;displa
       <!-- SIP Schedule -->
       <div class="inv-card" style="display:flex;flex-direction:column;">
         <div class="inv-card-title">SIP Step-Up Schedule</div>
-        <div style="flex:1;overflow-y:auto;"><div class="sip-row">
+        <div style="flex:1;min-height:0;overflow-y:auto;"><div class="sip-row">
           <div><div class="sip-period">Oct 2026 – Mar 2027</div><div style="font-size:11px;color:var(--gray);">Push phase · Debt paydown priority</div></div>
           <div style="text-align:right;"><div class="sip-amt active">₹15,750</div><span class="sip-tag st-now">Active now</span></div>
         </div>
