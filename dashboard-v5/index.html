@@ -864,9 +864,9 @@ body{font-family:'Inter',sans-serif;background:var(--bg);min-height:100vh;displa
       </div>
       <div class="mini-tile">
         <div class="m-dot" style="background:#D97706;"></div>
-        <div class="m-label">Free Cash</div>
-        <div class="m-num" id="inv-t-cash">₹23,495</div>
-        <div class="m-sub" id="inv-t-salary">Salary: ₹1,01,720</div>
+        <div class="m-label">Corpus Growth This Month</div>
+        <div class="m-num" id="inv-t-cash">₹1,647</div>
+        <div class="m-sub" id="inv-t-salary">Returns + SIP added</div>
       </div>
       <div class="mini-tile">
         <div class="m-dot" style="background:#7C3AED;"></div>
@@ -1419,9 +1419,12 @@ function updateInvMonth(key){
   document.getElementById('inv-t-corpus').textContent = fmtINR(corpus);
   document.getElementById('inv-t-cum').textContent = 'Invested: '+fmtINR(cum)+' total';
 
-  // Tile 3 — Free Cash
-  document.getElementById('inv-t-cash').textContent = fmtINR(leftover);
-  document.getElementById('inv-t-salary').textContent = 'Salary: '+fmtINR(salary);
+  // Tile 3 — Corpus Growth this month (corpus - prev month corpus)
+  const idx = INV_KEYS.indexOf(key);
+  const prevCorpus = idx>0 ? SIP_DATA[INV_KEYS[idx-1]][1] : 150000; // opening corpus
+  const growth = corpus - prevCorpus;
+  document.getElementById('inv-t-cash').textContent = fmtINR(growth);
+  document.getElementById('inv-t-salary').textContent = 'Returns + SIP added';
 
   // Tile 4 — % of salary
   document.getElementById('inv-t-pct').textContent = pct+'%';
