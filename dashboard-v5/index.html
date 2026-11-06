@@ -242,6 +242,17 @@ body{font-family:'Inter',sans-serif;background:var(--bg);min-height:100vh;displa
 .mr-val.a{color:var(--YD);}
 .modal-note{margin-top:14px;padding:10px 12px;background:var(--YL);border-radius:var(--rxs);font-size:12px;color:var(--YD);font-weight:500;line-height:1.5;}
 
+/* ── ACTUALS STRIP ── */
+.actuals-strip{margin:12px 28px 0;background:var(--white);border-radius:var(--rsm);padding:12px 16px;box-shadow:var(--sh);display:flex;align-items:center;gap:16px;flex-wrap:wrap;}
+.as-label{font-size:12px;font-weight:700;color:var(--dark);white-space:nowrap;min-width:80px;}
+.as-fields{display:flex;align-items:flex-end;gap:10px;flex:1;flex-wrap:wrap;}
+.as-field{display:flex;flex-direction:column;gap:3px;flex:1;min-width:120px;}
+.as-field-label{font-size:10px;font-weight:600;color:var(--gray);text-transform:uppercase;letter-spacing:.03em;}
+.as-input{padding:7px 10px;border-radius:var(--rxs);border:1.5px solid var(--border);background:var(--canvas);font-size:12.5px;font-family:'Inter',sans-serif;color:var(--dark);font-weight:600;outline:none;transition:border 150ms;width:100%;}
+.as-input:focus{border-color:var(--Y);}
+.as-btn{padding:7px 18px;background:var(--dark);color:var(--white);border:none;border-radius:var(--rxs);font-size:12.5px;font-weight:700;cursor:pointer;white-space:nowrap;transition:background 150ms;align-self:flex-end;}
+.as-btn:hover{background:#333;}
+
 /* ── LEGEND DOTS ── */
 .legend-row{display:flex;gap:12px;flex-wrap:wrap;}
 .leg-item{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--gray);}
@@ -352,6 +363,26 @@ body{font-family:'Inter',sans-serif;background:var(--bg);min-height:100vh;displa
     </div>
   </div>
 
+  <!-- ACTUALS STRIP -->
+  <div class="actuals-strip">
+    <div class="as-label">Actuals <span style="font-size:10.5px;font-weight:400;color:var(--grayL);">— enter on the 6th</span></div>
+    <div class="as-fields">
+      <div class="as-field">
+        <div class="as-field-label">HDFC Savings (₹)</div>
+        <input class="as-input" id="inp-savings" type="number" placeholder="e.g. 30000">
+      </div>
+      <div class="as-field">
+        <div class="as-field-label">Loan EF Balance (₹)</div>
+        <input class="as-input" id="inp-lef" type="number" placeholder="e.g. 22500" value="22500">
+      </div>
+      <div class="as-field">
+        <div class="as-field-label">One-time Expense (₹)</div>
+        <input class="as-input" id="inp-onetime" type="number" placeholder="e.g. 5000" value="0">
+      </div>
+      <button class="as-btn" id="as-update-btn" onclick="applyActuals()">Update →</button>
+    </div>
+  </div>
+
   <!-- MIDDLE 3-COL -->
   <div class="mid-row">
 
@@ -366,14 +397,13 @@ body{font-family:'Inter',sans-serif;background:var(--bg);min-height:100vh;displa
       </div>
 
       <div class="pill-tabs">
-        <button class="pill active" data-tab="actuals">Actuals</button>
-        <button class="pill" data-tab="emis">EMIs</button>
+        <button class="pill active" data-tab="emis">EMIs</button>
         <button class="pill" data-tab="goals">Goals</button>
         <button class="pill" data-tab="sip">Funds</button>
       </div>
 
       <!-- EMIs TAB -->
-      <div class="tab-content" id="tab-emis">
+      <div class="tab-content active" id="tab-emis">
         <div class="ev-card yel">
           <div class="ev-title amber">Car Loan — HDFC</div>
           <div class="ev-sub">Auto-debit · 9.25% p.a.</div>
@@ -472,25 +502,6 @@ body{font-family:'Inter',sans-serif;background:var(--bg);min-height:100vh;displa
         </div>
       </div>
 
-      <!-- ACTUALS TAB -->
-      <div class="tab-content active" id="tab-actuals">
-        <div style="font-size:12px;color:var(--gray);margin-bottom:4px;line-height:1.5;">Enter your numbers on the 6th of every month. Dashboard updates live.</div>
-        <div class="input-section">
-          <div class="input-row">
-            <div class="input-label">HDFC Savings Balance (₹)</div>
-            <input class="input-field" id="inp-savings" type="number" placeholder="e.g. 45000">
-          </div>
-          <div class="input-row">
-            <div class="input-label">Loan EF — Flexi FD Balance (₹)</div>
-            <input class="input-field" id="inp-lef" type="number" placeholder="e.g. 22500" value="22500">
-          </div>
-          <div class="input-row">
-            <div class="input-label">One-time Expense this Month (₹)</div>
-            <input class="input-field" id="inp-onetime" type="number" placeholder="e.g. 5000" value="0">
-          </div>
-          <button class="save-btn" onclick="applyActuals()">Update Dashboard →</button>
-        </div>
-      </div>
     </div>
 
     <!-- CENTRE: Balance Tracker -->
@@ -620,9 +631,9 @@ body{font-family:'Inter',sans-serif;background:var(--bg);min-height:100vh;displa
       </thead>
       <tbody>
         <tr><td>Car Loan — HDFC</td><td class="td-m">₹3,44,727</td><td class="td-m">₹9,296</td><td>9.25%</td><td>Sep 2028</td><td><span class="chip c-active">Active</span></td></tr>
+        <tr><td>Solar Roof — SBI</td><td class="td-m">₹1,89,492</td><td class="td-m">₹6,025</td><td>8.95%</td><td>Dec 2027</td><td><span class="chip c-warn">Closing Soon</span></td></tr>
         <tr><td>Personal Loan</td><td class="td-m">₹1,87,335</td><td class="td-m">₹6,883</td><td>13.00%</td><td>Nov 2028</td><td><span class="chip c-active">Active</span></td></tr>
         <tr><td>CRED Loan</td><td class="td-m">₹97,768</td><td class="td-m">₹4,982</td><td>14.99%</td><td>Oct 2028</td><td><span class="chip c-hot">Priority ⚡</span></td></tr>
-        <tr><td>Solar Roof — SBI</td><td class="td-m">₹1,89,492</td><td class="td-m">₹6,025</td><td>8.95%</td><td>Dec 2027</td><td><span class="chip c-warn">Closing Soon</span></td></tr>
         <tr><td>MF Pledge</td><td class="td-m">₹50,000</td><td class="td-m">₹500</td><td>0%</td><td>Dec 2027</td><td><span class="chip c-warn">Closing Soon</span></td></tr>
       </tbody>
     </table>
@@ -1170,10 +1181,10 @@ function applyActuals(){
   updateBalanceBars(savings, lef, onetime);
 
   // Flash confirmation
-  const btn = document.querySelector('.save-btn');
-  btn.textContent = '✓ Dashboard updated!';
+  const btn = document.getElementById('as-update-btn');
+  btn.textContent = '✓ Updated!';
   btn.style.background = '#2CC084';
-  setTimeout(()=>{ btn.textContent = 'Update Dashboard →'; btn.style.background = ''; },2000);
+  setTimeout(()=>{ btn.textContent = 'Update →'; btn.style.background = ''; },2000);
 }
 </script>
 </body>
