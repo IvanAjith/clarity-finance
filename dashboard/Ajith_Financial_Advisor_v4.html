@@ -2035,28 +2035,27 @@ function renderDash(){
   document.getElementById('d-fix-sub').textContent=hasAct&&fixDiff!==0?(fixDiff>0?'⬆ +'+INR(fixDiff)+' vs plan':'⬇ '+INR(-fixDiff)+' vs plan'):'Insurance + CC + SIP + misc';
   // V74: single flag used throughout renderDash for savings-balance-based logic
   const hasSavBal = a.savingsBal !== null;
-  // "Spendable Cash" tile — savings balance minus locked buffer and Loan EF
+  // "Spendable Cash" tile — savings minus buffer, then minus Loan EF split (50% of surplus)
   const SAV_BUFFER_FC = 20000;
-  const lefLocked = getEFAccumulated(ym).lef || 0; // Loan EF accumulated (locked)
-  const spendable = hasSavBal
-    ? Math.max(0, a.savingsBal - SAV_BUFFER_FC - lefLocked)
-    : Math.max(0, free - SAV_BUFFER_FC);
+  const fcSurplus = hasSavBal ? Math.max(0, a.savingsBal - SAV_BUFFER_FC) : Math.max(0, free - SAV_BUFFER_FC);
+  const fcLefSplit = Math.round(fcSurplus * split.lef); // Loan EF portion of surplus (50%)
+  const spendable  = Math.max(0, fcSurplus - fcLefSplit); // what's truly spendable
   const freeEl=document.getElementById('d-free');
   freeEl.textContent = INR(hasSavBal ? spendable : free);
   freeEl.className='kpi-value '+(hasSavBal ? (spendable>5000?'c-green':spendable>0?'c-gold':'c-red') : (free>=20000?'c-blue':'c-red'));
   document.getElementById('d-free').setAttribute('title', hasSavBal
-    ? `₹${a.savingsBal.toLocaleString('en-IN')} − ₹20,000 buffer − ₹${lefLocked.toLocaleString('en-IN')} Loan EF`
+    ? `₹${a.savingsBal.toLocaleString('en-IN')} − ₹20k buffer − ₹${fcLefSplit.toLocaleString('en-IN')} Loan EF`
     : 'Projected free cash');
   if(hasSavBal){
     document.getElementById('d-free-sub').textContent=
-      `−₹20k buffer −${INR(lefLocked)} EF = spendable`+(spendable<=0?' ⚠️ Nothing left':' ✅');
+      `−₹20k buffer −${INR(fcLefSplit)} Loan EF = spendable`+(spendable<=0?' ⚠️ Nothing left':' ✅');
   } else {
     document.getElementById('d-free-sub').textContent=
       free>=20000?'Projected · enter savings balance for spendable':'⚠️ Projected · below safety floor';
   }
   document.getElementById('d-free').parentElement.querySelector('.kpi-formula').textContent =
     hasSavBal
-      ? `Savings ₹${(a.savingsBal||0).toLocaleString('en-IN')} − Buffer ₹20k − Loan EF ${INR(lefLocked)}`
+      ? `₹${(a.savingsBal||0).toLocaleString('en-IN')} − ₹20k buffer − ${INR(fcLefSplit)} EF = ₹${spendable.toLocaleString('en-IN')}`
       : 'Actual if entered · else projected';
   document.getElementById('dash-phase').textContent='Split: '+split.label;
 
@@ -2748,9 +2747,8 @@ function renderLoans(){
   const gefRoom = Math.max(0, D.gefCap - lAccum.gef);
   const gefVal  = Math.min(surplus * sp.gef, gefRoom);
   const lefVal  = surplus - gefVal;
-  const lSpendable = isActual
-    ? Math.max(0, lSavBal - L_BUFFER - lefVal)
-    : Math.max(0, fc - L_BUFFER);
+  // Spendable = surplus − Loan EF split (same logic as Dashboard tile)
+  const lSpendable = Math.max(0, surplus - lefVal);
 
   set('l-cash', INR(lSpendable));
   set('l-cash-sub', isActual
