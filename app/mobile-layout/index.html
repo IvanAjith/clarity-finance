@@ -139,19 +139,41 @@ html,body{height:100%;margin:0;padding:0;overflow:hidden;background:var(--bg);fo
 .phase-row{display:flex;align-items:flex-start;gap:14px;padding:14px 24px;}
 
 /* ── View transitions — liquid slide ── */
+/* Views stack inside .phone which is overflow:hidden — only one is visible at a time */
 .view{
-  transition:opacity 0.28s ease, transform 0.32s cubic-bezier(0.4,0,0.2,1);
+  /* no default transition — animations handle it */
+  will-change: transform, opacity;
 }
-.view.slide-out-left{ opacity:0; transform:translateX(-18px); pointer-events:none; }
-.view.slide-out-right{ opacity:0; transform:translateX(18px); pointer-events:none; }
-.view.slide-in-left{ animation:slideInLeft 0.32s cubic-bezier(0.34,1.56,0.64,1) forwards; }
-.view.slide-in-right{ animation:slideInRight 0.32s cubic-bezier(0.34,1.56,0.64,1) forwards; }
+/* outgoing: slide + fade out instantly (no linger) */
+.view.anim-out-left{
+  animation: slideOutLeft 0.22s cubic-bezier(0.4,0,1,1) forwards;
+  pointer-events:none;
+}
+.view.anim-out-right{
+  animation: slideOutRight 0.22s cubic-bezier(0.4,0,1,1) forwards;
+  pointer-events:none;
+}
+/* incoming: slide in from edge */
+.view.anim-in-left{
+  animation: slideInLeft 0.3s cubic-bezier(0.25,0.46,0.45,0.94) forwards;
+}
+.view.anim-in-right{
+  animation: slideInRight 0.3s cubic-bezier(0.25,0.46,0.45,0.94) forwards;
+}
+@keyframes slideOutLeft{
+  from{opacity:1;transform:translateX(0);}
+  to{opacity:0;transform:translateX(-28px);}
+}
+@keyframes slideOutRight{
+  from{opacity:1;transform:translateX(0);}
+  to{opacity:0;transform:translateX(28px);}
+}
 @keyframes slideInLeft{
-  from{opacity:0;transform:translateX(24px);}
+  from{opacity:0;transform:translateX(32px);}
   to{opacity:1;transform:translateX(0);}
 }
 @keyframes slideInRight{
-  from{opacity:0;transform:translateX(-24px);}
+  from{opacity:0;transform:translateX(-32px);}
   to{opacity:1;transform:translateX(0);}
 }
 
@@ -833,34 +855,48 @@ function showView(v, skipAnim){
   const fromIdx = VIEW_ORDER.indexOf(currentView);
   const toIdx   = VIEW_ORDER.indexOf(v);
   const isModal = (v === 'modal' || currentView === 'modal');
+  const goRight = !isModal && toIdx > fromIdx;
 
-  const outClass = (!isModal && toIdx > fromIdx) ? 'slide-out-left' : 'slide-out-right';
-  const inClass  = (!isModal && toIdx > fromIdx) ? 'slide-in-left'  : 'slide-in-right';
+  const outClass = goRight ? 'anim-out-left' : 'anim-out-right';
+  const inClass  = goRight ? 'anim-in-left'  : 'anim-in-right';
 
-  const current = document.getElementById('view-'+currentView);
-  const target  = document.getElementById('view-'+v);
+  const prevView = currentView;
+  const current  = document.getElementById('view-' + prevView);
+  const target   = document.getElementById('view-' + v);
   if(!target) return;
 
+  // Update state immediately so double-taps don't re-enter
+  currentView = v;
+  if(v !== 'modal') updateNavActive(v);
+
   if(current && !skipAnim && !isModal){
+    // Animate outgoing view — hide it after animation completes
     current.classList.add(outClass);
-    setTimeout(function(){
+    current.addEventListener('animationend', function onOut(){
+      current.removeEventListener('animationend', onOut);
       current.classList.remove('active', outClass);
       current.style.display = 'none';
-    }, 180);
+    });
   } else if(current){
     current.classList.remove('active');
     current.style.display = 'none';
   }
 
-  target.style.display = 'flex';
+  // Set up incoming view: add animation class BEFORE display so no flash
   if(!skipAnim && !isModal){
     target.classList.add(inClass);
-    setTimeout(function(){ target.classList.remove(inClass); }, 350);
   }
+  target.style.display = 'flex';
   target.classList.add('active');
 
-  currentView = v;
-  if(v !== 'modal') updateNavActive(v);
+  // Clean up incoming animation class after it ends
+  if(!skipAnim && !isModal){
+    target.addEventListener('animationend', function onIn(){
+      target.removeEventListener('animationend', onIn);
+      target.classList.remove(inClass);
+    });
+  }
+
   renderAll();
 }
 
