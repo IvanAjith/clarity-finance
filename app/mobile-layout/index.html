@@ -55,15 +55,15 @@ html,body{height:100%;margin:0;padding:0;overflow:hidden;background:var(--bg);fo
 .scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;}
 .scroll::-webkit-scrollbar{display:none;}
 
-/* ── Status bar ── */
-.statusbar{
-  height:50px;display:flex;align-items:center;
-  justify-content:space-between;padding:0 24px;flex-shrink:0;
-  background:var(--bg);
+/* ── Page header (time + date inline, theme btn right) ── */
+.page-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 24px 0 24px;flex-shrink:0;
 }
-.statusbar-time{font-size:15px;font-weight:600;color:var(--text);}
-.statusbar-right{display:flex;align-items:center;gap:14px;}
-.theme-btn{background:none;border:none;cursor:pointer;padding:4px;display:flex;align-items:center;color:var(--text2);}
+.page-header-left{display:flex;flex-direction:column;gap:1px;}
+.statusbar-time{font-size:17px;font-weight:700;color:var(--text);letter-spacing:-0.3px;line-height:1.1;}
+.statusbar-date{font-size:12px;color:var(--text2);font-weight:400;}
+.theme-btn{background:none;border:none;cursor:pointer;padding:6px;display:flex;align-items:center;color:var(--text2);}
 
 /* ── Bottom nav — Liquid Glass floating pill ── */
 .nav-wrap{
@@ -203,20 +203,20 @@ html,body{height:100%;margin:0;padding:0;overflow:hidden;background:var(--bg);fo
        VIEW: DASHBOARD
   ══════════════════════════════════════ -->
   <div class="view active" id="view-dash">
-    <!-- Status bar -->
-    <div class="statusbar">
-      <span class="statusbar-time" id="dash-time"></span>
-      <div class="statusbar-right">
-        <button class="theme-btn" id="dash-theme-btn" aria-label="Toggle theme">
-          <svg id="dash-theme-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-        </button>
+    <!-- Merged header: time + date left, theme toggle right -->
+    <div class="page-header">
+      <div class="page-header-left">
+        <span class="statusbar-time" id="dash-time"></span>
+        <span class="statusbar-date" id="dash-date">Sunday, 08 November 2026</span>
       </div>
+      <button class="theme-btn" id="dash-theme-btn" aria-label="Toggle theme">
+        <svg id="dash-theme-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
     </div>
 
     <div class="scroll">
       <!-- Greeting -->
-      <div style="padding:4px 24px 16px 24px;">
-        <div style="font-size:13px;color:var(--text2);margin-bottom:2px;" id="dash-date">Sunday, 08 November 2026</div>
+      <div style="padding:10px 24px 16px 24px;">
         <div style="font-size:26px;font-weight:700;color:var(--text);letter-spacing:-0.5px;line-height:1.2;">Good afternoon,<br>Ajith 👋</div>
       </div>
 
@@ -321,18 +321,18 @@ html,body{height:100%;margin:0;padding:0;overflow:hidden;background:var(--bg);fo
        VIEW: LOANS
   ══════════════════════════════════════ -->
   <div class="view" id="view-loans">
-    <div class="statusbar">
-      <span class="statusbar-time"></span>
-      <div class="statusbar-right">
-        <button class="theme-btn" id="loans-theme-btn" aria-label="Toggle theme">
-          <svg id="loans-theme-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-        </button>
+    <div class="page-header">
+      <div class="page-header-left">
+        <span class="statusbar-time"></span>
+        <span class="statusbar-date">November 2026</span>
       </div>
+      <button class="theme-btn" id="loans-theme-btn" aria-label="Toggle theme">
+        <svg id="loans-theme-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
     </div>
 
     <div class="scroll">
-      <div style="padding:4px 24px 20px 24px;">
-        <div style="font-size:13px;color:var(--text2);margin-bottom:2px;">November 2026</div>
+      <div style="padding:10px 24px 20px 24px;">
         <div style="font-size:26px;font-weight:700;color:var(--text);letter-spacing:-0.5px;">Loans</div>
       </div>
 
@@ -504,18 +504,18 @@ html,body{height:100%;margin:0;padding:0;overflow:hidden;background:var(--bg);fo
        VIEW: INVESTMENTS
   ══════════════════════════════════════ -->
   <div class="view" id="view-invest">
-    <div class="statusbar">
-      <span class="statusbar-time"></span>
-      <div class="statusbar-right">
-        <button class="theme-btn" id="invest-theme-btn" aria-label="Toggle theme">
-          <svg id="invest-theme-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-        </button>
+    <div class="page-header">
+      <div class="page-header-left">
+        <span class="statusbar-time"></span>
+        <span class="statusbar-date">November 2026</span>
       </div>
+      <button class="theme-btn" id="invest-theme-btn" aria-label="Toggle theme">
+        <svg id="invest-theme-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
     </div>
 
     <div class="scroll">
-      <div style="padding:4px 24px 20px 24px;">
-        <div style="font-size:13px;color:var(--text2);margin-bottom:2px;">November 2026</div>
+      <div style="padding:10px 24px 20px 24px;">
         <div style="font-size:26px;font-weight:700;color:var(--text);letter-spacing:-0.5px;">Investments</div>
       </div>
 
