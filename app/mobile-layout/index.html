@@ -1,0 +1,960 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ajith · Finance Dashboard</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;margin:0;padding:0;background:var(--bg);font-family:-apple-system,'SF Pro Display',system-ui,sans-serif;}
+
+/* ── Theme tokens ── */
+:root{
+  --bg:#0D0D0F;--bg2:#111113;--surface:#17171B;
+  --border:#1E1E22;--sep:#1A1A1E;
+  --text:#FFFFFF;--text2:#888;--text3:#444;--text4:#2A2A2E;
+  --input-text:#FFF;
+}
+[data-theme="light"]{
+  --bg:#F5F5F0;--bg2:#FFFFFF;--surface:#EFEFEA;
+  --border:#E0E0D8;--sep:#E8E8E2;
+  --text:#0D0D0F;--text2:#666;--text3:#999;--text4:#E0E0D8;
+  --input-text:#0D0D0F;
+}
+
+/* ── Phone shell ── */
+.phone{
+  width:100%;min-height:100vh;background:var(--bg);
+  display:flex;flex-direction:column;overflow:hidden;
+  position:relative;
+}
+
+/* ── Views ── */
+.view{display:none;flex-direction:column;flex:1;overflow:hidden;}
+.view.active{display:flex;}
+
+/* ── Scroll area ── */
+.scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;}
+.scroll::-webkit-scrollbar{display:none;}
+
+/* ── Status bar ── */
+.statusbar{
+  height:50px;display:flex;align-items:center;
+  justify-content:space-between;padding:0 24px;flex-shrink:0;
+  background:var(--bg);
+}
+.statusbar-time{font-size:15px;font-weight:600;color:var(--text);}
+.statusbar-right{display:flex;align-items:center;gap:14px;}
+.theme-btn{background:none;border:none;cursor:pointer;padding:4px;display:flex;align-items:center;color:var(--text2);}
+
+/* ── Bottom nav ── */
+.nav{
+  height:83px;background:var(--bg);border-top:1px solid var(--sep);
+  display:flex;align-items:flex-start;padding-top:12px;flex-shrink:0;
+}
+.nav-item{
+  flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;
+  cursor:pointer;border:none;background:none;padding:0;
+}
+.nav-lbl{font-size:10px;font-weight:500;color:var(--text3);}
+.nav-lbl.active{font-size:10px;font-weight:700;color:var(--text);}
+
+/* ── Typography helpers ── */
+.section-title{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.8px;padding:0 24px;}
+.divider{height:1px;background:var(--border);margin:0 24px;}
+
+/* ── Progress bar ── */
+.prog-track{height:3px;background:var(--border);border-radius:2px;overflow:hidden;}
+.prog-fill{height:100%;border-radius:2px;transition:width 0.4s ease;}
+
+/* ── Toggle pill ── */
+.toggle-wrap{display:flex;background:var(--surface);border-radius:10px;padding:3px;gap:2px;}
+.toggle-btn{
+  flex:1;border-radius:7px;padding:7px 0;text-align:center;
+  font-size:13px;font-weight:700;border:none;cursor:pointer;
+  background:transparent;color:var(--text3);transition:background 0.2s,color 0.2s;
+}
+.toggle-btn.on{background:#6366F1;color:#fff;}
+
+/* ── Input field ── */
+.field-row{display:flex;align-items:center;border-bottom:1px solid var(--border);padding:14px 0;gap:12px;}
+.field-symbol{font-size:20px;color:var(--text3);font-weight:600;width:16px;flex-shrink:0;}
+.field-input{
+  flex:1;font-size:26px;font-weight:700;color:var(--input-text);
+  letter-spacing:-0.8px;background:none;border:none;outline:none;width:100%;
+}
+.result-row{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--sep);}
+
+/* ── Loan row ── */
+.loan-row{display:flex;align-items:flex-start;justify-content:space-between;padding:14px 24px;}
+.loan-sep{height:1px;background:var(--sep);margin:0 24px;}
+
+/* ── Phase timeline ── */
+.phase-row{display:flex;align-items:flex-start;gap:14px;padding:14px 24px;}
+
+/* ── Sheet (modal) ── */
+.sheet-scrim{position:absolute;inset:0;background:rgba(0,0,0,0.45);z-index:1;}
+.sheet{
+  position:absolute;bottom:0;left:0;right:0;
+  background:var(--bg2);border-radius:24px 24px 0 0;
+  border-top:1px solid var(--border);
+  max-height:92%;overflow-y:auto;z-index:2;
+}
+.sheet::-webkit-scrollbar{display:none;}
+</style>
+</head>
+<body>
+<div class="phone" id="app">
+
+  <!-- ══════════════════════════════════════
+       VIEW: DASHBOARD
+  ══════════════════════════════════════ -->
+  <div class="view active" id="view-dash">
+    <!-- Status bar -->
+    <div class="statusbar">
+      <span class="statusbar-time" id="dash-time"></span>
+      <div class="statusbar-right">
+        <button class="theme-btn" id="dash-theme-btn" aria-label="Toggle theme">
+          <svg id="dash-theme-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="scroll">
+      <!-- Greeting -->
+      <div style="padding:4px 24px 16px 24px;">
+        <div style="font-size:13px;color:var(--text2);margin-bottom:2px;" id="dash-date">Sunday, 08 November 2026</div>
+        <div style="font-size:26px;font-weight:700;color:var(--text);letter-spacing:-0.5px;line-height:1.2;">Good afternoon,<br>Ajith 👋</div>
+      </div>
+
+      <!-- Update trigger -->
+      <button onclick="showModal()" style="text-decoration:none;display:block;margin:0 24px 20px 24px;width:calc(100% - 48px);text-align:left;cursor:pointer;background:none;border:none;padding:0;">
+        <div style="background:var(--surface);border-radius:12px;padding:11px 16px;border:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div style="width:30px;height:30px;background:var(--border);border-radius:8px;display:flex;align-items:center;justify-content:center;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6366F1" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+            </div>
+            <span style="font-size:14px;font-weight:500;color:var(--text2);">Update November figures…</span>
+          </div>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>
+        </div>
+      </button>
+
+      <!-- THIS MONTH -->
+      <div class="section-title" style="margin-bottom:16px;">This Month</div>
+
+      <div style="display:flex;justify-content:space-between;padding:0 24px;margin-bottom:20px;">
+        <div>
+          <div style="font-size:12px;font-weight:500;color:var(--text2);margin-bottom:4px;">Monthly Income</div>
+          <div style="font-size:34px;font-weight:800;color:var(--text);letter-spacing:-1.5px;line-height:1;">₹1,01,720</div>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-size:12px;font-weight:500;color:var(--text2);margin-bottom:4px;">Total EMIs</div>
+          <div style="font-size:34px;font-weight:800;color:#FF3B30;letter-spacing:-1.5px;line-height:1;">₹27,561</div>
+        </div>
+      </div>
+
+      <div style="display:flex;justify-content:space-between;padding:0 24px;margin-bottom:24px;">
+        <div>
+          <div style="font-size:12px;font-weight:500;color:var(--text2);margin-bottom:4px;">Monthly SIP</div>
+          <div style="font-size:28px;font-weight:800;color:#C9A227;letter-spacing:-1px;line-height:1;">₹15,750</div>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-size:12px;font-weight:500;color:var(--text2);margin-bottom:4px;">Free Cash</div>
+          <div id="d-freecash" style="font-size:28px;font-weight:800;color:#34C759;letter-spacing:-1px;line-height:1;">₹23,495</div>
+        </div>
+      </div>
+
+      <div class="divider" style="margin-bottom:24px;"></div>
+
+      <!-- EF LOAN PROGRESS -->
+      <div class="section-title" style="margin-bottom:14px;">Emergency Fund — CRED Prepay</div>
+      <div style="padding:0 24px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:baseline;">
+        <div style="font-size:11px;color:var(--text2);">Running total</div>
+        <div style="display:flex;align-items:baseline;gap:6px;">
+          <div id="d-ef-amt" style="font-size:20px;font-weight:800;color:#FF9F0A;letter-spacing:-0.5px;">₹11,748</div>
+          <div style="font-size:12px;color:var(--text3);">/ ₹1,00,000</div>
+        </div>
+      </div>
+      <div style="margin:0 24px 4px 24px;" class="prog-track">
+        <div id="d-ef-bar" class="prog-fill" style="width:11.7%;background:#FF9F0A;"></div>
+      </div>
+      <div style="padding:4px 24px 24px 24px;display:flex;justify-content:space-between;">
+        <div style="font-size:11px;color:var(--text3);">Build ₹1L → lump-sum hit on CRED</div>
+        <div id="d-ef-pct" style="font-size:11px;font-weight:700;color:#FF9F0A;">11.7%</div>
+      </div>
+
+      <div class="divider" style="margin-bottom:24px;"></div>
+
+      <!-- DEBT JOURNEY -->
+      <div class="section-title" style="margin-bottom:16px;">Debt Journey</div>
+
+      <div style="padding:0 24px;margin-bottom:10px;">
+        <div style="display:flex;align-items:baseline;gap:8px;">
+          <div style="font-size:52px;font-weight:800;color:var(--text);letter-spacing:-2px;line-height:1;">25</div>
+          <div style="font-size:22px;font-weight:600;color:var(--text2);letter-spacing:-0.5px;">mo left</div>
+        </div>
+        <div style="font-size:13px;color:var(--text2);margin-top:3px;">Debt-free by December 2028 🎉</div>
+      </div>
+
+      <div style="padding:0 24px;margin-bottom:28px;display:flex;align-items:center;gap:8px;">
+        <div style="width:5px;height:5px;border-radius:50%;background:#FF3B30;flex-shrink:0;"></div>
+        <div style="font-size:14px;color:var(--text);font-weight:500;">Priority: <strong>CRED</strong> · 14.99% · closes Oct 2028 ⚡</div>
+      </div>
+
+      <div class="divider" style="margin-bottom:24px;"></div>
+
+      <!-- WEALTH BUILDING -->
+      <div class="section-title" style="margin-bottom:16px;">Wealth Building</div>
+
+      <div style="padding:0 24px;margin-bottom:12px;">
+        <div class="toggle-wrap" id="d-rate-wrap">
+          <button class="toggle-btn on" data-rate="10" id="d-r10">10%</button>
+          <button class="toggle-btn" data-rate="12" id="d-r12">12%</button>
+          <button class="toggle-btn" data-rate="14" id="d-r14">14%</button>
+        </div>
+      </div>
+
+      <div style="padding:0 24px;margin-bottom:28px;">
+        <div style="font-size:12px;color:var(--text2);margin-bottom:4px;">SIP Corpus · Age 57 · <span id="d-maturity">Mar 2049</span></div>
+        <div id="d-corpus" style="font-size:44px;font-weight:800;color:#34C759;letter-spacing:-1.5px;line-height:1;">₹2.41 Cr</div>
+        <div style="font-size:11px;color:var(--text2);margin-top:6px;">Long-term projection at current SIP schedule</div>
+      </div>
+    </div>
+
+    <!-- Nav -->
+    <div class="nav">
+      <button class="nav-item" onclick="showView('loans')">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="2" stroke-linecap="round"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
+        <span class="nav-lbl">Loans</span>
+      </button>
+      <button class="nav-item" onclick="showView('dash')">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="var(--text)" ><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+        <span class="nav-lbl active">Dashboard</span>
+      </button>
+      <button class="nav-item" onclick="showView('invest')">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="2" stroke-linecap="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+        <span class="nav-lbl">Investments</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       VIEW: LOANS
+  ══════════════════════════════════════ -->
+  <div class="view" id="view-loans">
+    <div class="statusbar">
+      <span class="statusbar-time"></span>
+      <div class="statusbar-right">
+        <button class="theme-btn" id="loans-theme-btn" aria-label="Toggle theme">
+          <svg id="loans-theme-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="scroll">
+      <div style="padding:4px 24px 20px 24px;">
+        <div style="font-size:13px;color:var(--text2);margin-bottom:2px;">November 2026</div>
+        <div style="font-size:26px;font-weight:700;color:var(--text);letter-spacing:-0.5px;">Loans</div>
+      </div>
+
+      <!-- OVERVIEW KPIs -->
+      <div class="section-title" style="margin-bottom:16px;">Overview</div>
+
+      <!-- Row 1: Total Remaining + Months left -->
+      <div style="display:flex;justify-content:space-between;padding:0 24px;margin-bottom:20px;">
+        <div>
+          <div style="font-size:11px;font-weight:500;color:var(--text2);margin-bottom:4px;">Total Debt Remaining</div>
+          <div style="font-size:34px;font-weight:800;color:#FF3B30;letter-spacing:-1.5px;line-height:1;">₹8.54 L</div>
+          <div style="font-size:11px;color:var(--text2);margin-top:3px;">across 5 loans</div>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-size:11px;font-weight:500;color:var(--text2);margin-bottom:4px;">Debt-Free In</div>
+          <div style="display:flex;align-items:baseline;gap:4px;justify-content:flex-end;">
+            <div style="font-size:34px;font-weight:800;color:var(--text);letter-spacing:-1.5px;line-height:1;">25</div>
+            <div style="font-size:16px;font-weight:600;color:var(--text2);">mo</div>
+          </div>
+          <div style="font-size:11px;color:var(--text2);margin-top:3px;">Dec 2028 🎉</div>
+        </div>
+      </div>
+
+      <!-- Row 2: Total EMI + EMI Burden -->
+      <div style="display:flex;justify-content:space-between;padding:0 24px;margin-bottom:8px;">
+        <div>
+          <div style="font-size:11px;font-weight:500;color:var(--text2);margin-bottom:4px;">Total EMI / Month</div>
+          <div style="font-size:28px;font-weight:800;color:var(--text);letter-spacing:-1px;line-height:1;">₹27,561</div>
+          <div style="font-size:11px;color:var(--text2);margin-top:3px;">CRED + Personal + Car + Solar + MF</div>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-size:11px;font-weight:500;color:var(--text2);margin-bottom:4px;">EMI Burden</div>
+          <div style="font-size:28px;font-weight:800;color:#FF9F0A;letter-spacing:-1px;line-height:1;">27%</div>
+          <div style="font-size:11px;color:var(--text2);margin-top:3px;">of monthly income</div>
+        </div>
+      </div>
+      <div style="margin:0 24px 20px 24px;" class="prog-track">
+        <div class="prog-fill" style="width:27%;background:#FF9F0A;"></div>
+      </div>
+
+      <!-- EF vs CRED -->
+      <div style="padding:0 24px;margin-bottom:6px;">
+        <div style="font-size:11px;font-weight:500;color:var(--text2);margin-bottom:6px;">Priority #1 ⚡ — EF Saved toward CRED Payoff</div>
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;">
+          <div>
+            <span id="l-ef-amt" style="font-size:22px;font-weight:800;color:#FF9F0A;letter-spacing:-0.5px;">₹11,748</span>
+            <span style="font-size:12px;color:var(--text3);margin-left:4px;">saved</span>
+          </div>
+          <div style="text-align:right;">
+            <span style="font-size:12px;color:var(--text2);">CRED balance: </span>
+            <span style="font-size:14px;font-weight:700;color:#FF3B30;">₹97,768</span>
+          </div>
+        </div>
+        <div class="prog-track">
+          <div id="l-ef-bar" class="prog-fill" style="width:12%;background:#FF9F0A;"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-top:5px;">
+          <div id="l-ef-pct" style="font-size:11px;font-weight:700;color:#FF9F0A;">12.0% of CRED balance</div>
+          <div id="l-ef-remaining" style="font-size:11px;color:var(--text3);">₹86,020 to go</div>
+        </div>
+      </div>
+      <div style="height:20px;"></div>
+
+      <div class="divider" style="margin-bottom:20px;"></div>
+
+      <!-- LOAN LIST -->
+      <div class="section-title" style="margin-bottom:4px;">Avalanche Order</div>
+
+      <!-- CRED -->
+      <div class="loan-row">
+        <div style="flex:1;">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+            <div style="width:5px;height:5px;border-radius:50%;background:#FF3B30;flex-shrink:0;"></div>
+            <div style="font-size:15px;font-weight:700;color:var(--text);">CRED Loan</div>
+            <div style="font-size:10px;font-weight:700;color:#FF3B30;background:rgba(255,59,48,0.12);border-radius:4px;padding:2px 6px;">14.99%</div>
+          </div>
+          <div style="font-size:12px;color:var(--text2);margin-left:13px;">Oct 2028 · ₹4,982/mo</div>
+          <div style="margin:8px 0 0 13px;height:3px;background:var(--border);border-radius:2px;overflow:hidden;">
+            <div style="width:5%;height:100%;background:#FF3B30;border-radius:2px;"></div>
+          </div>
+        </div>
+        <div style="text-align:right;padding-left:12px;">
+          <div style="font-size:18px;font-weight:800;color:var(--text);letter-spacing:-0.5px;">₹97,768</div>
+          <div style="font-size:11px;color:var(--text2);margin-top:2px;">remaining</div>
+        </div>
+      </div>
+      <div class="loan-sep"></div>
+
+      <!-- Personal -->
+      <div class="loan-row">
+        <div style="flex:1;">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+            <div style="width:5px;height:5px;border-radius:50%;background:#FF9F0A;flex-shrink:0;"></div>
+            <div style="font-size:15px;font-weight:700;color:var(--text);">Personal Loan</div>
+            <div style="font-size:10px;font-weight:700;color:#FF9F0A;background:rgba(255,159,10,0.12);border-radius:4px;padding:2px 6px;">13.00%</div>
+          </div>
+          <div style="font-size:12px;color:var(--text2);margin-left:13px;">Nov 2028 · ₹6,883/mo</div>
+          <div style="margin:8px 0 0 13px;height:3px;background:var(--border);border-radius:2px;overflow:hidden;">
+            <div style="width:12%;height:100%;background:#FF9F0A;border-radius:2px;"></div>
+          </div>
+        </div>
+        <div style="text-align:right;padding-left:12px;">
+          <div style="font-size:18px;font-weight:800;color:var(--text);letter-spacing:-0.5px;">₹1,87,335</div>
+          <div style="font-size:11px;color:var(--text2);margin-top:2px;">remaining</div>
+        </div>
+      </div>
+      <div class="loan-sep"></div>
+
+      <!-- Car -->
+      <div class="loan-row">
+        <div style="flex:1;">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+            <div style="width:5px;height:5px;border-radius:50%;background:#6366F1;flex-shrink:0;"></div>
+            <div style="font-size:15px;font-weight:700;color:var(--text);">Car Loan</div>
+            <div style="font-size:10px;font-weight:700;color:#6366F1;background:rgba(99,102,241,0.12);border-radius:4px;padding:2px 6px;">9.25%</div>
+          </div>
+          <div style="font-size:12px;color:var(--text2);margin-left:13px;">Sep 2028 · ₹9,296/mo</div>
+          <div style="margin:8px 0 0 13px;height:3px;background:var(--border);border-radius:2px;overflow:hidden;">
+            <div style="width:28%;height:100%;background:#6366F1;border-radius:2px;"></div>
+          </div>
+        </div>
+        <div style="text-align:right;padding-left:12px;">
+          <div style="font-size:18px;font-weight:800;color:var(--text);letter-spacing:-0.5px;">₹3,44,727</div>
+          <div style="font-size:11px;color:var(--text2);margin-top:2px;">remaining</div>
+        </div>
+      </div>
+      <div class="loan-sep"></div>
+
+      <!-- Solar -->
+      <div class="loan-row">
+        <div style="flex:1;">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+            <div style="width:5px;height:5px;border-radius:50%;background:#34C759;flex-shrink:0;"></div>
+            <div style="font-size:15px;font-weight:700;color:var(--text);">Solar Roof</div>
+            <div style="font-size:10px;font-weight:700;color:#34C759;background:rgba(52,199,89,0.12);border-radius:4px;padding:2px 6px;">8.95%</div>
+          </div>
+          <div style="font-size:12px;color:var(--text2);margin-left:13px;">Dec 2027 · ₹6,025/mo</div>
+          <div style="margin:8px 0 0 13px;height:3px;background:var(--border);border-radius:2px;overflow:hidden;">
+            <div style="width:35%;height:100%;background:#34C759;border-radius:2px;"></div>
+          </div>
+        </div>
+        <div style="text-align:right;padding-left:12px;">
+          <div style="font-size:18px;font-weight:800;color:var(--text);letter-spacing:-0.5px;">₹1,89,492</div>
+          <div style="font-size:11px;color:var(--text2);margin-top:2px;">remaining</div>
+        </div>
+      </div>
+      <div class="loan-sep"></div>
+
+      <!-- MF Pledge -->
+      <div class="loan-row" style="margin-bottom:16px;">
+        <div style="flex:1;">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+            <div style="width:5px;height:5px;border-radius:50%;background:var(--text3);flex-shrink:0;"></div>
+            <div style="font-size:15px;font-weight:700;color:var(--text);">MF Pledge</div>
+            <div style="font-size:10px;font-weight:700;color:var(--text2);background:var(--surface);border-radius:4px;padding:2px 6px;">0%</div>
+          </div>
+          <div style="font-size:12px;color:var(--text2);margin-left:13px;">Dec 2027 · ₹375/mo</div>
+        </div>
+        <div style="text-align:right;padding-left:12px;">
+          <div style="font-size:18px;font-weight:800;color:var(--text);letter-spacing:-0.5px;">₹35,000</div>
+          <div style="font-size:11px;color:var(--text2);margin-top:2px;">remaining</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav">
+      <button class="nav-item" onclick="showView('loans')">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--text)" stroke-width="2" stroke-linecap="round"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
+        <span class="nav-lbl active">Loans</span>
+      </button>
+      <button class="nav-item" onclick="showView('dash')">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="var(--text3)"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+        <span class="nav-lbl">Dashboard</span>
+      </button>
+      <button class="nav-item" onclick="showView('invest')">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="2" stroke-linecap="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+        <span class="nav-lbl">Investments</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       VIEW: INVESTMENTS
+  ══════════════════════════════════════ -->
+  <div class="view" id="view-invest">
+    <div class="statusbar">
+      <span class="statusbar-time"></span>
+      <div class="statusbar-right">
+        <button class="theme-btn" id="invest-theme-btn" aria-label="Toggle theme">
+          <svg id="invest-theme-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="scroll">
+      <div style="padding:4px 24px 20px 24px;">
+        <div style="font-size:13px;color:var(--text2);margin-bottom:2px;">November 2026</div>
+        <div style="font-size:26px;font-weight:700;color:var(--text);letter-spacing:-0.5px;">Investments</div>
+      </div>
+
+      <div class="section-title" style="margin-bottom:16px;">This Month</div>
+
+      <div style="display:flex;justify-content:space-between;padding:0 24px;margin-bottom:20px;">
+        <div>
+          <div style="font-size:11px;color:var(--text2);margin-bottom:4px;">SIP This Month</div>
+          <div style="font-size:34px;font-weight:800;color:#3B82F6;letter-spacing:-1.5px;line-height:1;">₹15,750</div>
+          <div style="display:inline-flex;align-items:center;gap:4px;margin-top:5px;">
+            <div style="width:5px;height:5px;border-radius:50%;background:#3B82F6;"></div>
+            <span style="font-size:11px;color:#3B82F6;font-weight:600;">Base phase</span>
+          </div>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-size:11px;color:var(--text2);margin-bottom:4px;">SIP % of Salary</div>
+          <div style="font-size:34px;font-weight:800;color:#FF9F0A;letter-spacing:-1.5px;line-height:1;">15.5%</div>
+          <div style="font-size:11px;color:var(--text2);margin-top:5px;">of take-home pay</div>
+        </div>
+      </div>
+
+      <div class="divider" style="margin-bottom:20px;"></div>
+
+      <!-- Next Phase -->
+      <div style="padding:0 24px 20px 24px;display:flex;justify-content:space-between;align-items:flex-end;">
+        <div>
+          <div style="font-size:11px;color:var(--text2);margin-bottom:4px;">Next Phase</div>
+          <div style="font-size:28px;font-weight:800;color:#6366F1;letter-spacing:-1px;line-height:1.1;">Push · Apr 2027</div>
+          <div style="font-size:12px;color:var(--text2);margin-top:4px;">5 months away · ₹18,900/mo</div>
+        </div>
+        <div style="font-size:28px;">🚀</div>
+      </div>
+
+      <div class="divider" style="margin-bottom:20px;"></div>
+
+      <!-- SIP Roadmap -->
+      <div class="section-title" style="margin-bottom:4px;">SIP Roadmap</div>
+
+      <div class="phase-row">
+        <div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0;">
+          <div style="width:10px;height:10px;border-radius:5px;background:#3B82F6;margin-top:3px;"></div>
+          <div style="width:1.5px;height:40px;background:var(--border);margin-top:4px;"></div>
+        </div>
+        <div>
+          <div style="font-size:14px;font-weight:700;color:var(--text);">Base Phase <span style="font-size:11px;font-weight:500;color:#3B82F6;background:rgba(59,130,246,0.1);border-radius:4px;padding:2px 6px;margin-left:4px;">Now</span></div>
+          <div style="font-size:13px;color:#3B82F6;font-weight:600;margin-top:2px;">₹15,750 / mo</div>
+          <div style="font-size:11px;color:var(--text2);margin-top:1px;">Now – Mar 2027</div>
+        </div>
+      </div>
+      <div class="phase-row" style="padding-top:0;">
+        <div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0;">
+          <div style="width:10px;height:10px;border-radius:5px;border:2px solid #6366F1;background:var(--bg);margin-top:3px;"></div>
+          <div style="width:1.5px;height:40px;background:var(--border);margin-top:4px;"></div>
+        </div>
+        <div>
+          <div style="font-size:14px;font-weight:700;color:var(--text2);">Push Phase</div>
+          <div style="font-size:13px;color:#6366F1;font-weight:600;margin-top:2px;">₹18,900 → ₹27,216 / mo</div>
+          <div style="font-size:11px;color:var(--text2);margin-top:1px;">Apr 2027 – Dec 2028</div>
+        </div>
+      </div>
+      <div class="phase-row" style="padding-top:0;">
+        <div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0;">
+          <div style="width:10px;height:10px;border-radius:5px;border:2px solid #34C759;background:var(--bg);margin-top:3px;"></div>
+          <div style="width:1.5px;height:40px;background:var(--border);margin-top:4px;"></div>
+        </div>
+        <div>
+          <div style="font-size:14px;font-weight:700;color:var(--text2);">Grow Phase</div>
+          <div style="font-size:13px;color:#34C759;font-weight:600;margin-top:2px;">₹37,100 / mo</div>
+          <div style="font-size:11px;color:var(--text2);margin-top:1px;">Jan 2029 – Mar 2031</div>
+        </div>
+      </div>
+      <div class="phase-row" style="padding-top:0;padding-bottom:24px;">
+        <div style="flex-shrink:0;">
+          <div style="width:10px;height:10px;border-radius:5px;border:2px solid #FF9F0A;background:var(--bg);margin-top:3px;"></div>
+        </div>
+        <div>
+          <div style="font-size:14px;font-weight:700;color:var(--text2);">Cruise → Hold</div>
+          <div style="font-size:13px;color:#FF9F0A;font-weight:600;margin-top:2px;">₹60,000 → ₹0 / mo</div>
+          <div style="font-size:11px;color:var(--text2);margin-top:1px;">Apr 2035 onward</div>
+        </div>
+      </div>
+
+      <div class="divider" style="margin-bottom:20px;"></div>
+
+      <!-- Long-term corpus + toggle -->
+      <div style="padding:0 24px 28px 24px;">
+        <div style="font-size:11px;color:var(--text2);margin-bottom:4px;">Long-term Corpus @<span id="i-rate-lbl">14</span>% · Age 57 · Mar 2049</div>
+        <div id="i-corpus" style="font-size:40px;font-weight:800;color:#34C759;letter-spacing:-1.5px;line-height:1;">₹7.10 Cr</div>
+        <div style="font-size:12px;color:var(--text2);margin-top:5px;">Journey is 2% complete · keep investing</div>
+        <div style="margin-top:10px;" class="prog-track">
+          <div class="prog-fill" style="width:2%;background:#34C759;"></div>
+        </div>
+
+        <!-- Toggle below corpus -->
+        <div style="margin-top:20px;">
+          <div style="font-size:11px;color:var(--text3);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.6px;font-weight:600;">Projected return rate</div>
+          <div class="toggle-wrap" id="i-rate-wrap">
+            <button class="toggle-btn" data-rate="10" id="i-r10">10%</button>
+            <button class="toggle-btn" data-rate="12" id="i-r12">12%</button>
+            <button class="toggle-btn on" data-rate="14" id="i-r14">14%</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav">
+      <button class="nav-item" onclick="showView('loans')">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="2" stroke-linecap="round"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
+        <span class="nav-lbl">Loans</span>
+      </button>
+      <button class="nav-item" onclick="showView('dash')">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="var(--text3)"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+        <span class="nav-lbl">Dashboard</span>
+      </button>
+      <button class="nav-item" onclick="showView('invest')">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--text)" stroke-width="2" stroke-linecap="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+        <span class="nav-lbl active">Investments</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       VIEW: MODAL (input sheet)
+  ══════════════════════════════════════ -->
+  <div class="view" id="view-modal" style="position:relative;">
+    <!-- blurred bg (faked) -->
+    <div style="position:absolute;inset:0;background:var(--bg);opacity:0.6;z-index:0;"></div>
+    <div class="sheet-scrim" onclick="hideModal()"></div>
+
+    <div class="sheet" id="modal-sheet">
+      <!-- Drag handle -->
+      <div style="display:flex;justify-content:center;padding:12px 0 0 0;">
+        <div style="width:36px;height:4px;background:var(--border);border-radius:2px;"></div>
+      </div>
+
+      <!-- Header -->
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 24px 0 24px;">
+        <div>
+          <div style="font-size:20px;font-weight:700;color:var(--text);letter-spacing:-0.3px;">November 2026</div>
+          <div style="font-size:13px;color:var(--text2);margin-top:2px;">Update your figures</div>
+        </div>
+        <button onclick="hideModal()" style="width:34px;height:34px;background:var(--surface);border-radius:17px;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;">
+          <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="var(--text2)" stroke-width="2" stroke-linecap="round"><path d="M1 1l11 11M12 1L1 12"/></svg>
+        </button>
+      </div>
+
+      <!-- Inputs -->
+      <div style="padding:20px 24px 0 24px;">
+        <!-- Salary readonly -->
+        <div style="font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:8px;">Salary Received</div>
+        <div class="field-row">
+          <span class="field-symbol">₹</span>
+          <div style="flex:1;font-size:26px;font-weight:700;color:var(--text);letter-spacing:-0.8px;">1,01,720</div>
+          <div style="background:#6366F1;border-radius:6px;padding:3px 9px;"><span style="font-size:11px;font-weight:600;color:#fff;">Auto</span></div>
+        </div>
+
+        <!-- HDFC Balance -->
+        <div style="margin-top:12px;">
+          <div style="font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:8px;">HDFC Balance Remaining</div>
+          <div class="field-row">
+            <span class="field-symbol">₹</span>
+            <input id="m-hdfc" type="number" inputmode="numeric" class="field-input" value="8400">
+          </div>
+          <div style="font-size:11px;color:var(--text3);padding:4px 0 0 28px;">What's left in your HDFC account right now</div>
+        </div>
+
+        <!-- One-time -->
+        <div style="margin-top:12px;">
+          <div style="font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:8px;">One-Time Payment This Month</div>
+          <div class="field-row">
+            <span class="field-symbol">₹</span>
+            <input id="m-onetime" type="number" inputmode="numeric" class="field-input" value="0">
+          </div>
+          <div style="font-size:11px;color:var(--text3);padding:4px 0 0 28px;">Any extra spend outside your usual budget</div>
+        </div>
+
+        <!-- Loan EF -->
+        <div style="margin-top:12px;">
+          <div style="font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:8px;">Loan EF Running Total</div>
+          <div class="field-row" style="border-bottom:none;">
+            <span class="field-symbol">₹</span>
+            <input id="m-loanef" type="number" inputmode="numeric" class="field-input" value="11748">
+          </div>
+          <div style="font-size:11px;color:var(--text3);padding:4px 0 0 28px;">Running total saved toward ₹1,00,000 target</div>
+        </div>
+      </div>
+
+      <!-- Update btn -->
+      <div style="padding:20px 24px 0 24px;">
+        <button id="update-btn" style="display:block;width:100%;background:#6366F1;border-radius:12px;padding:15px;text-align:center;border:none;cursor:pointer;">
+          <span style="font-size:16px;font-weight:700;color:#fff;">↻ Update Dashboard</span>
+        </button>
+      </div>
+
+      <!-- Results -->
+      <div style="padding:20px 24px 0 24px;">
+        <div style="font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:12px;">Allowable Spending</div>
+        <div class="result-row"><span style="font-size:14px;color:var(--text2);">SIP</span><span style="font-size:14px;font-weight:700;color:#34C759;">– ₹15,750</span></div>
+        <div class="result-row"><span style="font-size:14px;color:var(--text2);">All EMIs</span><span style="font-size:14px;font-weight:700;color:#FF3B30;">– ₹27,561</span></div>
+        <div class="result-row"><span style="font-size:14px;color:var(--text2);">Fixed Costs</span><span style="font-size:14px;font-weight:700;color:#FF3B30;">– ₹34,914</span></div>
+        <div class="result-row"><span style="font-size:14px;color:var(--text2);">One-time</span><span id="m-res-onetime" style="font-size:14px;font-weight:700;color:var(--text3);">– ₹0</span></div>
+        <div style="display:flex;justify-content:space-between;align-items:baseline;padding:14px 0 4px 0;">
+          <span style="font-size:16px;font-weight:700;color:var(--text);">Free Cash</span>
+          <span id="m-res-freecash" style="font-size:28px;font-weight:800;color:#34C759;letter-spacing:-1px;">₹23,495</span>
+        </div>
+      </div>
+
+      <!-- EF split -->
+      <div style="padding:4px 24px 0 24px;">
+        <div style="font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:12px;">EF Split (50/50 this month)</div>
+        <div class="result-row">
+          <div>
+            <div style="font-size:14px;color:var(--text);font-weight:600;">Loan EF</div>
+            <div id="m-loanef-sub" style="font-size:11px;color:var(--text2);margin-top:2px;">11.7% of ₹1L target</div>
+          </div>
+          <div style="text-align:right;">
+            <div id="m-loanef-val" style="font-size:18px;font-weight:800;color:#6366F1;">₹11,748</div>
+            <div style="font-size:11px;color:var(--text2);margin-top:2px;">running total</div>
+          </div>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;padding:12px 0 4px 0;">
+          <div>
+            <div style="font-size:14px;color:var(--text);font-weight:600;">Goals EF</div>
+            <div style="font-size:11px;color:var(--text2);margin-top:2px;">0% of ₹2.5L target</div>
+          </div>
+          <div style="text-align:right;">
+            <div id="m-goals-split" style="font-size:18px;font-weight:800;color:#34C759;">+₹11,748</div>
+            <div style="font-size:11px;color:var(--text2);margin-top:2px;">this month's split</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="padding:16px 24px 48px 24px;">
+        <button onclick="hideModal()" style="display:block;width:100%;text-align:center;background:none;border:none;cursor:pointer;padding:13px;">
+          <span style="font-size:14px;font-weight:600;color:var(--text3);">← Back to Dashboard</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /phone -->
+
+<script>
+// ════════════════════════════════
+// CONSTANTS
+// ════════════════════════════════
+const SALARY = 101720, SIP_AMT = 15750, EMIS = 27561, FIXED = 34914;
+const CRED_BAL = 97768;
+const CORPUS_LT  = {10:'₹2.41 Cr', 12:'₹4.21 Cr', 14:'₹7.10 Cr'};
+
+function fmt(n){ return '₹' + Math.round(n).toLocaleString('en-IN'); }
+function el(id){ return document.getElementById(id); }
+
+// ════════════════════════════════
+// STORED STATE
+// ════════════════════════════════
+function getState(){
+  let hdfc=8400, oneTime=0, loanEF=11748, theme='dark', rate=10;
+  try{ hdfc    = parseInt(localStorage.getItem('hdfc')   ||'8400')   ||8400;   }catch(e){}
+  try{ oneTime = parseInt(localStorage.getItem('oneTime')||'0')       ||0;      }catch(e){}
+  try{ loanEF  = parseInt(localStorage.getItem('loanEF') ||'11748')  ||11748;  }catch(e){}
+  try{ theme   = localStorage.getItem('theme')  || 'dark';                      }catch(e){}
+  try{ rate    = parseInt(localStorage.getItem('rate')   ||'10')      ||10;     }catch(e){}
+  return {hdfc, oneTime, loanEF, theme, rate};
+}
+function saveState(s){
+  try{
+    localStorage.setItem('hdfc',    s.hdfc);
+    localStorage.setItem('oneTime', s.oneTime);
+    localStorage.setItem('loanEF',  s.loanEF);
+    localStorage.setItem('theme',   s.theme);
+    localStorage.setItem('rate',    s.rate);
+  }catch(e){}
+}
+
+// ════════════════════════════════
+// VIEW SWITCHING
+// ════════════════════════════════
+let currentView = 'dash';
+let previousView = 'dash';
+
+function showView(v){
+  ['dash','loans','invest','modal'].forEach(function(id){
+    const el2 = document.getElementById('view-'+id);
+    if(el2){ el2.classList.remove('active'); el2.style.display='none'; }
+  });
+  const target = document.getElementById('view-'+v);
+  if(target){ target.style.display='flex'; target.classList.add('active'); }
+  currentView = v;
+  renderAll();
+}
+
+function showModal(){
+  previousView = currentView;
+  showView('modal');
+}
+function hideModal(){
+  // Save inputs before closing
+  const s = getState();
+  s.hdfc    = parseInt(el('m-hdfc').value)   ||0;
+  s.oneTime = parseInt(el('m-onetime').value)||0;
+  s.loanEF  = parseInt(el('m-loanef').value) ||0;
+  saveState(s);
+  showView(previousView === 'modal' ? 'dash' : previousView);
+}
+
+// ════════════════════════════════
+// THEME
+// ════════════════════════════════
+const MOON_PATH = '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>';
+const SUN_PATH  = '<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>';
+
+function applyTheme(t){
+  document.getElementById('app').setAttribute('data-theme', t);
+  ['dash','loans','invest'].forEach(function(view){
+    const icon = el(view+'-theme-icon');
+    if(icon) icon.innerHTML = t==='light' ? SUN_PATH : MOON_PATH;
+  });
+}
+function toggleTheme(){
+  const s = getState();
+  s.theme = s.theme === 'dark' ? 'light' : 'dark';
+  saveState(s);
+  applyTheme(s.theme);
+}
+['dash','loans','invest'].forEach(function(view){
+  const btn = document.getElementById(view+'-theme-btn');
+  if(btn) btn.addEventListener('click', toggleTheme);
+});
+
+// ════════════════════════════════
+// CORPUS RATE TOGGLE
+// ════════════════════════════════
+function setRate(r){
+  const s = getState();
+  s.rate = r;
+  saveState(s);
+
+  // Dashboard toggles
+  ['d-r10','d-r12','d-r14'].forEach(function(id){
+    const b = el(id);
+    if(!b) return;
+    const br = parseInt(b.dataset.rate);
+    b.classList.toggle('on', br === r);
+  });
+  // Invest toggles
+  ['i-r10','i-r12','i-r14'].forEach(function(id){
+    const b = el(id);
+    if(!b) return;
+    const br = parseInt(b.dataset.rate);
+    b.classList.toggle('on', br === r);
+  });
+
+  const corpus = CORPUS_LT[r];
+  const dc = el('d-corpus');  if(dc) dc.textContent = corpus;
+  const dm = el('d-maturity');if(dm) dm.textContent = 'Mar 2049';
+  const ic = el('i-corpus');  if(ic) ic.textContent = corpus;
+  const irl= el('i-rate-lbl');if(irl) irl.textContent = r;
+}
+
+// Wire rate toggle buttons
+document.querySelectorAll('[data-rate]').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    setRate(parseInt(this.dataset.rate));
+  });
+});
+
+// ════════════════════════════════
+// RENDER ALL DYNAMIC VALUES
+// ════════════════════════════════
+function renderAll(){
+  const s = getState();
+  const freeCash = Math.max(0, SALARY - SIP_AMT - EMIS - FIXED - s.oneTime);
+  const efPct    = Math.min(100, (s.loanEF / 100000) * 100);
+  const efVsCred = Math.min(100, (s.loanEF / CRED_BAL) * 100);
+  const efRemain = Math.max(0, CRED_BAL - s.loanEF);
+
+  // ── Dashboard ──
+  const dfc = el('d-freecash');
+  if(dfc) dfc.textContent = fmt(freeCash);
+
+  const defAmt = el('d-ef-amt');
+  if(defAmt) defAmt.textContent = fmt(s.loanEF);
+
+  const defBar = el('d-ef-bar');
+  if(defBar) defBar.style.width = efPct.toFixed(1) + '%';
+
+  const defPct = el('d-ef-pct');
+  if(defPct) defPct.textContent = efPct.toFixed(1) + '%';
+
+  // ── Loans ──
+  const lefAmt = el('l-ef-amt');
+  if(lefAmt) lefAmt.textContent = fmt(s.loanEF);
+
+  const lefBar = el('l-ef-bar');
+  if(lefBar) lefBar.style.width = efVsCred.toFixed(1) + '%';
+
+  const lefPct = el('l-ef-pct');
+  if(lefPct) lefPct.textContent = efVsCred.toFixed(1) + '% of CRED balance';
+
+  const lefRem = el('l-ef-remaining');
+  if(lefRem) lefRem.textContent = fmt(efRemain) + ' to go';
+
+  // ── Modal results (live as user types) ──
+  const mot = el('m-res-onetime');
+  if(mot) mot.textContent = '– ' + fmt(s.oneTime);
+
+  const mfc = el('m-res-freecash');
+  if(mfc) mfc.textContent = fmt(freeCash);
+
+  const mlefSub = el('m-loanef-sub');
+  if(mlefSub) mlefSub.textContent = efPct.toFixed(1) + '% of ₹1L target';
+
+  const mlefVal = el('m-loanef-val');
+  if(mlefVal) mlefVal.textContent = fmt(s.loanEF);
+
+  const mgs = el('m-goals-split');
+  if(mgs) mgs.textContent = '+' + fmt(Math.round(freeCash / 2));
+
+  // Apply rate
+  setRate(s.rate);
+}
+
+// ── Live recalc in modal as user types ──
+function modalRecalc(){
+  const hdfc    = parseInt(el('m-hdfc').value)   ||0;
+  const oneTime = parseInt(el('m-onetime').value)||0;
+  const loanEF  = parseInt(el('m-loanef').value) ||0;
+  const freeCash = Math.max(0, SALARY - SIP_AMT - EMIS - FIXED - oneTime);
+  const efPct    = Math.min(100, (loanEF/100000)*100);
+
+  const mot = el('m-res-onetime');
+  if(mot) mot.textContent = '– ₹' + oneTime.toLocaleString('en-IN');
+
+  const mfc = el('m-res-freecash');
+  if(mfc) mfc.textContent = fmt(freeCash);
+
+  const mlefSub = el('m-loanef-sub');
+  if(mlefSub) mlefSub.textContent = efPct.toFixed(1) + '% of ₹1L target';
+
+  const mlefVal = el('m-loanef-val');
+  if(mlefVal) mlefVal.textContent = '₹' + loanEF.toLocaleString('en-IN');
+
+  const mgs = el('m-goals-split');
+  if(mgs) mgs.textContent = '+' + fmt(Math.round(freeCash/2));
+}
+
+['m-hdfc','m-onetime','m-loanef'].forEach(function(id){
+  const inp = el(id);
+  if(inp) inp.addEventListener('input', modalRecalc);
+});
+
+// Update button — saves and goes back to dashboard
+el('update-btn').addEventListener('click', function(){
+  const s = getState();
+  s.hdfc    = parseInt(el('m-hdfc').value)   ||0;
+  s.oneTime = parseInt(el('m-onetime').value)||0;
+  s.loanEF  = parseInt(el('m-loanef').value) ||0;
+  saveState(s);
+  showView('dash');
+});
+
+// ════════════════════════════════
+// CLOCK
+// ════════════════════════════════
+function updateClock(){
+  const now = new Date();
+  const h = now.getHours(), m = now.getMinutes();
+  const timeStr = h + ':' + (m<10?'0':'')+m;
+  const t = el('dash-time'); if(t) t.textContent = timeStr;
+
+  const days=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  const months=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  const dateStr = days[now.getDay()] + ', ' + String(now.getDate()).padStart(2,'0') + ' ' + months[now.getMonth()] + ' ' + now.getFullYear();
+  const d = el('dash-date'); if(d) d.textContent = dateStr;
+
+  // Greeting
+  const greetEl = document.querySelector('#view-dash .scroll div:first-child div:last-child');
+  const greet = h<12?'Good morning':h<17?'Good afternoon':'Good evening';
+  if(greetEl) greetEl.innerHTML = greet + ',<br>Ajith 👋';
+}
+
+// ════════════════════════════════
+// RESTORE MODAL INPUTS FROM STATE
+// ════════════════════════════════
+function restoreInputs(){
+  const s = getState();
+  const mh = el('m-hdfc');     if(mh) mh.value = s.hdfc;
+  const mo = el('m-onetime');  if(mo) mo.value = s.oneTime;
+  const ml = el('m-loanef');   if(ml) ml.value = s.loanEF;
+}
+
+// ════════════════════════════════
+// INIT
+// ════════════════════════════════
+(function init(){
+  const s = getState();
+  applyTheme(s.theme);
+  restoreInputs();
+  updateClock();
+  setInterval(updateClock, 30000);
+  showView('dash');
+})();
+</script>
+</body>
+</html>
