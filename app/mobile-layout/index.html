@@ -968,18 +968,18 @@ document.querySelectorAll('[data-rate]').forEach(function(btn){
 // ════════════════════════════════
 function renderAll(){
   const s = getState();
-  const { freeCash, efAdd, surplus } = calcSplit(s.hdfc, s.oneTime);
-  const newLoanEF  = s.loanEF + efAdd;           // running total after this month's addition
-  const efPct      = Math.min(100, (newLoanEF / 100000) * 100);
-  const efVsCred   = Math.min(100, (newLoanEF / CRED_BAL) * 100);
-  const efRemain   = Math.max(0, CRED_BAL - newLoanEF);
+  const { freeCash } = calcSplit(s.hdfc, s.oneTime);
+  // s.loanEF is the committed running total — efAdd is only added on Update press
+  const efPct    = Math.min(100, (s.loanEF / 100000) * 100);
+  const efVsCred = Math.min(100, (s.loanEF / CRED_BAL) * 100);
+  const efRemain = Math.max(0, CRED_BAL - s.loanEF);
 
   // ── Dashboard ──
   const dfc = el('d-freecash');
   if(dfc) dfc.textContent = fmt(freeCash);
 
   const defAmt = el('d-ef-amt');
-  if(defAmt) defAmt.textContent = fmt(newLoanEF);
+  if(defAmt) defAmt.textContent = fmt(s.loanEF);
 
   const defBar = el('d-ef-bar');
   if(defBar) defBar.style.width = efPct.toFixed(1) + '%';
@@ -989,7 +989,7 @@ function renderAll(){
 
   // ── Loans ──
   const lefAmt = el('l-ef-amt');
-  if(lefAmt) lefAmt.textContent = fmt(newLoanEF);
+  if(lefAmt) lefAmt.textContent = fmt(s.loanEF);
 
   const lefBar = el('l-ef-bar');
   if(lefBar) lefBar.style.width = efVsCred.toFixed(1) + '%';
