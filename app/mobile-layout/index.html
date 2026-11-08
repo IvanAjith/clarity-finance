@@ -650,42 +650,33 @@ html,body{height:100%;margin:0;padding:0;overflow:hidden;background:var(--bg);fo
 
       <!-- Inputs -->
       <div style="padding:20px 24px 0 24px;">
-        <!-- Salary readonly -->
-        <div style="font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:8px;">Salary Received</div>
+
+        <!-- HDFC Savings Balance -->
+        <div style="font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:8px;">HDFC Savings Balance</div>
         <div class="field-row">
           <span class="field-symbol">₹</span>
-          <div style="flex:1;font-size:26px;font-weight:700;color:var(--text);letter-spacing:-0.8px;">1,01,720</div>
-          <div style="background:#6366F1;border-radius:6px;padding:3px 9px;"><span style="font-size:11px;font-weight:600;color:#fff;">Auto</span></div>
+          <input id="m-hdfc" type="number" inputmode="numeric" class="field-input" placeholder="0">
         </div>
-
-        <!-- HDFC Balance -->
-        <div style="margin-top:12px;">
-          <div style="font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:8px;">HDFC Balance Remaining</div>
-          <div class="field-row">
-            <span class="field-symbol">₹</span>
-            <input id="m-hdfc" type="number" inputmode="numeric" class="field-input" value="8400">
-          </div>
-          <div style="font-size:11px;color:var(--text3);padding:4px 0 0 28px;">What's left in your HDFC account right now</div>
-        </div>
+        <div style="font-size:11px;color:var(--text3);padding:4px 0 0 28px;">What's left in your HDFC account right now</div>
 
         <!-- One-time -->
-        <div style="margin-top:12px;">
+        <div style="margin-top:16px;">
           <div style="font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:8px;">One-Time Payment This Month</div>
           <div class="field-row">
             <span class="field-symbol">₹</span>
-            <input id="m-onetime" type="number" inputmode="numeric" class="field-input" value="0">
+            <input id="m-onetime" type="number" inputmode="numeric" class="field-input" placeholder="0">
           </div>
-          <div style="font-size:11px;color:var(--text3);padding:4px 0 0 28px;">Any extra spend outside your usual budget</div>
+          <div style="font-size:11px;color:var(--text3);padding:4px 0 0 28px;">Extra spend outside your usual fixed costs</div>
         </div>
 
-        <!-- Loan EF -->
-        <div style="margin-top:12px;">
+        <!-- Loan EF running total -->
+        <div style="margin-top:16px;">
           <div style="font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:8px;">Loan EF Running Total</div>
           <div class="field-row" style="border-bottom:none;">
             <span class="field-symbol">₹</span>
-            <input id="m-loanef" type="number" inputmode="numeric" class="field-input" value="11748">
+            <input id="m-loanef" type="number" inputmode="numeric" class="field-input" placeholder="0">
           </div>
-          <div style="font-size:11px;color:var(--text3);padding:4px 0 0 28px;">Running total saved toward ₹1,00,000 target</div>
+          <div style="font-size:11px;color:var(--text3);padding:4px 0 0 28px;">Total saved so far toward ₹1,00,000 CRED prepay</div>
         </div>
       </div>
 
@@ -696,40 +687,51 @@ html,body{height:100%;margin:0;padding:0;overflow:hidden;background:var(--bg);fo
         </button>
       </div>
 
-      <!-- Results -->
+      <!-- Results breakdown -->
       <div style="padding:20px 24px 0 24px;">
-        <div style="font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:12px;">Allowable Spending</div>
-        <div class="result-row"><span style="font-size:14px;color:var(--text2);">SIP</span><span style="font-size:14px;font-weight:700;color:#34C759;">– ₹15,750</span></div>
-        <div class="result-row"><span style="font-size:14px;color:var(--text2);">All EMIs</span><span style="font-size:14px;font-weight:700;color:#FF3B30;">– ₹27,561</span></div>
-        <div class="result-row"><span style="font-size:14px;color:var(--text2);">Fixed Costs</span><span style="font-size:14px;font-weight:700;color:#FF3B30;">– ₹34,914</span></div>
-        <div class="result-row"><span style="font-size:14px;color:var(--text2);">One-time</span><span id="m-res-onetime" style="font-size:14px;font-weight:700;color:var(--text3);">– ₹0</span></div>
-        <div style="display:flex;justify-content:space-between;align-items:baseline;padding:14px 0 4px 0;">
-          <span style="font-size:16px;font-weight:700;color:var(--text);">Free Cash</span>
-          <span id="m-res-freecash" style="font-size:28px;font-weight:800;color:#34C759;letter-spacing:-1px;">₹23,495</span>
+        <div style="font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:12px;">This Month's Breakdown</div>
+
+        <div class="result-row">
+          <span style="font-size:14px;color:var(--text2);">HDFC Balance</span>
+          <span id="m-res-hdfc" style="font-size:14px;font-weight:700;color:var(--text);">₹0</span>
+        </div>
+        <div class="result-row">
+          <span style="font-size:14px;color:var(--text2);">One-time payment</span>
+          <span id="m-res-onetime" style="font-size:14px;font-weight:700;color:#FF3B30;">– ₹0</span>
+        </div>
+        <div class="result-row">
+          <span style="font-size:14px;color:var(--text2);">Safety buffer (kept)</span>
+          <span id="m-res-buffer" style="font-size:14px;font-weight:700;color:#FF9F0A;">– ₹20,000</span>
+        </div>
+
+        <!-- Surplus row — highlighted -->
+        <div style="display:flex;justify-content:space-between;align-items:baseline;padding:14px 0 4px 0;border-top:1px solid var(--border);margin-top:4px;">
+          <span style="font-size:14px;font-weight:600;color:var(--text2);">Surplus to split</span>
+          <span id="m-res-surplus" style="font-size:22px;font-weight:800;color:#FF9F0A;letter-spacing:-0.5px;">₹0</span>
         </div>
       </div>
 
-      <!-- EF split -->
+      <!-- 50/50 Split -->
       <div style="padding:4px 24px 0 24px;">
-        <div style="font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:12px;">EF Split (50/50 this month)</div>
+        <div style="font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:12px;">50 / 50 Split of Surplus</div>
+
         <div class="result-row">
           <div>
-            <div style="font-size:14px;color:var(--text);font-weight:600;">Loan EF</div>
-            <div id="m-loanef-sub" style="font-size:11px;color:var(--text2);margin-top:2px;">11.7% of ₹1L target</div>
+            <div style="font-size:14px;color:var(--text);font-weight:600;">Free Cash 🎉</div>
+            <div style="font-size:11px;color:var(--text2);margin-top:2px;">yours to spend freely</div>
           </div>
           <div style="text-align:right;">
-            <div id="m-loanef-val" style="font-size:18px;font-weight:800;color:#6366F1;">₹11,748</div>
-            <div style="font-size:11px;color:var(--text2);margin-top:2px;">running total</div>
+            <div id="m-res-freecash" style="font-size:22px;font-weight:800;color:#34C759;letter-spacing:-0.5px;">₹0</div>
           </div>
         </div>
-        <div style="display:flex;justify-content:space-between;align-items:flex-start;padding:12px 0 4px 0;">
+
+        <div class="result-row" style="border-bottom:none;">
           <div>
-            <div style="font-size:14px;color:var(--text);font-weight:600;">Goals EF</div>
-            <div style="font-size:11px;color:var(--text2);margin-top:2px;">0% of ₹2.5L target</div>
+            <div style="font-size:14px;color:var(--text);font-weight:600;">→ Add to Loan EF</div>
+            <div id="m-loanef-sub" style="font-size:11px;color:var(--text2);margin-top:2px;">new total: ₹0 (0% of ₹1L)</div>
           </div>
           <div style="text-align:right;">
-            <div id="m-goals-split" style="font-size:18px;font-weight:800;color:#34C759;">+₹11,748</div>
-            <div style="font-size:11px;color:var(--text2);margin-top:2px;">this month's split</div>
+            <div id="m-loanef-val" style="font-size:22px;font-weight:800;color:#6366F1;letter-spacing:-0.5px;">+₹0</div>
           </div>
         </div>
       </div>
@@ -769,22 +771,36 @@ html,body{height:100%;margin:0;padding:0;overflow:hidden;background:var(--bg);fo
 // ════════════════════════════════
 // CONSTANTS
 // ════════════════════════════════
-const SALARY = 101720, SIP_AMT = 15750, EMIS = 27561, FIXED = 34914;
+const BUFFER   = 20000;   // safety floor always kept in HDFC
 const CRED_BAL = 97768;
-const CORPUS_LT  = {10:'₹2.41 Cr', 12:'₹4.21 Cr', 14:'₹7.10 Cr'};
+const CORPUS_LT = {10:'₹2.41 Cr', 12:'₹4.21 Cr', 14:'₹7.10 Cr'};
 
 function fmt(n){ return '₹' + Math.round(n).toLocaleString('en-IN'); }
 function el(id){ return document.getElementById(id); }
 
 // ════════════════════════════════
+// FREE CASH FORMULA
+// hdfc − oneTime − 20k buffer = surplus
+// surplus split 50/50 → freeCash + EF addition
+// ════════════════════════════════
+function calcSplit(hdfc, oneTime){
+  const afterOneTime = Math.max(0, hdfc - oneTime);
+  const surplus      = Math.max(0, afterOneTime - BUFFER);
+  const freeCash     = Math.round(surplus / 2);
+  const efAdd        = Math.round(surplus / 2);
+  const bufferActual = Math.min(afterOneTime, BUFFER); // might be less if balance < 20k
+  return { afterOneTime, surplus, freeCash, efAdd, bufferActual };
+}
+
+// ════════════════════════════════
 // STORED STATE
 // ════════════════════════════════
 function getState(){
-  let hdfc=8400, oneTime=0, loanEF=11748, theme='dark', rate=10;
-  try{ hdfc    = parseInt(localStorage.getItem('hdfc')   ||'8400')   ||8400;   }catch(e){}
-  try{ oneTime = parseInt(localStorage.getItem('oneTime')||'0')       ||0;      }catch(e){}
-  try{ loanEF  = parseInt(localStorage.getItem('loanEF') ||'11748')  ||11748;  }catch(e){}
-  try{ theme   = localStorage.getItem('theme')  || 'dark';                      }catch(e){}
+  let hdfc=0, oneTime=0, loanEF=0, theme='dark', rate=10;
+  try{ hdfc    = parseInt(localStorage.getItem('hdfc')   ||'0')   ||0;   }catch(e){}
+  try{ oneTime = parseInt(localStorage.getItem('oneTime')||'0')   ||0;   }catch(e){}
+  try{ loanEF  = parseInt(localStorage.getItem('loanEF') ||'0')   ||0;   }catch(e){}
+  try{ theme   = localStorage.getItem('theme')  || 'dark';               }catch(e){}
   try{ rate    = parseInt(localStorage.getItem('rate')   ||'10')      ||10;     }catch(e){}
   return {hdfc, oneTime, loanEF, theme, rate};
 }
@@ -867,6 +883,7 @@ function showView(v, skipAnim){
 
 function showModal(){
   previousView = currentView;
+  restoreInputs();   // reset/restore fields and recalc before showing
   showView('modal');
 }
 function hideModal(){
@@ -951,17 +968,18 @@ document.querySelectorAll('[data-rate]').forEach(function(btn){
 // ════════════════════════════════
 function renderAll(){
   const s = getState();
-  const freeCash = Math.max(0, SALARY - SIP_AMT - EMIS - FIXED - s.oneTime);
-  const efPct    = Math.min(100, (s.loanEF / 100000) * 100);
-  const efVsCred = Math.min(100, (s.loanEF / CRED_BAL) * 100);
-  const efRemain = Math.max(0, CRED_BAL - s.loanEF);
+  const { freeCash, efAdd, surplus } = calcSplit(s.hdfc, s.oneTime);
+  const newLoanEF  = s.loanEF + efAdd;           // running total after this month's addition
+  const efPct      = Math.min(100, (newLoanEF / 100000) * 100);
+  const efVsCred   = Math.min(100, (newLoanEF / CRED_BAL) * 100);
+  const efRemain   = Math.max(0, CRED_BAL - newLoanEF);
 
   // ── Dashboard ──
   const dfc = el('d-freecash');
   if(dfc) dfc.textContent = fmt(freeCash);
 
   const defAmt = el('d-ef-amt');
-  if(defAmt) defAmt.textContent = fmt(s.loanEF);
+  if(defAmt) defAmt.textContent = fmt(newLoanEF);
 
   const defBar = el('d-ef-bar');
   if(defBar) defBar.style.width = efPct.toFixed(1) + '%';
@@ -971,7 +989,7 @@ function renderAll(){
 
   // ── Loans ──
   const lefAmt = el('l-ef-amt');
-  if(lefAmt) lefAmt.textContent = fmt(s.loanEF);
+  if(lefAmt) lefAmt.textContent = fmt(newLoanEF);
 
   const lefBar = el('l-ef-bar');
   if(lefBar) lefBar.style.width = efVsCred.toFixed(1) + '%';
@@ -982,48 +1000,42 @@ function renderAll(){
   const lefRem = el('l-ef-remaining');
   if(lefRem) lefRem.textContent = fmt(efRemain) + ' to go';
 
-  // ── Modal results (live as user types) ──
-  const mot = el('m-res-onetime');
-  if(mot) mot.textContent = '– ' + fmt(s.oneTime);
-
-  const mfc = el('m-res-freecash');
-  if(mfc) mfc.textContent = fmt(freeCash);
-
-  const mlefSub = el('m-loanef-sub');
-  if(mlefSub) mlefSub.textContent = efPct.toFixed(1) + '% of ₹1L target';
-
-  const mlefVal = el('m-loanef-val');
-  if(mlefVal) mlefVal.textContent = fmt(s.loanEF);
-
-  const mgs = el('m-goals-split');
-  if(mgs) mgs.textContent = '+' + fmt(Math.round(freeCash / 2));
-
   // Apply rate
   setRate(s.rate);
 }
 
 // ── Live recalc in modal as user types ──
 function modalRecalc(){
-  const hdfc    = parseInt(el('m-hdfc').value)   ||0;
-  const oneTime = parseInt(el('m-onetime').value)||0;
-  const loanEF  = parseInt(el('m-loanef').value) ||0;
-  const freeCash = Math.max(0, SALARY - SIP_AMT - EMIS - FIXED - oneTime);
-  const efPct    = Math.min(100, (loanEF/100000)*100);
+  const hdfc    = parseInt(el('m-hdfc').value)    || 0;
+  const oneTime = parseInt(el('m-onetime').value) || 0;
+  const loanEF  = parseInt(el('m-loanef').value)  || 0;
+
+  const { freeCash, efAdd, surplus, bufferActual } = calcSplit(hdfc, oneTime);
+  const newTotal = loanEF + efAdd;
+  const efPct    = Math.min(100, (newTotal / 100000) * 100);
+
+  // Breakdown rows
+  const mHdfc = el('m-res-hdfc');
+  if(mHdfc) mHdfc.textContent = fmt(hdfc);
 
   const mot = el('m-res-onetime');
-  if(mot) mot.textContent = '– ₹' + oneTime.toLocaleString('en-IN');
+  if(mot) mot.textContent = oneTime > 0 ? '– ' + fmt(oneTime) : '₹0';
 
+  const mbuf = el('m-res-buffer');
+  if(mbuf) mbuf.textContent = '– ' + fmt(bufferActual);
+
+  const msurplus = el('m-res-surplus');
+  if(msurplus) msurplus.textContent = fmt(surplus);
+
+  // 50/50 split
   const mfc = el('m-res-freecash');
   if(mfc) mfc.textContent = fmt(freeCash);
 
-  const mlefSub = el('m-loanef-sub');
-  if(mlefSub) mlefSub.textContent = efPct.toFixed(1) + '% of ₹1L target';
-
   const mlefVal = el('m-loanef-val');
-  if(mlefVal) mlefVal.textContent = '₹' + loanEF.toLocaleString('en-IN');
+  if(mlefVal) mlefVal.textContent = '+' + fmt(efAdd);
 
-  const mgs = el('m-goals-split');
-  if(mgs) mgs.textContent = '+' + fmt(Math.round(freeCash/2));
+  const mlefSub = el('m-loanef-sub');
+  if(mlefSub) mlefSub.textContent = 'new total: ' + fmt(newTotal) + ' (' + efPct.toFixed(1) + '% of ₹1L)';
 }
 
 ['m-hdfc','m-onetime','m-loanef'].forEach(function(id){
@@ -1031,13 +1043,19 @@ function modalRecalc(){
   if(inp) inp.addEventListener('input', modalRecalc);
 });
 
-// Update button — saves and goes back to dashboard
+// Update button — saves loanEF as the NEW running total (old + this month's EF addition)
 el('update-btn').addEventListener('click', function(){
-  const s = getState();
-  s.hdfc    = parseInt(el('m-hdfc').value)   ||0;
-  s.oneTime = parseInt(el('m-onetime').value)||0;
-  s.loanEF  = parseInt(el('m-loanef').value) ||0;
+  const s       = getState();
+  const hdfc    = parseInt(el('m-hdfc').value)    || 0;
+  const oneTime = parseInt(el('m-onetime').value) || 0;
+  const loanEF  = parseInt(el('m-loanef').value)  || 0;
+  const { efAdd } = calcSplit(hdfc, oneTime);
+  s.hdfc    = hdfc;
+  s.oneTime = oneTime;
+  s.loanEF  = loanEF + efAdd;   // persist updated running total
   saveState(s);
+  // Also update the loanEF input to show new total so it's correct next time
+  el('m-loanef').value = s.loanEF;
   showView('dash');
 });
 
@@ -1066,9 +1084,11 @@ function updateClock(){
 // ════════════════════════════════
 function restoreInputs(){
   const s = getState();
-  const mh = el('m-hdfc');     if(mh) mh.value = s.hdfc;
-  const mo = el('m-onetime');  if(mo) mo.value = s.oneTime;
-  const ml = el('m-loanef');   if(ml) ml.value = s.loanEF;
+  // Reset HDFC and one-time to 0 each month (balance changes); keep loanEF running total
+  const mh = el('m-hdfc');    if(mh) mh.value = s.hdfc    || '';
+  const mo = el('m-onetime'); if(mo) mo.value = s.oneTime  || '';
+  const ml = el('m-loanef');  if(ml) ml.value = s.loanEF  || '';
+  modalRecalc(); // show breakdown immediately
 }
 
 // ════════════════════════════════
