@@ -182,8 +182,17 @@ html,body{height:100%;margin:0;padding:0;overflow:hidden;background:var(--bg);fo
   background:var(--bg2);border-radius:24px 24px 0 0;
   border-top:1px solid var(--border);
   max-height:92%;overflow-y:auto;z-index:2;
+  transform:translateY(0);
 }
 .sheet::-webkit-scrollbar{display:none;}
+/* Sheet entrance when modal becomes active */
+#view-modal.active .sheet{
+  animation:sheetUp 0.32s cubic-bezier(0.32,0.72,0,1) forwards;
+}
+@keyframes sheetUp{
+  from{transform:translateY(100%);}
+  to{transform:translateY(0);}
+}
 </style>
 </head>
 <body>
@@ -617,7 +626,7 @@ html,body{height:100%;margin:0;padding:0;overflow:hidden;background:var(--bg);fo
   <!-- ══════════════════════════════════════
        VIEW: MODAL (input sheet)
   ══════════════════════════════════════ -->
-  <div class="view" id="view-modal" style="position:relative;">
+  <div class="view" id="view-modal">
     <!-- blurred bg (faked) -->
     <div style="position:absolute;inset:0;background:var(--bg);opacity:0.6;z-index:0;"></div>
     <div class="sheet-scrim" onclick="hideModal()"></div>
