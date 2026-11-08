@@ -6,7 +6,7 @@
 <title>Ajith · Finance Dashboard</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
-html,body{height:100%;margin:0;padding:0;background:var(--bg);font-family:-apple-system,'SF Pro Display',system-ui,sans-serif;}
+html,body{height:100%;margin:0;padding:0;overflow:hidden;background:var(--bg);font-family:-apple-system,'SF Pro Display',system-ui,sans-serif;}
 
 /* ── Theme tokens ── */
 :root{
@@ -24,13 +24,13 @@ html,body{height:100%;margin:0;padding:0;background:var(--bg);font-family:-apple
 
 /* ── Phone shell ── */
 .phone{
-  width:100%;min-height:100vh;background:var(--bg);
+  width:100%;height:100vh;height:100dvh;background:var(--bg);
   display:flex;flex-direction:column;overflow:hidden;
-  position:relative;
+  position:fixed;inset:0;
 }
 
 /* ── Views ── */
-.view{display:none;flex-direction:column;flex:1;overflow:hidden;}
+.view{display:none;flex-direction:column;flex:1;min-height:0;overflow:hidden;}
 .view.active{display:flex;}
 
 /* ── Scroll area ── */
@@ -51,6 +51,7 @@ html,body{height:100%;margin:0;padding:0;background:var(--bg);font-family:-apple
 .nav{
   height:83px;background:var(--bg);border-top:1px solid var(--sep);
   display:flex;align-items:flex-start;padding-top:12px;flex-shrink:0;
+  padding-bottom:env(safe-area-inset-bottom,0px);
 }
 .nav-item{
   flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;
