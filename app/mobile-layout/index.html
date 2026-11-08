@@ -35,9 +35,21 @@ html,body{height:100%;margin:0;padding:0;overflow:hidden;background:var(--bg);fo
   position:fixed;inset:0;
 }
 
+/* ── View stack — views are absolutely layered, not stacked in flow ── */
+.view-stack{
+  flex:1;min-height:0;position:relative;overflow:hidden;
+}
 /* ── Views ── */
-.view{display:none;flex-direction:column;flex:1;min-height:0;overflow:hidden;}
-.view.active{display:flex;}
+.view{
+  position:absolute;inset:0;
+  display:flex;flex-direction:column;overflow:hidden;
+  opacity:0;pointer-events:none;
+  /* no transition by default — animations handle it */
+  will-change:transform,opacity;
+}
+.view.active{
+  opacity:1;pointer-events:auto;
+}
 
 /* ── Scroll area ── */
 .scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;}
@@ -101,9 +113,12 @@ html,body{height:100%;margin:0;padding:0;overflow:hidden;background:var(--bg);fo
 .nav-icon{transition:color 0.25s, transform 0.25s;}
 .nav-lbl{font-size:10px;font-weight:500;color:rgba(255,255,255,0.45);transition:color 0.25s,font-weight 0.25s;}
 [data-theme="light"] .nav-lbl{color:rgba(0,0,0,0.4);}
-.nav-item.active .nav-lbl{font-weight:700;color:rgba(255,255,255,0.95);}
-[data-theme="light"] .nav-item.active .nav-lbl{color:rgba(0,0,0,0.9);}
-.nav-item.active .nav-icon{transform:scale(1.08);}
+.nav-item.active .nav-lbl{font-weight:700;color:#fff;}
+[data-theme="light"] .nav-item.active .nav-lbl{color:#111;}
+.nav-item.active .nav-icon{transform:scale(1.1);color:#6366F1;}
+[data-theme="light"] .nav-item.active .nav-icon{color:#6366F1;}
+.nav-item:not(.active) .nav-icon{color:rgba(255,255,255,0.4);}
+[data-theme="light"] .nav-item:not(.active) .nav-icon{color:rgba(0,0,0,0.35);}
 
 /* ── Typography helpers ── */
 .section-title{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.8px;padding:0 24px;}
@@ -138,44 +153,27 @@ html,body{height:100%;margin:0;padding:0;overflow:hidden;background:var(--bg);fo
 /* ── Phase timeline ── */
 .phase-row{display:flex;align-items:flex-start;gap:14px;padding:14px 24px;}
 
-/* ── View transitions — liquid slide ── */
-/* Views stack inside .phone which is overflow:hidden — only one is visible at a time */
-.view{
-  /* no default transition — animations handle it */
-  will-change: transform, opacity;
-}
-/* outgoing: slide + fade out instantly (no linger) */
-.view.anim-out-left{
-  animation: slideOutLeft 0.22s cubic-bezier(0.4,0,1,1) forwards;
-  pointer-events:none;
-}
-.view.anim-out-right{
-  animation: slideOutRight 0.22s cubic-bezier(0.4,0,1,1) forwards;
-  pointer-events:none;
-}
-/* incoming: slide in from edge */
-.view.anim-in-left{
-  animation: slideInLeft 0.3s cubic-bezier(0.25,0.46,0.45,0.94) forwards;
-}
-.view.anim-in-right{
-  animation: slideInRight 0.3s cubic-bezier(0.25,0.46,0.45,0.94) forwards;
-}
+/* ── View transition keyframes ── */
 @keyframes slideOutLeft{
   from{opacity:1;transform:translateX(0);}
-  to{opacity:0;transform:translateX(-28px);}
+  to{opacity:0;transform:translateX(-30px);}
 }
 @keyframes slideOutRight{
   from{opacity:1;transform:translateX(0);}
-  to{opacity:0;transform:translateX(28px);}
+  to{opacity:0;transform:translateX(30px);}
 }
-@keyframes slideInLeft{
-  from{opacity:0;transform:translateX(32px);}
+@keyframes slideInFromRight{
+  from{opacity:0;transform:translateX(30px);}
   to{opacity:1;transform:translateX(0);}
 }
-@keyframes slideInRight{
-  from{opacity:0;transform:translateX(-32px);}
+@keyframes slideInFromLeft{
+  from{opacity:0;transform:translateX(-30px);}
   to{opacity:1;transform:translateX(0);}
 }
+.view.anim-out-left {animation:slideOutLeft 0.22s ease forwards;pointer-events:none;}
+.view.anim-out-right{animation:slideOutRight 0.22s ease forwards;pointer-events:none;}
+.view.anim-in-right {animation:slideInFromRight 0.28s ease forwards;}
+.view.anim-in-left  {animation:slideInFromLeft  0.28s ease forwards;}
 
 /* ── Sheet (modal) ── */
 .sheet-scrim{position:absolute;inset:0;background:rgba(0,0,0,0.45);z-index:1;}
@@ -190,6 +188,7 @@ html,body{height:100%;margin:0;padding:0;overflow:hidden;background:var(--bg);fo
 </head>
 <body>
 <div class="phone" id="app">
+<div class="view-stack">
 
   <!-- ══════════════════════════════════════
        VIEW: DASHBOARD
@@ -307,24 +306,6 @@ html,body{height:100%;margin:0;padding:0;overflow:hidden;background:var(--bg);fo
       </div>
     </div>
 
-    <!-- Nav -->
-    <div class="nav-wrap">
-      <div class="nav" id="nav-dash">
-        <div class="nav-pill" id="nav-pill"></div>
-        <button class="nav-item active" data-view="loans" id="ni-loans">
-          <svg class="nav-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
-          <span class="nav-lbl">Loans</span>
-        </button>
-        <button class="nav-item active" data-view="dash" id="ni-dash">
-          <svg class="nav-icon" width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
-          <span class="nav-lbl">Dashboard</span>
-        </button>
-        <button class="nav-item" data-view="invest" id="ni-invest">
-          <svg class="nav-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
-          <span class="nav-lbl">Investments</span>
-        </button>
-      </div>
-    </div>
   </div>
 
   <!-- ══════════════════════════════════════
@@ -508,23 +489,6 @@ html,body{height:100%;margin:0;padding:0;overflow:hidden;background:var(--bg);fo
       </div>
     </div>
 
-    <div class="nav-wrap">
-      <div class="nav" id="nav-loans">
-        <div class="nav-pill"></div>
-        <button class="nav-item" data-view="loans" id="ni-loans-l">
-          <svg class="nav-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
-          <span class="nav-lbl">Loans</span>
-        </button>
-        <button class="nav-item" data-view="dash" id="ni-dash-l">
-          <svg class="nav-icon" width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
-          <span class="nav-lbl">Dashboard</span>
-        </button>
-        <button class="nav-item" data-view="invest" id="ni-invest-l">
-          <svg class="nav-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
-          <span class="nav-lbl">Investments</span>
-        </button>
-      </div>
-    </div>
   </div>
 
   <!-- ══════════════════════════════════════
@@ -648,23 +612,6 @@ html,body{height:100%;margin:0;padding:0;overflow:hidden;background:var(--bg);fo
       </div>
     </div>
 
-    <div class="nav-wrap">
-      <div class="nav" id="nav-invest">
-        <div class="nav-pill"></div>
-        <button class="nav-item" data-view="loans" id="ni-loans-i">
-          <svg class="nav-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
-          <span class="nav-lbl">Loans</span>
-        </button>
-        <button class="nav-item" data-view="dash" id="ni-dash-i">
-          <svg class="nav-icon" width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
-          <span class="nav-lbl">Dashboard</span>
-        </button>
-        <button class="nav-item" data-view="invest" id="ni-invest-i">
-          <svg class="nav-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
-          <span class="nav-lbl">Investments</span>
-        </button>
-      </div>
-    </div>
   </div>
 
   <!-- ══════════════════════════════════════
@@ -786,6 +733,27 @@ html,body{height:100%;margin:0;padding:0;overflow:hidden;background:var(--bg);fo
     </div>
   </div>
 
+</div><!-- /view-stack -->
+
+<!-- ══ SINGLE SHARED BOTTOM NAV ══ -->
+<div class="nav-wrap">
+  <div class="nav" id="main-nav">
+    <div class="nav-pill" id="nav-pill"></div>
+    <button class="nav-item" data-view="loans" id="ni-loans">
+      <svg class="nav-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
+      <span class="nav-lbl">Loans</span>
+    </button>
+    <button class="nav-item active" data-view="dash" id="ni-dash">
+      <svg class="nav-icon" width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+      <span class="nav-lbl">Dashboard</span>
+    </button>
+    <button class="nav-item" data-view="invest" id="ni-invest">
+      <svg class="nav-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+      <span class="nav-lbl">Investments</span>
+    </button>
+  </div>
+</div>
+
 </div><!-- /phone -->
 
 <script>
@@ -828,9 +796,10 @@ let currentView = 'dash';
 let previousView = 'dash';
 const VIEW_ORDER = ['loans','dash','invest']; // left → right
 
-function movePill(navEl, activeView){
-  const pill = navEl.querySelector('.nav-pill');
-  const btn  = navEl.querySelector('[data-view="'+activeView+'"]');
+function movePill(activeView){
+  const navEl = document.getElementById('main-nav');
+  const pill  = document.getElementById('nav-pill');
+  const btn   = navEl ? navEl.querySelector('[data-view="'+activeView+'"]') : null;
   if(!pill || !btn) return;
   const navRect = navEl.getBoundingClientRect();
   const btnRect = btn.getBoundingClientRect();
@@ -839,15 +808,10 @@ function movePill(navEl, activeView){
 }
 
 function updateNavActive(activeView){
-  document.querySelectorAll('.nav-item').forEach(function(btn){
-    const isActive = btn.dataset.view === activeView;
-    btn.classList.toggle('active', isActive);
+  document.querySelectorAll('#main-nav .nav-item').forEach(function(btn){
+    btn.classList.toggle('active', btn.dataset.view === activeView);
   });
-  // Move pill in every visible nav
-  ['nav-dash','nav-loans','nav-invest'].forEach(function(navId){
-    const navEl = document.getElementById(navId);
-    if(navEl) movePill(navEl, activeView);
-  });
+  movePill(activeView);
 }
 
 function showView(v, skipAnim){
@@ -857,44 +821,36 @@ function showView(v, skipAnim){
   const isModal = (v === 'modal' || currentView === 'modal');
   const goRight = !isModal && toIdx > fromIdx;
 
-  const outClass = goRight ? 'anim-out-left' : 'anim-out-right';
-  const inClass  = goRight ? 'anim-in-left'  : 'anim-in-right';
+  const outClass = goRight ? 'anim-out-left'  : 'anim-out-right';
+  const inClass  = goRight ? 'anim-in-right'  : 'anim-in-left';
 
   const prevView = currentView;
   const current  = document.getElementById('view-' + prevView);
   const target   = document.getElementById('view-' + v);
   if(!target) return;
 
-  // Update state immediately so double-taps don't re-enter
   currentView = v;
   if(v !== 'modal') updateNavActive(v);
 
+  /* ── Outgoing view ── */
   if(current && !skipAnim && !isModal){
-    // Animate outgoing view — hide it after animation completes
     current.classList.add(outClass);
     current.addEventListener('animationend', function onOut(){
       current.removeEventListener('animationend', onOut);
       current.classList.remove('active', outClass);
-      current.style.display = 'none';
-    });
+    }, {once:true});
   } else if(current){
     current.classList.remove('active');
-    current.style.display = 'none';
   }
 
-  // Set up incoming view: add animation class BEFORE display so no flash
-  if(!skipAnim && !isModal){
-    target.classList.add(inClass);
-  }
-  target.style.display = 'flex';
+  /* ── Incoming view: add anim class FIRST (before active), no display toggle ── */
+  if(!skipAnim && !isModal) target.classList.add(inClass);
   target.classList.add('active');
-
-  // Clean up incoming animation class after it ends
   if(!skipAnim && !isModal){
     target.addEventListener('animationend', function onIn(){
       target.removeEventListener('animationend', onIn);
       target.classList.remove(inClass);
-    });
+    }, {once:true});
   }
 
   renderAll();
@@ -913,8 +869,8 @@ function hideModal(){
   showView(previousView === 'modal' ? 'dash' : previousView);
 }
 
-// Wire nav buttons
-document.querySelectorAll('.nav-item[data-view]').forEach(function(btn){
+// Wire nav buttons — single shared nav only
+document.querySelectorAll('#main-nav .nav-item[data-view]').forEach(function(btn){
   btn.addEventListener('click', function(){
     showView(this.dataset.view);
   });
