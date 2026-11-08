@@ -1083,12 +1083,11 @@ function updateClock(){
 // RESTORE MODAL INPUTS FROM STATE
 // ════════════════════════════════
 function restoreInputs(){
-  const s = getState();
-  // Reset HDFC and one-time to 0 each month (balance changes); keep loanEF running total
-  const mh = el('m-hdfc');    if(mh) mh.value = s.hdfc    || '';
-  const mo = el('m-onetime'); if(mo) mo.value = s.oneTime  || '';
-  const ml = el('m-loanef');  if(ml) ml.value = s.loanEF  || '';
-  modalRecalc(); // show breakdown immediately
+  // Always reset all inputs to blank/0 on open — user enters fresh numbers each time
+  const mh = el('m-hdfc');    if(mh) mh.value = '';
+  const mo = el('m-onetime'); if(mo) mo.value = '';
+  const ml = el('m-loanef');  if(ml) ml.value = '';
+  modalRecalc(); // show zeroed breakdown immediately
 }
 
 // ════════════════════════════════
