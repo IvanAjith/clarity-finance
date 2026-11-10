@@ -1,0 +1,1403 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Clarity">
+<meta name="theme-color" content="#09090B" id="meta-theme">
+<meta name="robots" content="noindex,nofollow">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" href="icon-192.png">
+<link rel="manifest" href="manifest.json">
+<title>Ajith · Finance Dashboard</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+:root{
+  --bg:#09090B;--card:#141417;--card2:#1C1C21;--line:rgba(255,255,255,.07);
+  --text:#F5F5F7;--text2:#9A9AA3;--text3:#5E5E68;
+  --accent:#6366F1;--accent2:#8B5CF6;
+  --red:#FF453A;--orange:#FF9F0A;--green:#30D158;--gold:#D4AF37;--blue:#4C8DFF;
+  --shadow:0 1px 0 rgba(255,255,255,.04) inset;
+  --nav-bg:rgba(30,30,36,.72);--nav-line:rgba(255,255,255,.1);--pill:rgba(255,255,255,.12);
+  --ease:cubic-bezier(.32,.72,0,1);
+}
+[data-theme="light"]{
+  --bg:#F2F2F7;--card:#FFFFFF;--card2:#F1F1F6;--line:rgba(0,0,0,.07);
+  --text:#0B0B0F;--text2:#62626C;--text3:#A2A2AC;
+  --red:#E5342A;--orange:#D97F00;--green:#1E9E47;--gold:#A8841A;--blue:#2563EB;
+  --shadow:0 1px 2px rgba(0,0,0,.04),0 8px 24px rgba(0,0,0,.04);
+  --nav-bg:rgba(255,255,255,.78);--nav-line:rgba(0,0,0,.06);--pill:rgba(99,102,241,.12);
+}
+html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);
+  font-family:-apple-system,'SF Pro Text','SF Pro Display','Inter','Segoe UI',Roboto,system-ui,sans-serif;
+  font-size:15px;line-height:1.35;-webkit-font-smoothing:antialiased;overscroll-behavior:none;}
+button{font:inherit;color:inherit;background:none;border:none;cursor:pointer;}
+.num{font-variant-numeric:tabular-nums;letter-spacing:-.02em;}
+
+/* ── App shell ── */
+.app{position:fixed;inset:0;max-width:480px;margin:0 auto;display:flex;flex-direction:column;background:var(--bg);overflow:hidden;}
+@media(min-width:520px){body{background:#000;}[data-theme="light"] body{background:#DCDCE4;}.app{box-shadow:0 0 80px rgba(0,0,0,.35);}}
+
+/* ── Top bar ── */
+.topbar{flex-shrink:0;display:flex;align-items:center;justify-content:space-between;
+  padding:calc(env(safe-area-inset-top,0px) + 12px) 20px 8px;}
+.who{display:flex;align-items:center;gap:11px;}
+.avatar{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:16px;color:#fff;
+  background:linear-gradient(135deg,var(--accent),#A855F7);}
+.who-date{font-size:12px;color:var(--text2);font-weight:500;}
+.who-time{font-size:15px;font-weight:700;letter-spacing:-.01em;}
+.icon-btn{width:40px;height:40px;border-radius:50%;background:var(--card);border:1px solid var(--line);display:grid;place-items:center;
+  transition:transform .15s;box-shadow:var(--shadow);}
+.icon-btn:active{transform:scale(.9);}
+.icon-btn svg{width:18px;height:18px;transition:transform .5s var(--ease),opacity .25s;position:absolute;}
+.icon-btn .sun{opacity:0;transform:rotate(-90deg) scale(.5);}
+[data-theme="light"] .icon-btn .sun{opacity:1;transform:none;}
+[data-theme="light"] .icon-btn .moon{opacity:0;transform:rotate(90deg) scale(.5);}
+
+/* ── Views ── */
+.stack{flex:1;min-height:0;position:relative;}
+.view{position:absolute;inset:0;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;
+  padding:4px 16px calc(env(safe-area-inset-bottom,0px) + 112px);
+  opacity:0;pointer-events:none;transform:translateX(28px);
+  transition:opacity .28s ease,transform .38s var(--ease);will-change:transform,opacity;}
+.view.before{transform:translateX(-28px);}
+.view.active{opacity:1;pointer-events:auto;transform:none;}
+.view::-webkit-scrollbar{display:none;}
+.view>*{margin-bottom:12px;}
+.title{font-size:30px;font-weight:800;letter-spacing:-.035em;line-height:1.1;padding:6px 4px 8px;}
+.title small{display:block;font-size:14px;font-weight:500;color:var(--text2);letter-spacing:0;margin-bottom:2px;}
+.sec{font-size:12px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.09em;padding:12px 4px 0;margin-bottom:8px!important;}
+
+/* ── Cards ── */
+.card{background:var(--card);border:1px solid var(--line);border-radius:24px;padding:18px;box-shadow:var(--shadow);}
+.card.tap{transition:transform .18s var(--ease);}
+.card.tap:active{transform:scale(.975);}
+.lbl{font-size:13px;color:var(--text2);font-weight:500;}
+.sub{font-size:12px;color:var(--text2);}
+.big{font-size:40px;font-weight:800;letter-spacing:-.045em;line-height:1.05;}
+.mid{font-size:26px;font-weight:800;letter-spacing:-.035em;line-height:1.1;}
+.row{display:flex;justify-content:space-between;align-items:center;gap:12px;}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.chip{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;border-radius:999px;padding:4px 9px;
+  color:var(--c,var(--text2));background:color-mix(in srgb,var(--c,var(--text2)) 14%,transparent);white-space:nowrap;}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--c);flex-shrink:0;}
+.track{height:8px;border-radius:999px;background:var(--card2);overflow:hidden;display:flex;gap:2px;}
+.fill{height:100%;border-radius:999px;background:var(--c);transition:width .8s var(--ease);}
+.seg{height:100%;border-radius:3px;background:var(--c);}
+.chev{width:18px;height:18px;color:var(--text3);flex-shrink:0;}
+
+/* ── Hero ── */
+.hero{border:none;color:#fff;position:relative;overflow:hidden;padding:20px;
+  background:linear-gradient(135deg,#4338CA 0%,#6D28D9 55%,#A21CAF 120%);
+  box-shadow:0 16px 40px -12px rgba(99,60,220,.55);}
+.hero::before{content:'';position:absolute;width:260px;height:260px;border-radius:50%;right:-90px;top:-120px;
+  background:radial-gradient(circle,rgba(255,255,255,.22),transparent 65%);}
+.hero>*{position:relative;}
+.hero .lbl,.hero .sub{color:rgba(255,255,255,.72);}
+.hero .track{background:rgba(255,255,255,.16);height:10px;margin:16px 0 14px;}
+.legend{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.legend b{display:block;font-size:16px;font-weight:700;letter-spacing:-.02em;margin-top:2px;}
+.legend span{font-size:11px;color:rgba(255,255,255,.72);display:flex;align-items:center;gap:5px;}
+.legend em{font-style:normal;font-size:11px;color:rgba(255,255,255,.6);}
+
+.alloc>div{display:grid;grid-template-columns:8px 1fr 48px 78px;align-items:center;gap:10px;padding:9px 0;border-top:1px solid rgba(255,255,255,.12);}
+.alloc>div:first-child{border-top:none;padding-top:0;}
+.alloc>div:last-child{padding-bottom:0;}
+.alloc span{font-size:14px;font-weight:500;color:rgba(255,255,255,.92);}
+.alloc small{font-size:11px;color:rgba(255,255,255,.6);margin-left:4px;}
+.alloc em{font-style:normal;font-size:12px;color:rgba(255,255,255,.65);text-align:right;}
+.alloc b{font-size:16px;font-weight:700;text-align:right;}
+
+.sal-btn{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.18);display:grid;place-items:center;color:#fff;flex-shrink:0;transition:transform .15s,background .2s;}
+.sal-btn:active{transform:scale(.88);}
+.sal-btn svg{width:16px;height:16px;}
+.sal-in{font:inherit;font-size:40px;font-weight:800;letter-spacing:-.04em;color:#fff;background:none;border:none;border-bottom:2px solid rgba(255,255,255,.7);
+  outline:none;width:190px;min-width:0;padding:0;-moz-appearance:textfield;}
+.sal-in::-webkit-outer-spin-button,.sal-in::-webkit-inner-spin-button{-webkit-appearance:none;}
+.rst{font-size:11px;font-weight:700;padding:5px 10px;border-radius:999px;background:var(--card2);color:var(--text2);border:1px solid var(--line);
+  white-space:nowrap;transition:transform .15s,color .2s,background .2s;z-index:1;}
+.rst:active{transform:scale(.92);}
+.rst.sure{color:#fff;background:var(--red);border-color:transparent;}
+
+/* Ready-to-pay-off state (emergency fund covers the CRED balance) */
+#l-ef-card{transition:border-color .3s,background .3s;}
+#l-ef-card.ready,.loan.ready{border-color:color-mix(in srgb,var(--green) 60%,transparent);background:color-mix(in srgb,var(--green) 9%,var(--card));}
+#l-ef-card.ready #l-ef-amt,#l-ef-card.ready #l-ef-pct,#l-ef-card.ready #l-ef-lbl{color:var(--green)!important;}
+#l-ef-card.ready .fill{background:var(--green);}
+.loan.ready{--c:var(--green)!important;}
+.loan.ready .track .fill{width:100%!important;}
+#l-ef-card.ready,.loan.ready,#d-ef-card.ready{position:relative;overflow:hidden;animation:glow 2.4s ease-in-out infinite;}
+#d-ef-card.ready{border-color:color-mix(in srgb,var(--green) 60%,transparent);background:color-mix(in srgb,var(--green) 9%,var(--card));}
+#d-ef-card.ready .fgc{stroke:var(--green);}
+#d-ef-card.ready .ctr,#d-ef-card.ready #d-ef-amt{color:var(--green)!important;}
+@keyframes glow{0%,100%{box-shadow:0 0 0 0 color-mix(in srgb,var(--green) 0%,transparent);}50%{box-shadow:0 0 28px -2px color-mix(in srgb,var(--green) 55%,transparent);}}
+/* light sweep across a ready card */
+#l-ef-card.ready::after,.loan.ready::after{content:'';position:absolute;top:0;bottom:0;left:-60%;width:45%;pointer-events:none;
+  background:linear-gradient(100deg,transparent,rgba(255,255,255,.22),transparent);animation:sweep 3.2s ease-in-out infinite;}
+@keyframes sweep{0%,55%{left:-60%;}100%{left:130%;}}
+.pay-btn{display:block;width:100%;margin-top:14px;padding:13px;border-radius:14px;font-size:14px;font-weight:700;color:#fff;position:relative;z-index:1;
+  background:linear-gradient(135deg,#16A34A,#22C55E);box-shadow:0 8px 20px -8px #22C55E;transition:transform .15s;}
+.pay-btn:active{transform:scale(.97);}
+.undo-btn{display:block;width:100%;margin-top:14px;padding:11px;border-radius:12px;font-size:13px;font-weight:700;color:var(--text);
+  background:var(--card2);border:1px solid var(--line);}
+.loan.done{opacity:.5;filter:grayscale(1);}
+.loan.done.open{opacity:.85;}
+/* centre achievement badge */
+.cheer{position:absolute;left:50%;top:38%;z-index:31;transform:translate(-50%,-50%) scale(.6);opacity:0;pointer-events:none;text-align:center;
+  background:var(--card);border:1px solid color-mix(in srgb,var(--green) 55%,transparent);border-radius:28px;padding:22px 26px;min-width:230px;
+  box-shadow:0 24px 60px rgba(0,0,0,.45),0 0 40px -6px color-mix(in srgb,var(--green) 60%,transparent);
+  transition:transform .5s cubic-bezier(.34,1.56,.64,1),opacity .3s;}
+.cheer.show{transform:translate(-50%,-50%) scale(1);opacity:1;}
+.cheer .em{font-size:52px;line-height:1.1;}
+.cheer b{display:block;font-size:19px;font-weight:800;letter-spacing:-.02em;margin-top:6px;}
+.cheer small{display:block;font-size:13px;color:var(--text2);margin-top:4px;}
+
+/* ── CTA tile ── */
+.cta{display:flex;flex-direction:column;justify-content:space-between;text-align:left;min-height:118px;
+  background:var(--card);border:1px dashed color-mix(in srgb,var(--accent) 55%,transparent);}
+.cta .plus{width:36px;height:36px;border-radius:12px;display:grid;place-items:center;background:var(--accent);color:#fff;
+  box-shadow:0 6px 16px -4px var(--accent);}
+
+/* ── Ring ── */
+.ring{position:relative;width:104px;height:104px;flex-shrink:0;}
+.ring svg{width:100%;height:100%;transform:rotate(-90deg);}
+.ring circle{fill:none;stroke-width:10;stroke-linecap:round;}
+.ring .bgc{stroke:var(--card2);}
+.ring .fgc{stroke:var(--orange);stroke-dasharray:289.03;stroke-dashoffset:289.03;transition:stroke-dashoffset 1s var(--ease);}
+.ring .ctr{position:absolute;inset:0;display:grid;place-items:center;font-size:18px;font-weight:800;letter-spacing:-.03em;color:var(--orange);}
+
+/* ── Segmented control ── */
+.segctl{position:relative;display:grid;grid-template-columns:repeat(3,1fr);background:var(--card2);border-radius:14px;padding:4px;}
+.segctl .thumb{position:absolute;top:4px;bottom:4px;left:4px;width:calc((100% - 8px)/3);border-radius:10px;background:var(--accent);
+  box-shadow:0 4px 12px -2px color-mix(in srgb,var(--accent) 60%,transparent);transition:transform .35s var(--ease);}
+.segctl[data-r="12"] .thumb{transform:translateX(100%);}
+.segctl[data-r="14"] .thumb{transform:translateX(200%);}
+.segctl button{position:relative;padding:9px 0;font-size:14px;font-weight:700;color:var(--text2);transition:color .2s;}
+.segctl button.on{color:#fff;}
+
+/* ── Corpus compare bars ── */
+.cmp{display:grid;grid-template-columns:38px 1fr 76px;align-items:center;gap:10px;padding:7px 0;width:100%;text-align:left;
+  font-size:13px;font-weight:600;color:var(--text3);transition:color .2s;}
+.cmp .track{height:10px;}
+.cmp .fill{background:var(--text3);opacity:.45;transition:width .8s var(--ease),background .2s,opacity .2s;}
+.cmp b{text-align:right;font-weight:700;}
+.cmp.on{color:var(--text);}
+.cmp.on .fill{background:var(--green);opacity:1;}
+
+/* ── Loans ── */
+.loan{padding:16px 18px;}
+.loan-head{display:flex;align-items:center;gap:12px;}
+.rank{width:36px;height:36px;border-radius:12px;display:grid;place-items:center;font-weight:800;font-size:15px;flex-shrink:0;
+  color:var(--c);background:color-mix(in srgb,var(--c) 14%,transparent);}
+.loan-name{font-size:16px;font-weight:700;letter-spacing:-.01em;display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.loan-amt{font-size:18px;font-weight:800;letter-spacing:-.03em;text-align:right;}
+.loan .track{height:5px;margin-top:14px;}
+.loan-more{display:grid;grid-template-rows:0fr;transition:grid-template-rows .35s var(--ease);}
+.loan.open .loan-more{grid-template-rows:1fr;}
+.loan-more>div{overflow:hidden;}
+.loan-more dl{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding-top:14px;margin-top:14px;border-top:1px solid var(--line);}
+.loan-more dt{font-size:11px;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.06em;}
+.loan-more dd{font-size:15px;font-weight:700;margin-top:2px;}
+.loan .chev{transition:transform .3s var(--ease);margin-left:2px;}
+.loan.open .chev{transform:rotate(90deg);}
+.keys{display:flex;flex-wrap:wrap;gap:6px 12px;margin-top:12px;}
+.keys span{font-size:11px;color:var(--text2);display:flex;align-items:center;gap:5px;}
+
+.fund{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--line);}
+.fund:last-child{border-bottom:none;padding-bottom:0;}
+.fund-n{font-size:14px;font-weight:700;letter-spacing:-.01em;}
+
+/* ── Timeline ── */
+.tl{position:relative;display:grid;grid-template-columns:22px 1fr;gap:0 14px;padding-bottom:20px;}
+.tl:last-child{padding-bottom:0;}
+.tl::before{content:'';position:absolute;left:10px;top:20px;bottom:-2px;width:2px;background:var(--line);}
+.tl:last-child::before{display:none;}
+.tl i{width:14px;height:14px;border-radius:50%;margin:3px 4px 0;border:2.5px solid var(--c);background:var(--card);}
+.tl.now i{background:var(--c);box-shadow:0 0 0 5px color-mix(in srgb,var(--c) 22%,transparent);animation:pulse 2.2s ease-in-out infinite;}
+@keyframes pulse{50%{box-shadow:0 0 0 9px color-mix(in srgb,var(--c) 0%,transparent);}}
+.tl h4{font-size:15px;font-weight:700;color:var(--text2);display:flex;align-items:center;gap:8px;}
+.tl.now h4{color:var(--text);}
+.tl p{font-size:15px;font-weight:700;color:var(--c);margin-top:2px;}
+.tl small{font-size:12px;color:var(--text2);}
+
+/* ── Bottom nav ── */
+.nav-wrap{position:absolute;left:0;right:0;bottom:0;z-index:5;display:flex;justify-content:center;pointer-events:none;
+  padding:28px 20px calc(env(safe-area-inset-bottom,0px) + 14px);
+  background:linear-gradient(to top,var(--bg) 35%,transparent);}
+.nav{pointer-events:auto;position:relative;display:flex;width:100%;max-width:360px;padding:6px;border-radius:32px;
+  background:var(--nav-bg);border:1px solid var(--nav-line);
+  -webkit-backdrop-filter:blur(28px) saturate(180%);backdrop-filter:blur(28px) saturate(180%);
+  box-shadow:0 12px 36px rgba(0,0,0,.28);}
+.nav-pill{position:absolute;top:6px;bottom:6px;left:0;border-radius:26px;background:var(--pill);
+  transition:transform .42s cubic-bezier(.34,1.4,.64,1),width .42s var(--ease);}
+.nav button{flex:1;position:relative;display:flex;flex-direction:column;align-items:center;gap:3px;padding:9px 0 8px;
+  color:var(--text3);transition:color .25s,transform .15s;}
+.nav button:active{transform:scale(.92);}
+.nav button.active{color:var(--accent);}
+[data-theme="dark"] .nav button.active{color:#A5B4FC;}
+.nav svg{width:22px;height:22px;}
+.nav span{font-size:10.5px;font-weight:600;}
+
+/* ── Sheet ── */
+.scrim{position:absolute;inset:0;z-index:10;background:rgba(0,0,0,.55);opacity:0;pointer-events:none;transition:opacity .3s;
+  -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);}
+.sheet{position:absolute;left:0;right:0;bottom:0;z-index:11;max-height:94%;display:flex;flex-direction:column;
+  background:var(--card);border-radius:28px 28px 0 0;border-top:1px solid var(--line);
+  transform:translateY(105%);transition:transform .42s var(--ease);box-shadow:0 -20px 60px rgba(0,0,0,.35);}
+.app.sheet-open .scrim{opacity:1;pointer-events:auto;}
+.app.sheet-open .sheet{transform:none;}
+.sheet.drag{transition:none;}
+.grab{flex-shrink:0;padding:10px 20px 6px;touch-action:none;cursor:grab;}
+.grab::before{content:'';display:block;width:40px;height:5px;border-radius:3px;background:var(--text3);opacity:.5;margin:0 auto 14px;}
+.sheet-body{overflow-y:auto;padding:8px 20px 12px;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;}
+.sheet-body::-webkit-scrollbar{display:none;}
+.field{display:block;background:var(--card2);border:1.5px solid transparent;border-radius:18px;padding:12px 16px;margin-bottom:10px;transition:border-color .2s,background .2s;}
+.field:focus-within{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 8%,var(--card2));}
+.field .cap{font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.07em;}
+.field .in{display:flex;align-items:baseline;gap:6px;margin:2px 0;}
+.field .in span{font-size:22px;font-weight:700;color:var(--text3);}
+.field input{flex:1;min-width:0;width:100%;font:inherit;font-size:28px;font-weight:800;letter-spacing:-.03em;color:var(--text);
+  background:none;border:none;outline:none;font-variant-numeric:tabular-nums;-moz-appearance:textfield;}
+.field input::placeholder{color:var(--text3);}
+.field input::-webkit-outer-spin-button,.field input::-webkit-inner-spin-button{-webkit-appearance:none;}
+.field .hint{font-size:12px;color:var(--text3);}
+.calc{padding:6px 2px 0;}
+.calc .row{padding:9px 0;font-size:14px;color:var(--text2);}
+.calc .row b{color:var(--text);font-weight:700;}
+.calc .tot{border-top:1px solid var(--line);margin-top:4px;padding-top:14px;font-weight:600;}
+.calc .tot b{font-size:24px;font-weight:800;color:var(--orange);letter-spacing:-.03em;}
+.split{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px;}
+.split>div{border-radius:18px;padding:14px;background:color-mix(in srgb,var(--c) 12%,transparent);}
+.split h5{font-size:13px;font-weight:700;color:var(--text);}
+.split b{display:block;font-size:22px;font-weight:800;letter-spacing:-.03em;color:var(--c);margin:4px 0 2px;}
+.split small{font-size:11px;color:var(--text2);display:block;}
+.sheet-foot{flex-shrink:0;padding:12px 20px calc(env(safe-area-inset-bottom,0px) + 16px);border-top:1px solid var(--line);}
+.primary{display:block;width:100%;padding:16px;border-radius:18px;font-size:16px;font-weight:700;color:#fff;
+  background:linear-gradient(135deg,var(--accent),#7C3AED);box-shadow:0 10px 24px -8px var(--accent);transition:transform .15s;}
+.primary:active{transform:scale(.97);}
+.ghost{display:block;width:100%;padding:12px 0 2px;font-size:14px;font-weight:600;color:var(--text2);}
+
+/* ── Toast ── */
+.toast{position:absolute;left:50%;top:calc(env(safe-area-inset-top,0px) + 14px);z-index:20;transform:translate(-50%,-90px);
+  background:var(--text);color:var(--bg);font-size:13px;font-weight:600;padding:11px 16px;border-radius:999px;white-space:nowrap;
+  display:flex;align-items:center;gap:8px;box-shadow:0 12px 30px rgba(0,0,0,.3);transition:transform .5s cubic-bezier(.34,1.4,.64,1);}
+.toast.show{transform:translate(-50%,0);}
+
+@media(prefers-reduced-motion:reduce){*{transition-duration:.01ms!important;animation:none!important;}}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+
+  <!-- ══ TOP BAR ══ -->
+  <header class="topbar">
+    <div class="who">
+      <div class="avatar">A</div>
+    </div>
+    <button class="icon-btn" id="theme-btn" aria-label="Toggle theme">
+      <svg class="moon" viewBox="0 0 24 24" fill="currentColor"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+      <svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="4.2" fill="currentColor"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"/></svg>
+    </button>
+  </header>
+
+  <div class="stack" id="stack">
+
+    <!-- ══════════ LOANS ══════════ -->
+    <section class="view before" id="view-loans">
+      <h1 class="title"><small class="mon-lbl">November 2026</small>Loans</h1>
+
+      <div class="card">
+        <div class="row" style="align-items:flex-start;">
+          <div>
+            <div class="lbl">Total debt remaining</div>
+            <div class="big num" id="l-debt" style="color:var(--red);margin-top:4px;">₹8.54 L</div>
+            <div class="sub" id="l-count" style="margin-top:4px;">across 5 loans</div>
+          </div>
+          <div style="text-align:right;">
+            <div class="lbl">Debt-free in</div>
+            <div class="big num" style="margin-top:4px;"><span id="l-months">25</span><span style="font-size:17px;font-weight:600;color:var(--text2);letter-spacing:0;"> mo</span></div>
+            <div class="sub" id="l-free" style="margin-top:4px;">Dec 2028 🎉</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="row" style="align-items:flex-end;">
+          <div>
+            <div class="lbl">Total EMI / month</div>
+            <div class="mid num" id="l-emi" style="margin-top:4px;">₹27,561</div>
+          </div>
+          <div style="text-align:right;">
+            <div class="lbl">EMI burden</div>
+            <div class="mid num" id="l-burden" style="color:var(--orange);margin-top:4px;">27%</div>
+          </div>
+        </div>
+        <div class="track" style="margin-top:14px;"><div class="fill" id="l-burden-bar" style="--c:var(--orange);width:27%;"></div></div>
+        <div class="sub" style="margin-top:6px;">of monthly income</div>
+        <div class="track" id="emi-mix" style="margin-top:16px;height:10px;"></div>
+        <div class="keys" id="emi-keys"></div>
+      </div>
+
+      <div class="card" id="l-ef-card">
+        <div class="row">
+          <div class="lbl" id="l-ef-lbl">Priority #1 ⚡ EF saved toward CRED payoff</div>
+        </div>
+        <div class="row" style="align-items:baseline;margin:10px 0 12px;">
+          <div><span class="mid num" id="l-ef-amt" style="color:var(--orange);">₹0</span> <span class="sub">saved</span></div>
+          <div class="sub"><span id="l-top-name">CRED balance</span> <b class="num" id="l-cred" style="color:var(--red);font-size:15px;">₹97,768</b></div>
+        </div>
+        <div class="track"><div class="fill" id="l-ef-bar" style="--c:var(--orange);width:0%;"></div></div>
+        <div class="row" style="margin-top:8px;">
+          <span id="l-ef-pct" style="font-size:12px;font-weight:700;color:var(--orange);">0.0% of CRED balance</span>
+          <span class="sub num" id="l-ef-remaining">₹97,768 to go</span>
+        </div>
+      </div>
+
+      <div class="sec row">Avalanche order<button class="rst" id="rst-loans" style="text-transform:none;letter-spacing:0;" hidden>↺ Reset order</button></div>
+      <div id="loan-list" style="display:grid;gap:12px;"></div>
+    </section>
+
+    <!-- ══════════ DASHBOARD ══════════ -->
+    <section class="view active" id="view-dash">
+      <div class="row" style="align-items:flex-end;">
+        <h1 class="title"><small id="greet">Good afternoon,</small>Ajith 👋</h1>
+        <div style="text-align:right;padding:6px 4px 10px;">
+          <div class="num" id="dash-time" style="font-size:22px;font-weight:800;letter-spacing:-.03em;line-height:1.1;"></div>
+          <div class="who-date" id="dash-date" style="margin-top:2px;">Sunday, 08 November 2026</div>
+        </div>
+      </div>
+
+      <div class="card hero">
+        <div class="row">
+          <div class="lbl">Monthly income</div>
+          <span class="chip" style="--c:#fff;background:rgba(255,255,255,.18);">This month</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;margin-top:4px;min-height:48px;">
+          <div class="big num" id="h-income" style="font-size:44px;">₹1,01,720</div>
+          <input id="h-income-in" class="sal-in num" type="number" inputmode="numeric" aria-label="Monthly salary" hidden>
+          <button id="h-income-edit" class="sal-btn" aria-label="Edit salary"></button>
+        </div>
+        <div class="track">
+          <div class="seg" id="h-emi-seg" style="--c:#FF7A70;width:27.1%;"></div>
+          <div class="seg" id="h-sip-seg" style="--c:#FFD666;width:15.5%;"></div>
+          <div class="seg" id="h-ins-seg" style="--c:#5EEAD4;width:3.2%;"></div>
+          <div class="seg" id="h-mom-seg" style="--c:#F9A8D4;width:5.9%;"></div>
+          <div class="seg" style="--c:rgba(255,255,255,.5);flex:1;"></div>
+        </div>
+        <div class="alloc">
+          <div><i class="dot" style="--c:#FF7A70"></i><span>Total EMIs</span><em class="num" id="h-emi-pct">27%</em><b class="num" id="h-emi">₹27,561</b></div>
+          <div><i class="dot" style="--c:#FFD666"></i><span>Monthly SIP</span><em class="num" id="h-sip-pct">15.5%</em><b class="num" id="h-sip">₹15,750</b></div>
+          <div><i class="dot" style="--c:#5EEAD4"></i><span>Insurance <small>Life + Health</small></span><em class="num" id="h-ins-pct">3.2%</em><b class="num">₹3,281</b></div>
+          <div><i class="dot" style="--c:#F9A8D4"></i><span>Mom's Share</span><em class="num" id="h-mom-pct">5.9%</em><b class="num">₹6,000</b></div>
+          <div><i class="dot" style="--c:rgba(255,255,255,.6)"></i><span>Everything else</span><em class="num" id="h-else-pct">48.3%</em><b class="num" id="h-else">₹49,128</b></div>
+        </div>
+      </div>
+
+      <div class="grid2">
+        <div class="card" style="min-height:118px;display:flex;flex-direction:column;justify-content:space-between;">
+          <div class="row" style="gap:4px;margin-right:-6px;"><span class="lbl" style="white-space:nowrap;">Free cash</span><button class="rst" id="rst-cash" style="padding:5px 8px;" aria-label="Reset free cash">↺ Reset</button></div>
+          <div>
+            <div class="mid num" id="d-freecash" style="color:var(--green);font-size:30px;">₹0</div>
+            <div class="sub" style="margin-top:2px;">yours to spend freely</div>
+          </div>
+        </div>
+        <button class="card tap cta" onclick="showModal()">
+          <div class="plus"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></div>
+          <div>
+            <div style="font-size:15px;font-weight:700;letter-spacing:-.01em;">Update <span id="d-upd-month">November</span> figures</div>
+            <div class="sub" style="margin-top:2px;">HDFC · one-time · Loan EF</div>
+          </div>
+        </button>
+      </div>
+
+      <div class="sec">Emergency fund — <span id="d-ef-name">CRED prepay</span></div>
+      <div class="card" id="d-ef-card" style="display:flex;align-items:center;gap:18px;position:relative;">
+        <button class="rst" id="rst-ef" aria-label="Reset emergency fund" style="position:absolute;top:14px;right:14px;">↺ Reset</button>
+        <div class="ring">
+          <svg viewBox="0 0 104 104"><circle class="bgc" cx="52" cy="52" r="46"/><circle class="fgc" id="d-ef-ring" cx="52" cy="52" r="46"/></svg>
+          <div class="ctr num" id="d-ef-pct">0.0%</div>
+        </div>
+        <div style="flex:1;min-width:0;">
+          <div class="lbl">Running total</div>
+          <div class="mid num" id="d-ef-amt" style="color:var(--orange);margin-top:2px;">₹0</div>
+          <div class="sub num" style="margin-top:2px;">of ₹1,00,000</div>
+          <div class="sub" id="d-ef-note" style="margin-top:8px;color:var(--text3);">Build ₹1L → lump-sum hit on CRED</div>
+        </div>
+      </div>
+
+      <div class="sec">Debt journey</div>
+      <button class="card tap" style="display:block;width:100%;text-align:left;" onclick="showView('loans')">
+        <div class="row">
+          <div>
+            <div class="num" style="font-size:54px;font-weight:800;letter-spacing:-.05em;line-height:1;"><span id="d-months">25</span><span style="font-size:20px;font-weight:600;color:var(--text2);letter-spacing:-.01em;"> mo left</span></div>
+            <div class="sub" id="d-free" style="font-size:13px;margin-top:6px;">Debt-free by December 2028 🎉</div>
+          </div>
+          <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>
+        </div>
+        <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--line);display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:14px;font-weight:500;">
+          <span id="d-priority" style="display:contents;"><i class="dot" style="--c:var(--red)"></i>Priority: <b>CRED</b>
+          <span class="chip" style="--c:var(--red)">14.99%</span>
+          <span class="sub" style="font-size:13px;">closes Oct 2028 ⚡</span></span>
+        </div>
+      </button>
+
+      <div class="sec">Wealth building</div>
+      <div class="card">
+        <div class="lbl">SIP corpus · Age 60 · <span id="d-maturity">Mar 2052</span></div>
+        <div class="num" id="d-corpus" style="font-size:46px;font-weight:800;letter-spacing:-.045em;line-height:1.1;color:var(--green);margin:4px 0 2px;">₹5.45 Cr</div>
+        <div class="sub">Long-term projection at current SIP schedule</div>
+        <div class="segctl" data-rate-wrap style="margin-top:16px;">
+          <div class="thumb"></div>
+          <button data-rate="10">10%</button><button data-rate="12">12%</button><button data-rate="14">14%</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════ INVESTMENTS ══════════ -->
+    <section class="view" id="view-invest">
+      <h1 class="title"><small class="mon-lbl">November 2026</small>Investments</h1>
+
+      <div class="grid2">
+        <div class="card">
+          <div class="lbl">SIP this month</div>
+          <div class="mid num" id="i-sip" style="color:var(--blue);font-size:30px;margin:6px 0 10px;">₹15,750</div>
+          <span class="chip" id="i-phase" style="--c:var(--blue)"><i class="dot"></i>Base phase</span>
+        </div>
+        <div class="card">
+          <div class="lbl">SIP % of salary</div>
+          <div class="mid num" id="i-sip-pct" style="color:var(--orange);font-size:30px;margin:6px 0 10px;">15.5%</div>
+          <div class="sub">of take-home pay</div>
+        </div>
+      </div>
+
+      <div class="card" id="i-next-card" style="background:linear-gradient(135deg,color-mix(in srgb,var(--accent) 22%,var(--card)),var(--card) 70%);">
+        <div class="row">
+          <div>
+            <div class="lbl">Next phase</div>
+            <div class="mid" id="i-next-title" style="color:var(--accent);font-size:24px;margin-top:4px;">Push · Apr 2027</div>
+            <div class="sub" style="font-size:13px;margin-top:6px;"><span id="i-next-away">5 months away</span> · <b class="num" id="i-next-amt" style="color:var(--text);">₹18,900/mo</b></div>
+          </div>
+          <div style="font-size:40px;">🚀</div>
+        </div>
+      </div>
+
+      <div class="sec">Where the SIP goes</div>
+      <div class="card">
+        <div class="row" style="align-items:baseline;">
+          <div class="lbl">Monthly SIP by fund</div>
+          <div class="sub"><b class="num" id="fund-total" style="color:var(--text);font-size:15px;"></b> across <span id="fund-count">8</span> funds</div>
+        </div>
+        <div class="track" id="fund-mix" style="height:10px;margin:14px 0 6px;"></div>
+        <div id="fund-list"></div>
+      </div>
+
+      <div class="sec">SIP roadmap</div>
+      <div class="card">
+        <div class="tl now" style="--c:var(--blue)"><i></i><div>
+          <h4>Base Phase <span class="chip" style="--c:var(--blue)">Now</span></h4>
+          <p class="num">₹15,750 / mo</p><small>Nov 2026 – Dec 2027 · held flat</small></div></div>
+        <div class="tl" style="--c:var(--accent)"><i></i><div>
+          <h4>EMI Swap Phase</h4>
+          <p class="num">₹18,250 → ₹27,900 / mo</p><small>Jan – Dec 2028 · closed EMIs move into SIP</small></div></div>
+        <div class="tl" style="--c:var(--green)"><i></i><div>
+          <h4>Growth Phase</h4>
+          <p class="num">₹27,900 → ₹34,650 / mo</p><small>Jan 2029 – Mar 2043 · step-ups in 2034, 2038, 2039</small></div></div>
+        <div class="tl" style="--c:var(--orange)"><i></i><div>
+          <h4>College Years</h4>
+          <p class="num">₹15,750 → ₹26,500 / mo</p><small>Apr 2043 – Mar 2048 · reduced SIP</small></div></div>
+        <div class="tl" style="--c:var(--gold)"><i></i><div>
+          <h4>Hold Phase</h4>
+          <p class="num">₹0 / mo</p><small>Apr 2048 – Mar 2052 · corpus keeps growing</small></div></div>
+      </div>
+
+      <div class="sec">Long-term corpus</div>
+      <div class="card">
+        <div class="lbl">Corpus @<span id="i-rate-lbl">14</span>% · Age 60 · Mar 2052</div>
+        <div class="num" id="i-corpus" style="font-size:46px;font-weight:800;letter-spacing:-.045em;line-height:1.1;color:var(--green);margin:4px 0 2px;">₹10.51 Cr</div>
+        <div class="sub" id="i-journey">Journey is 2% complete · keep investing</div>
+        <div class="track" style="margin-top:10px;"><div class="fill" id="i-journey-bar" style="--c:var(--green);width:2%;"></div></div>
+        <div class="sub" style="margin-top:10px;color:var(--text3);">With the debt bucket in the last 3 years (<span id="i-debt-rate">12</span>%): <b class="num" id="i-debt" style="color:var(--text2);">₹4.01 Cr</b></div>
+
+        <div style="font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin:20px 0 8px;">Projected return rate</div>
+        <div class="segctl" data-rate-wrap>
+          <div class="thumb"></div>
+          <button data-rate="10">10%</button><button data-rate="12">12%</button><button data-rate="14">14%</button>
+        </div>
+        <div style="margin-top:14px;">
+          <button class="cmp num" data-rate="10"><span>10%</span><div class="track"><div class="fill" style="width:51.6%"></div></div><b>₹3.36 Cr</b></button>
+          <button class="cmp num" data-rate="12"><span>12%</span><div class="track"><div class="fill" style="width:71.7%"></div></div><b>₹4.67 Cr</b></button>
+          <button class="cmp num" data-rate="14"><span>14%</span><div class="track"><div class="fill" style="width:100%"></div></div><b>₹6.51 Cr</b></button>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- ══ BOTTOM NAV ══ -->
+  <div class="nav-wrap">
+    <nav class="nav" id="main-nav">
+      <div class="nav-pill" id="nav-pill"></div>
+      <button data-view="loans">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="3"/><path d="M2 10h20M6 15h4"/></svg>
+        <span>Loans</span>
+      </button>
+      <button data-view="dash" class="active">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M10.6 3.5a2 2 0 0 1 2.8 0l7 6.7c.4.4.6.9.6 1.4V19a2 2 0 0 1-2 2h-3.5v-5.5a1.5 1.5 0 0 0-1.5-1.5h-4A1.5 1.5 0 0 0 8.5 15.5V21H5a2 2 0 0 1-2-2v-7.4c0-.5.2-1 .6-1.4z"/></svg>
+        <span>Dashboard</span>
+      </button>
+      <button data-view="invest">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+        <span>Investments</span>
+      </button>
+    </nav>
+  </div>
+
+  <!-- ══ UPDATE SHEET ══ -->
+  <div class="scrim" onclick="hideModal()"></div>
+  <div class="sheet" id="sheet" role="dialog" aria-label="Update figures">
+    <div class="grab" id="grab">
+      <div class="row">
+        <div>
+          <div class="mon-lbl" style="font-size:22px;font-weight:800;letter-spacing:-.03em;">November 2026</div>
+          <div class="sub" style="font-size:13px;">Update your figures</div>
+        </div>
+        <button class="icon-btn" style="background:var(--card2);box-shadow:none;" onclick="hideModal()" aria-label="Close">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" style="position:static;width:16px;height:16px;"><path d="M6 6l12 12M18 6L6 18"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="sheet-body">
+      <label class="field">
+        <div class="cap">HDFC savings balance</div>
+        <div class="in"><span>₹</span><input id="m-hdfc" type="number" inputmode="numeric" placeholder="0"></div>
+        <div class="hint">What's left in your HDFC account right now</div>
+      </label>
+      <label class="field">
+        <div class="cap">One-time payment this month</div>
+        <div class="in"><span>₹</span><input id="m-onetime" type="number" inputmode="numeric" placeholder="0"></div>
+        <div class="hint">Extra spend outside your usual fixed costs</div>
+      </label>
+      <label class="field">
+        <div class="cap">Loan EF running total</div>
+        <div class="in"><span>₹</span><input id="m-loanef" type="number" inputmode="numeric" placeholder="0"></div>
+        <div class="hint">Total saved so far toward ₹1,00,000 CRED prepay</div>
+      </label>
+
+      <div class="sec" style="padding-left:2px;">This month's breakdown</div>
+      <div class="calc">
+        <div class="row"><span>HDFC balance</span><b class="num" id="m-res-hdfc">₹0</b></div>
+        <div class="row"><span>One-time payment</span><b class="num" id="m-res-onetime" style="color:var(--red);">₹0</b></div>
+        <div class="row"><span>Safety buffer (kept)</span><b class="num" id="m-res-buffer" style="color:var(--orange);">– ₹20,000</b></div>
+        <div class="row tot"><span>Surplus to split</span><b class="num" id="m-res-surplus">₹0</b></div>
+      </div>
+
+      <div class="sec" style="padding-left:2px;">50 / 50 split of surplus</div>
+      <div class="split">
+        <div style="--c:var(--green)">
+          <h5>Free Cash 🎉</h5>
+          <b class="num" id="m-res-freecash">₹0</b>
+          <small>yours to spend freely</small>
+        </div>
+        <div style="--c:var(--accent)">
+          <h5>→ Add to Loan EF</h5>
+          <b class="num" id="m-loanef-val">+₹0</b>
+          <small id="m-loanef-sub">new total: ₹0 (0.0% of ₹1L)</small>
+        </div>
+      </div>
+    </div>
+
+    <div class="sheet-foot">
+      <button class="primary" id="update-btn">↻ Update Dashboard</button>
+      <button class="ghost" onclick="hideModal()">← Back to Dashboard</button>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+  <div class="cheer" id="cheer"><div class="em"></div><b></b><small></small></div>
+</div>
+
+<script>
+// ════════════════════════════════
+// CONSTANTS  (unchanged from v1)
+// ════════════════════════════════
+const BUFFER   = 20000;   // safety floor always kept in HDFC
+const CRED_BAL = 97768;
+const EF_GOAL  = 100000;
+// Maturity value on 31 Mar 2052 (₹1.5L opening + SIP schedule, monthly compounding)
+const CORPUS_LT  = {10:'₹3.36 Cr', 12:'₹4.67 Cr', 14:'₹6.51 Cr'};
+const CORPUS_NUM = {10:3.36, 12:4.67, 14:6.51};
+// Same plan, but the corpus as of Mar 2049 moves to debt at 6.5% p.a. for the last 3 years
+const CORPUS_DEBT = {10:'₹3.05 Cr', 12:'₹4.01 Cr', 14:'₹5.31 Cr'};
+const LOANS = [
+  {n:'CRED Loan',     r:'14.99%', c:'Oct 2028', emi:4982, bal:97768,  p:5,    col:'var(--red)'},
+  {n:'Personal Loan', r:'13.00%', c:'Nov 2028', emi:6883, bal:187335, p:12,   col:'var(--orange)'},
+  {n:'Car Loan',      r:'9.25%',  c:'Sep 2028', emi:9296, bal:344727, p:28,   col:'var(--accent)'},
+  {n:'Solar Roof',    r:'8.95%',  c:'Dec 2027', emi:6025, bal:189492, p:35,   col:'var(--green)'},
+  {n:'MF Pledge',     r:'0%',     c:'Dec 2027', emi:375,  bal:35000,  p:null, col:'var(--text2)'}
+];
+const TOTAL_EMI  = 27561;
+const TOTAL_DEBT = LOANS.reduce(function(a,l){return a+l.bal;},0); // 8,54,322
+
+function fmt(n){ return '₹' + Math.round(n).toLocaleString('en-IN'); }
+function el(id){ return document.getElementById(id); }
+function buzz(ms){ try{ if(navigator.vibrate) navigator.vibrate(ms||8); }catch(e){} }
+
+// Smooth number count-up
+const REDUCED = window.matchMedia && matchMedia('(prefers-reduced-motion:reduce)').matches;
+function tween(node, to, f){
+  if(!node) return;
+  const from = (node._v === undefined) ? 0 : node._v;
+  node._v = to;
+  cancelAnimationFrame(node._r); clearTimeout(node._t);
+  if(from === to || REDUCED){ node.textContent = f(to); return; }
+  const t0 = performance.now();
+  (function step(t){
+    const k = Math.min(1, (t - t0) / 550), e = 1 - Math.pow(1 - k, 3);
+    node.textContent = f(from + (to - from) * e);
+    if(k < 1) node._r = requestAnimationFrame(step);
+  })(t0);
+  node._t = setTimeout(function(){ node.textContent = f(to); }, 700); // safety net
+}
+
+// ════════════════════════════════
+// FREE CASH FORMULA
+// hdfc − oneTime − 20k buffer = surplus
+// surplus split 50/50 → freeCash + EF addition
+// ════════════════════════════════
+function calcSplit(hdfc, oneTime){
+  const afterOneTime = Math.max(0, hdfc - oneTime);
+  const surplus      = Math.max(0, afterOneTime - BUFFER);
+  const freeCash     = Math.round(surplus / 2);
+  const efAdd        = Math.round(surplus / 2);
+  const bufferActual = Math.min(afterOneTime, BUFFER);
+  return { afterOneTime, surplus, freeCash, efAdd, bufferActual };
+}
+
+// ════════════════════════════════
+// STORED STATE  (same localStorage keys as v1)
+// ════════════════════════════════
+function getState(){
+  let hdfc=0, oneTime=0, loanEF=0, theme='dark', rate=10;
+  try{ hdfc    = parseInt(localStorage.getItem('hdfc')   ||'0')  ||0;  }catch(e){}
+  try{ oneTime = parseInt(localStorage.getItem('oneTime')||'0')  ||0;  }catch(e){}
+  try{ loanEF  = parseInt(localStorage.getItem('loanEF') ||'0')  ||0;  }catch(e){}
+  try{ theme   = localStorage.getItem('theme') || 'dark';              }catch(e){}
+  try{ rate    = parseInt(localStorage.getItem('rate')   ||'10') ||10; }catch(e){}
+  return {hdfc, oneTime, loanEF, theme, rate};
+}
+function saveState(s){
+  try{
+    localStorage.setItem('hdfc',    s.hdfc);
+    localStorage.setItem('oneTime', s.oneTime);
+    localStorage.setItem('loanEF',  s.loanEF);
+    localStorage.setItem('theme',   s.theme);
+    localStorage.setItem('rate',    s.rate);
+  }catch(e){}
+}
+let MEM = null; // fallback if localStorage is blocked
+const _get = getState, _save = saveState;
+getState  = function(){ const s = _get(); return MEM ? Object.assign(s, MEM) : s; };
+saveState = function(s){ _save(s); try{ if(localStorage.getItem('rate') === null) throw 0; }catch(e){ MEM = Object.assign({}, s); } };
+
+// ════════════════════════════════
+// BUILD LOAN LIST + EMI MIX
+// ════════════════════════════════
+// Balances are worked out for the month the app is opened in:
+//   balance = opening × (1+r)^n − EMI × ((1+r)^n − 1) / r      n = months since Oct 2026
+// LOANS[].bal is the Oct 2026 opening balance (after the Sep 2026 EMI).
+const LOAN_RATE = [14.99, 13.00, 9.25, 8.95, 0];                    // % p.a., same order as LOANS
+const LOAN_ORIG = [102750, 212881, 478787, 291526, null];           // original principal, for the progress bar
+const LOAN_SHORT = ['CRED','Personal','Car','Solar','MF'];
+const DEBT_FREE = [2028,12];
+const MONTHS_FULL = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+// Loans you marked as paid off early: { loanIndex: {amt: taken from the emergency fund, y, m} }
+let paidMem = {};
+function getPaid(){
+  try{ const p = JSON.parse(localStorage.getItem('paidLoans') || 'null'); if(p && typeof p === 'object') return p; }catch(e){}
+  return paidMem;
+}
+function savePaid(p){ paidMem = p; try{ localStorage.setItem('paidLoans', JSON.stringify(p)); }catch(e){} }
+function loanOpen(k, ym){ return ymIdx(LOAN_END[k]) >= ymIdx(ym) && !getPaid()[k]; }
+function topLoan(ym){ for(let k = 0; k < LOANS.length; k++) if(loanOpen(k, ym)) return k; return -1; }
+let lastReady = null;
+function refreshAll(){ sipKey = ''; renderSIP(); renderAll(); }
+function payOff(k){
+  const ym = nowYM(), bal = balAt(k, ym), s = getState(), used = Math.min(s.loanEF, bal);
+  s.loanEF -= used; saveState(s);                    // the fund pays for it
+  const p = getPaid(); p[k] = {amt:used, y:ym[0], m:ym[1]}; savePaid(p);
+  lastReady = null; refreshAll();
+  const nxt = topLoan(ym);
+  confetti(); buzz([12,50,12,50,24]);
+  cheer('🏆', LOANS[k].n + ' paid off!', nxt >= 0 ? 'Next up: ' + LOANS[nxt].n : 'You are debt-free');
+}
+function undoPaid(k){
+  const p = getPaid(); if(!p[k]) return;
+  const s = getState(); s.loanEF += p[k].amt || 0; saveState(s);   // money goes back to the fund
+  delete p[k]; savePaid(p);
+  lastReady = null; refreshAll();
+  toast('↺ ' + LOANS[k].n + ' restored');
+}
+function undoAllPaid(){
+  const p = getPaid(), s = getState();
+  Object.keys(p).forEach(function(k){ s.loanEF += p[k].amt || 0; });
+  saveState(s); savePaid({});
+  lastReady = null; refreshAll();
+  toast('↺ Avalanche order restored');
+}
+function balAt(k, ym){
+  if(!loanOpen(k, ym)) return 0;
+  const l = LOANS[k], n = Math.max(0, ymIdx(ym) - ymIdx([2026,10])), r = LOAN_RATE[k] / 1200;
+  const g = Math.pow(1 + r, n);
+  const b = r ? l.bal * g - l.emi * (g - 1) / r : l.bal - l.emi * n;
+  return Math.max(0, Math.round(b));
+}
+function renderLoans(ym){
+  const income = incomeAt(ym), emi = emiAt(ym);
+  const bals = LOANS.map(function(l, k){ return balAt(k, ym); });
+  const debt = bals.reduce(function(a, b){ return a + b; }, 0);
+  const nOpen = LOANS.filter(function(l, k){ return loanOpen(k, ym); }).length;
+  // Debt-free month = the month after the last EMI of whichever open loan closes latest
+  let lastEnd = -1;
+  LOANS.forEach(function(l, k){ if(loanOpen(k, ym)) lastEnd = Math.max(lastEnd, ymIdx(LOAN_END[k])); });
+  const freeIdx = lastEnd + 1, left = lastEnd < 0 ? 0 : Math.max(0, freeIdx - ymIdx(ym));
+  const freeShort = MON[freeIdx % 12] + ' ' + Math.floor(freeIdx / 12);
+  const freeLong  = MONTHS_FULL[freeIdx % 12] + ' ' + Math.floor(freeIdx / 12);
+  const burden = emi / income * 100;
+
+  // Month labels everywhere
+  document.querySelectorAll('.mon-lbl').forEach(function(n){ n.textContent = MONTHS_FULL[ym[1]-1] + ' ' + ym[0]; });
+  el('d-upd-month').textContent = MONTHS_FULL[ym[1]-1];
+
+  // Loans overview
+  el('l-debt').textContent  = debt >= 100000 ? '₹' + (debt/100000).toFixed(2) + ' L' : fmt(debt);
+  el('l-count').textContent = nOpen ? 'across ' + nOpen + (nOpen === 1 ? ' loan' : ' loans') : 'all loans closed';
+  el('l-months').textContent = left;
+  el('l-free').textContent  = left ? freeShort + ' 🎉' : 'Debt-free 🎉';
+  el('l-emi').textContent   = fmt(emi);
+  el('l-burden').textContent = (burden >= 10 ? Math.round(burden) : burden.toFixed(1)) + '%';
+  el('l-burden-bar').style.width = burden.toFixed(1) + '%';
+
+  // Dashboard debt journey
+  el('d-months').textContent = left;
+  el('d-free').textContent = left ? 'Debt-free by ' + freeLong + ' 🎉' : 'You are debt-free 🎉';
+  let top = -1; LOANS.forEach(function(l, k){ if(top < 0 && loanOpen(k, ym)) top = k; });
+  el('d-priority').innerHTML = top < 0 ? '<i class="dot" style="--c:var(--green)"></i>All five loans closed' :
+    '<i class="dot" style="--c:'+LOANS[top].col+'"></i>Priority: <b>'+LOAN_SHORT[top]+'</b> ' +
+    '<span class="chip" style="--c:'+LOANS[top].col+'">'+LOANS[top].r+'</span> ' +
+    '<span class="sub" style="font-size:13px;">closes '+LOANS[top].c+' ⚡</span>';
+
+  // Loan cards: open loans first in avalanche order, finished ones greyed out at the bottom
+  const paid = getPaid(), order = [];
+  LOANS.forEach(function(l, k){ if(loanOpen(k, ym)) order.push(k); });
+  const nOpenCards = order.length;
+  LOANS.forEach(function(l, k){ if(!loanOpen(k, ym)) order.push(k); });
+  el('rst-loans').hidden = !Object.keys(paid).length;
+  el('loan-list').innerHTML = order.map(function(i, pos){
+    const l = LOANS[i], open = pos < nOpenCards, bal = bals[i], pd = paid[i];
+    const p = LOAN_ORIG[i] ? (open ? Math.min(100, Math.max(0, (1 - bal / LOAN_ORIG[i]) * 100)) : 100) : null;
+    const doneTxt = pd ? 'Paid off ' + MON[pd.m-1] + ' ' + pd.y + ' 🎉' : 'Closed ' + l.c;
+    return '<div class="card tap loan'+(open ? '' : ' done')+'" data-k="'+i+'" style="--c:'+l.col+'">' +
+      '<div class="loan-head">' +
+        '<div class="rank">'+(open ? pos+1 : '✓')+'</div>' +
+        '<div style="flex:1;min-width:0;">' +
+          '<div class="loan-name">'+l.n+' <span class="chip">'+(open ? l.r : pd ? 'Paid off' : 'Closed')+'</span></div>' +
+          '<div class="sub num" style="margin-top:2px;">'+(open ? l.c+' · '+fmt(l.emi)+'/mo' : doneTxt)+'</div>' +
+        '</div>' +
+        '<div><div class="loan-amt num">'+fmt(bal)+'</div><div class="sub" style="text-align:right;">remaining</div></div>' +
+        '<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>' +
+      '</div>' +
+      (p !== null ? '<div class="track"><div class="fill" style="width:'+p.toFixed(1)+'%"></div></div>' : '') +
+      '<div class="loan-more"><div><dl>' +
+        '<div><dt>Interest rate</dt><dd class="num">'+l.r+'</dd></div>' +
+        '<div><dt>'+(open ? 'Closes' : 'Closed')+'</dt><dd>'+l.c+'</dd></div>' +
+        '<div><dt>EMI</dt><dd class="num">'+(open ? fmt(l.emi)+'/mo' : '₹0')+'</dd></div>' +
+        '<div><dt>Share of EMIs</dt><dd class="num">'+(open && emi ? l.emi/emi*100 : 0).toFixed(1)+'%</dd></div>' +
+        '<div><dt>Share of debt</dt><dd class="num">'+(debt ? bal/debt*100 : 0).toFixed(1)+'%</dd></div>' +
+        (p !== null ? '<div><dt>Paid off</dt><dd class="num">'+Math.round(p)+'%</dd></div>' : '') +
+      '</dl>' +
+      (pd ? '<button class="undo-btn" data-undo="'+i+'">↺ Undo paid off · put back in the list</button>' : '') +
+      '</div></div>' +
+    '</div>';
+  }).join('');
+  el('emi-mix').innerHTML = LOANS.map(function(l, k){
+    return loanOpen(k, ym) ? '<div class="seg" style="--c:'+l.col+';flex:'+l.emi+' 0 0;min-width:3px;"></div>' : '';
+  }).join('');
+  el('emi-keys').innerHTML = LOANS.map(function(l, k){
+    return loanOpen(k, ym) ? '<span><i class="dot" style="--c:'+l.col+'"></i>'+LOAN_SHORT[k]+'</span>' : '';
+  }).join('') || '<span>No EMIs left</span>';
+  markReadyLoan();
+}
+// Turn the priority loan's card green when the emergency fund covers its current balance
+function markReadyLoan(){
+  const top = topLoan(nowYM());
+  document.querySelectorAll('#loan-list .loan').forEach(function(card){
+    const k = +card.dataset.k, bal = balAt(k, nowYM());
+    const ready = k === top && bal > 0 && getState().loanEF >= bal;
+    card.classList.toggle('ready', ready);
+    const name = card.querySelector('.loan-name'), old = name.querySelector('.rdy'), btn = card.querySelector('.pay-btn');
+    if(old) old.remove(); if(btn) btn.remove();
+    if(ready){
+      name.insertAdjacentHTML('beforeend', ' <span class="chip rdy">🏆 Ready to pay off</span>');
+      card.querySelector('.loan-more').insertAdjacentHTML('beforebegin',
+        '<button class="pay-btn" data-pay="'+k+'">🎉 Mark as paid off · move to the bottom</button>');
+    }
+  });
+}
+el('loan-list').addEventListener('click', function(e){
+  const pay = e.target.closest('[data-pay]'), undo = e.target.closest('[data-undo]');
+  if(pay){ payOff(+pay.dataset.pay); return; }
+  if(undo){ undoPaid(+undo.dataset.undo); return; }
+  const c = e.target.closest('.loan'); if(!c) return;
+  c.classList.toggle('open'); buzz(6);
+});
+
+// ════════════════════════════════
+// SIP FUND BREAKDOWN  (base monthly amounts, Oct 2026 – Mar 2027)
+// ════════════════════════════════
+const FUNDS = [
+  {n:'Parag Parikh Flexi Cap Fund', cat:'Flexi Cap',   amt:3700, col:'#8B5CF6'},
+  {n:'Nippon India Mid Cap Fund',   cat:'Mid Cap',     amt:2300, col:'#10B981'},
+  {n:'ICICI Pru Large Cap Fund',    cat:'Large Cap',   amt:2250, col:'#06B6D4'},
+  {n:'ICICI Pru Dynamic Bond Fund', cat:'Debt / Bond', amt:2000, col:'#D97706', bond:true},
+  {n:'HDFC Flexi Cap Fund',         cat:'Flexi Cap',   amt:1500, col:'#3B82F6'},
+  {n:'Nippon India Small Cap Fund', cat:'Small Cap',   amt:1500, col:'#34D399'},
+  {n:'iShares Semiconductor ETF',   cat:'US Tech ETF', amt:1500, col:'#F87171'},
+  {n:'UTI Gold ETF',                cat:'Gold ETF',    amt:1000, col:'#FBBF24', gold:true}
+];
+
+// ════════════════════════════════
+// SIP SCHEDULE — follows today's date
+// Each step applies from its start month until the next one begins.
+// ════════════════════════════════
+const INSURANCE = 3281, MOM_SHARE = 6000;
+const SIP_STEPS = [
+  {from:[2026,10], sip:15750, ph:'Base'},
+  {from:[2028,1],  sip:18250, ph:'EMI swap', why:'EMI swap'},      // Solar + MF Pledge EMIs ended Dec 2027
+  {from:[2028,10], sip:20850, ph:'EMI swap', why:'EMI swap'},      // Car EMI ended Sep 2028
+  {from:[2028,11], sip:23800, ph:'EMI swap', why:'EMI swap'},      // CRED EMI ended Oct 2028
+  {from:[2028,12], sip:27900, ph:'EMI swap', why:'Debt-free'},     // Personal EMI ended Nov 2028
+  {from:[2029,1],  sip:27900, ph:'Growth',   why:'Growth phase'},
+  {from:[2034,4],  sip:29600, ph:'Growth',   why:'Step-up'},       // funded by raise
+  {from:[2038,4],  sip:31550, ph:'Growth',   why:'Step-up'},
+  {from:[2039,4],  sip:34650, ph:'Growth',   why:'Step-up'},
+  {from:[2043,4],  sip:15750, ph:'College',  why:'College years'}, // SIP steps down
+  {from:[2047,4],  sip:26500, ph:'College',  why:'Step-up'},       // first child finished college
+  {from:[2048,4],  sip:0,     ph:'Hold',     why:'Hold'}           // last SIP is Mar 2048
+];
+const PHASES   = ['Base','EMI swap','Growth','College','Hold'];   // same order as the roadmap rows
+const PH_COL   = {Base:'var(--blue)', 'EMI swap':'var(--accent)', Growth:'var(--green)', College:'var(--orange)', Hold:'var(--gold)'};
+// Net salary per month, by calendar year (steps up each January)
+const SALARY = {2026:101720,2027:109858,2028:118646,2029:128138,2030:138389,2031:149460,2032:161417,2033:174330,2034:188277,
+  2035:203339,2036:219606,2037:237174,2038:256148,2039:276640,2040:298772,2041:322673,2042:348487,2043:376366,2044:406475,
+  2045:438993,2046:474113,2047:512042,2048:553005,2049:597246,2050:645025,2051:696627,2052:752358};
+function planIncome(ym){ return SALARY[Math.min(2052, Math.max(2026, ym[0]))]; }
+// Your own salary figure, entered in the update sheet. It applies from the year you
+// entered it; later years are estimated at the plan's 8% yearly raise until you enter the actual.
+const RAISE = 1.08;
+let salMem = null;
+function getSalary(){
+  try{
+    const a = parseInt(localStorage.getItem('salary') || '0') || 0, y = parseInt(localStorage.getItem('salaryYear') || '0') || 0;
+    if(a > 0 && y > 0) return {amt:a, year:y};
+  }catch(e){}
+  return salMem;
+}
+function setSalary(amt, year){
+  salMem = amt > 0 ? {amt:amt, year:year} : null;
+  try{
+    if(amt > 0){ localStorage.setItem('salary', amt); localStorage.setItem('salaryYear', year); }
+    else { localStorage.removeItem('salary'); localStorage.removeItem('salaryYear'); }
+  }catch(e){}
+}
+function incomeAt(ym){
+  const o = getSalary();
+  if(o && ym[0] >= o.year) return Math.round(o.amt * Math.pow(RAISE, ym[0] - o.year));
+  return planIncome(ym);
+}
+const PLAN_START = [2026,11], PLAN_END = [2052,3], OPENING = 150000;
+function investedBy(ym){   // opening corpus + every SIP paid up to and including this month
+  let t = OPENING;
+  const last = Math.min(ymIdx(ym), ymIdx(PLAN_END));
+  for(let k = ymIdx(PLAN_START); k <= last; k++) t += SIP_STEPS[sipStepIndex([Math.floor(k/12), k%12+1])].sip;
+  return t;
+}
+const LOAN_END = [[2028,10],[2028,11],[2028,9],[2027,12],[2027,12]];   // last EMI month, same order as LOANS
+function emiAt(ym){
+  return LOANS.reduce(function(a,l,k){ return a + (loanOpen(k, ym) ? l.emi : 0); }, 0);
+}
+const MON      = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const BOND_END = [2026,12];   // bond SIP runs until Dec 2026
+const GOLD_FLAT = 1000;       // gold never steps up
+
+function ymIdx(ym){ return ym[0]*12 + ym[1] - 1; }
+function nowYM(){
+  // add ?asof=2027-04 to the address to preview any month
+  const m = /[?&]asof=(\d{4})-(\d{1,2})/.exec(location.search);
+  if(m) return [+m[1], +m[2]];
+  const d = new Date(); return [d.getFullYear(), d.getMonth()+1];
+}
+function sipStepIndex(ym){
+  let i = 0;
+  SIP_STEPS.forEach(function(s, k){ if(ymIdx(s.from) <= ymIdx(ym)) i = k; });
+  return i;
+}
+// Gold stays flat, bond stops after Dec 2026, the rest is shared by the
+// equity funds in proportion to their base amounts.
+function fundSplit(sip, ym){
+  if(sip <= 0) return FUNDS.map(function(f){ return {n:f.n, cat:f.cat, col:f.col, amt:0, note:'SIP stopped Mar 2048'}; });
+  const bondOn = ymIdx(ym) <= ymIdx(BOND_END);
+  const equity = sip - GOLD_FLAT - (bondOn ? 2000 : 0);
+  const eqBase = FUNDS.reduce(function(a,f){ return a + (f.bond||f.gold ? 0 : f.amt); }, 0);
+  const out = FUNDS.map(function(f){
+    let amt, note = '';
+    if(f.gold){ amt = GOLD_FLAT; note = 'flat, no step-up'; }
+    else if(f.bond){ amt = bondOn ? 2000 : 0; note = bondOn ? 'stops after Dec 2026' : 'stopped Dec 2026'; }
+    else amt = Math.round(f.amt / eqBase * equity);
+    return {n:f.n, cat:f.cat, col:f.col, amt:amt, note:note};
+  });
+  const diff = sip - out.reduce(function(a,f){ return a + f.amt; }, 0);
+  out[0].amt += diff;   // rounding remainder goes to the largest fund
+  return out.sort(function(a,b){ return b.amt - a.amt; });
+}
+let sipKey = '';
+function renderSIP(){
+  const ym = nowYM(), i = sipStepIndex(ym), cur = SIP_STEPS[i], next = SIP_STEPS[i+1];
+  const key = ym.join('-'); if(key === sipKey) return;
+  const firstRun = sipKey === ''; sipKey = key;
+  renderLoans(ym);
+  if(!firstRun) renderAll();   // month rolled over while the app was open
+  const INCOME = incomeAt(ym);
+  const sip = cur.sip, pct = function(v){ return (v/INCOME*100).toFixed(1) + '%'; };
+  const emi  = emiAt(ym);
+  const rest = INCOME - emi - sip - INSURANCE - MOM_SHARE;
+
+  // Dashboard income card
+  el('h-income').textContent = fmt(INCOME);
+  el('h-ins-pct').textContent = pct(INSURANCE);
+  el('h-ins-seg').style.width = pct(INSURANCE);
+  el('h-mom-pct').textContent = pct(MOM_SHARE);
+  el('h-mom-seg').style.width = pct(MOM_SHARE);
+  el('h-emi').textContent = fmt(emi);
+  el('h-emi-pct').textContent = pct(emi);
+
+  // Journey = share of the plan's total investment already made
+  const done = investedBy(ym) / investedBy(PLAN_END) * 100;
+  el('i-journey').textContent = 'Journey is ' + (done < 10 ? done.toFixed(1) : Math.round(done)) + '% complete · ' +
+    fmt(investedBy(ym)) + ' of ₹69.0 L invested';
+  el('i-journey-bar').style.width = Math.max(1, done).toFixed(1) + '%';
+  el('h-emi-seg').style.width = pct(emi);
+  el('h-emi-seg').style.display = emi > 0 ? '' : 'none';
+  el('h-sip-seg').style.display = sip > 0 ? '' : 'none';
+  el('h-sip').textContent = fmt(sip);
+  el('h-sip-pct').textContent = pct(sip);
+  el('h-sip-seg').style.width = pct(sip);
+  el('h-else').textContent = fmt(rest);
+  el('h-else-pct').textContent = pct(rest);
+
+  // Investments tiles
+  el('i-sip').textContent = fmt(sip);
+  el('i-sip').style.color = PH_COL[cur.ph];
+  el('i-phase').style.setProperty('--c', PH_COL[cur.ph]);
+  el('i-phase').innerHTML = '<i class="dot"></i>' + cur.ph + ' phase';
+  el('i-sip-pct').textContent = pct(sip);
+
+  // Next step-up
+  if(next){
+    const away = ymIdx(next.from) - ymIdx(ym);
+    el('i-next-card').style.display = '';
+    el('i-next-title').textContent = next.why + ' · ' + MON[next.from[1]-1] + ' ' + next.from[0];
+    el('i-next-away').textContent = away + (away === 1 ? ' month away' : ' months away');
+    el('i-next-amt').textContent = fmt(next.sip) + '/mo';
+  } else el('i-next-card').style.display = 'none';
+
+  // Roadmap: mark the current phase
+  document.querySelectorAll('#view-invest .tl').forEach(function(row, k){
+    const on = PHASES[k] === cur.ph, h = row.querySelector('h4'), chip = h.querySelector('.chip');
+    row.classList.toggle('now', on);
+    if(chip) chip.remove();
+    if(on) h.insertAdjacentHTML('beforeend', ' <span class="chip" style="--c:'+PH_COL[cur.ph]+'">Now</span>');
+  });
+
+  // Fund breakdown
+  const funds = fundSplit(sip, ym);
+  el('fund-total').textContent = fmt(sip);
+  el('fund-count').textContent = funds.filter(function(f){ return f.amt > 0; }).length;
+  el('fund-mix').innerHTML = funds.map(function(f){
+    return f.amt > 0 ? '<div class="seg" style="--c:'+f.col+';flex:'+f.amt+' 0 0;"></div>' : '';
+  }).join('');
+  el('fund-list').innerHTML = funds.map(function(f){
+    return '<div class="fund"'+(f.amt > 0 ? '' : ' style="opacity:.45"')+'>' +
+      '<i class="dot" style="--c:'+f.col+';width:10px;height:10px;"></i>' +
+      '<div style="flex:1;min-width:0;"><div class="fund-n">'+f.n+'</div>' +
+      '<div class="sub">'+f.cat+(f.note?' · '+f.note:'')+'</div></div>' +
+      '<div style="text-align:right;"><div class="fund-n num">'+fmt(f.amt)+'</div>' +
+      '<div class="sub num">'+(sip > 0 ? f.amt/sip*100 : 0).toFixed(1)+'%</div></div>' +
+    '</div>';
+  }).join('');
+}
+
+// ════════════════════════════════
+// VIEW SWITCHING + NAV
+// ════════════════════════════════
+let currentView = 'dash';
+const VIEW_ORDER = ['loans','dash','invest']; // left → right
+
+function movePill(v){
+  const nav = el('main-nav'), pill = el('nav-pill');
+  const btn = nav.querySelector('[data-view="'+v+'"]');
+  if(!btn) return;
+  const n = nav.getBoundingClientRect(), b = btn.getBoundingClientRect();
+  if(!b.width) return;
+  pill.style.width = b.width + 'px';
+  pill.style.transform = 'translateX(' + (b.left - n.left - 1) + 'px)';
+}
+function showView(v){
+  const idx = VIEW_ORDER.indexOf(v);
+  if(idx < 0) return;
+  if(v !== currentView) buzz(6);
+  currentView = v;
+  VIEW_ORDER.forEach(function(name, i){
+    const node = el('view-' + name);
+    node.classList.toggle('active', i === idx);
+    node.classList.toggle('before', i < idx);
+  });
+  document.querySelectorAll('#main-nav button').forEach(function(b){
+    b.classList.toggle('active', b.dataset.view === v);
+  });
+  movePill(v);
+  renderAll();
+}
+document.querySelectorAll('#main-nav button').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    if(this.dataset.view === currentView){ el('view-'+currentView).scrollTo({top:0, behavior:'smooth'}); return; }
+    showView(this.dataset.view);
+  });
+});
+window.addEventListener('resize', function(){ movePill(currentView); });
+
+// Swipe left / right between tabs
+(function(){
+  let x0 = 0, y0 = 0, ok = false;
+  const st = el('stack');
+  st.addEventListener('touchstart', function(e){
+    ok = e.touches.length === 1 && !e.target.closest('.segctl');
+    x0 = e.touches[0].clientX; y0 = e.touches[0].clientY;
+  }, {passive:true});
+  st.addEventListener('touchend', function(e){
+    if(!ok) return;
+    const dx = e.changedTouches[0].clientX - x0, dy = e.changedTouches[0].clientY - y0;
+    if(Math.abs(dx) < 70 || Math.abs(dx) < Math.abs(dy) * 2) return;
+    const i = VIEW_ORDER.indexOf(currentView) + (dx < 0 ? 1 : -1);
+    if(i >= 0 && i < VIEW_ORDER.length) showView(VIEW_ORDER[i]);
+  }, {passive:true});
+})();
+
+// ════════════════════════════════
+// THEME
+// ════════════════════════════════
+function applyTheme(t){
+  document.documentElement.setAttribute('data-theme', t);
+  el('meta-theme').setAttribute('content', t === 'light' ? '#F2F2F7' : '#09090B');
+}
+function toggleTheme(){
+  const s = getState();
+  s.theme = s.theme === 'dark' ? 'light' : 'dark';
+  saveState(s);
+  applyTheme(s.theme);
+  buzz(8);
+}
+el('theme-btn').addEventListener('click', toggleTheme);
+
+// ════════════════════════════════
+// CORPUS RATE TOGGLE
+// ════════════════════════════════
+function setRate(r){
+  if(!CORPUS_LT[r]) r = 10;
+  const s = getState();
+  if(s.rate !== r){ s.rate = r; saveState(s); }
+
+  document.querySelectorAll('[data-rate-wrap]').forEach(function(w){ w.setAttribute('data-r', r); });
+  document.querySelectorAll('[data-rate]').forEach(function(b){
+    b.classList.toggle('on', parseInt(b.dataset.rate) === r);
+  });
+  const cr = function(v){ return '₹' + v.toFixed(2) + ' Cr'; };
+  tween(el('d-corpus'), CORPUS_NUM[r], cr);
+  tween(el('i-corpus'), CORPUS_NUM[r], cr);
+  el('d-maturity').textContent = 'Mar 2052';
+  el('i-rate-lbl').textContent = r;
+  el('i-debt-rate').textContent = r;
+  el('i-debt').textContent = CORPUS_DEBT[r];
+}
+document.querySelectorAll('[data-rate]').forEach(function(btn){
+  btn.addEventListener('click', function(){ buzz(6); setRate(parseInt(this.dataset.rate)); });
+});
+
+// ════════════════════════════════
+// RENDER ALL DYNAMIC VALUES
+// ════════════════════════════════
+function renderAll(){
+  const s = getState();
+  const { freeCash } = calcSplit(s.hdfc, s.oneTime);
+  // s.loanEF is the committed running total — efAdd is only added on Update press
+  const efPct    = Math.min(100, (s.loanEF / EF_GOAL) * 100);
+  const top      = topLoan(nowYM());                       // first open loan in avalanche order
+  const topName  = top >= 0 ? LOAN_SHORT[top] : '';
+  const credNow  = top >= 0 ? balAt(top, nowYM()) : 0;     // that loan's balance this month
+  const efVsCred = credNow > 0 ? Math.min(100, (s.loanEF / credNow) * 100) : 100;
+  const efRemain = Math.max(0, credNow - s.loanEF);
+  const pct1 = function(v){ return v.toFixed(1) + '%'; };
+
+  // ── Dashboard ──
+  tween(el('d-freecash'), freeCash, fmt);
+  tween(el('d-ef-amt'), s.loanEF, fmt);
+  tween(el('d-ef-pct'), efPct, pct1);
+  el('d-ef-ring').style.strokeDashoffset = (289.03 * (1 - efPct / 100)).toFixed(2);
+
+  // ── Loans ──
+  tween(el('l-ef-amt'), s.loanEF, fmt);
+  el('l-ef-bar').style.width = efVsCred.toFixed(1) + '%';
+  const ready = credNow > 0 && s.loanEF >= credNow;   // fund covers the whole priority-loan balance
+  el('l-top-name').textContent = top >= 0 ? topName + ' balance' : 'No loans left';
+  el('l-cred').textContent = top >= 0 ? fmt(credNow) : '🎉';
+  el('l-ef-pct').textContent = ready ? '🏆 Ready to pay off ' + topName : credNow > 0 ? efVsCred.toFixed(1) + '% of ' + topName + ' balance' : 'All loans closed';
+  el('l-ef-remaining').textContent = ready ? fmt(s.loanEF - credNow) + ' left over' : credNow > 0 ? fmt(efRemain) + ' to go' : 'nothing left to prepay';
+  el('l-ef-lbl').textContent = ready ? '🎉 Goal reached · EF covers the ' + topName + ' balance' : top >= 0 ? 'Priority #1 ⚡ EF saved toward ' + topName + ' payoff' : 'Emergency fund';
+  el('l-ef-card').classList.toggle('ready', ready);
+  el('d-ef-card').classList.toggle('ready', ready);
+  el('d-ef-name').textContent = top >= 0 ? topName + ' prepay' : 'all loans closed';
+  el('d-ef-note').textContent = ready ? '🏆 Enough to clear ' + topName + ' (' + fmt(credNow) + ') now' : top >= 0 ? 'Build ₹1L → lump-sum hit on ' + topName : 'Nothing left to prepay';
+  el('d-ef-note').style.color = ready ? 'var(--green)' : 'var(--text3)';
+  markReadyLoan();
+  if(ready && lastReady === false){ confetti(); cheer('🎉', 'Ready to pay off ' + topName); }   // just crossed the line
+  lastReady = ready;
+
+  setRate(s.rate);
+}
+
+// ════════════════════════════════
+// UPDATE SHEET
+// ════════════════════════════════
+function modalRecalc(){
+  const hdfc    = parseInt(el('m-hdfc').value)    || 0;
+  const oneTime = parseInt(el('m-onetime').value) || 0;
+  const loanEF  = parseInt(el('m-loanef').value)  || 0;
+
+  const { freeCash, efAdd, surplus, bufferActual } = calcSplit(hdfc, oneTime);
+  const newTotal = loanEF + efAdd;
+  const efPct    = Math.min(100, (newTotal / EF_GOAL) * 100);
+
+  el('m-res-hdfc').textContent     = fmt(hdfc);
+  el('m-res-onetime').textContent  = oneTime > 0 ? '– ' + fmt(oneTime) : '₹0';
+  el('m-res-buffer').textContent   = '– ' + fmt(bufferActual);
+  el('m-res-surplus').textContent  = fmt(surplus);
+  el('m-res-freecash').textContent = fmt(freeCash);
+  el('m-loanef-val').textContent   = '+' + fmt(efAdd);
+  el('m-loanef-sub').textContent   = 'new total: ' + fmt(newTotal) + ' (' + efPct.toFixed(1) + '% of ₹1L)';
+}
+['m-hdfc','m-onetime','m-loanef'].forEach(function(id){
+  el(id).addEventListener('input', modalRecalc);
+  el(id).addEventListener('focus', function(){ const i = this; setTimeout(function(){ try{ i.select(); }catch(e){} }, 0); });
+});
+
+function restoreInputs(){
+  // Balance + one-time start blank each time; the EF running total is carried over
+  const s = getState();
+  el('m-hdfc').value    = '';
+  el('m-onetime').value = '';
+  el('m-loanef').value  = s.loanEF > 0 ? s.loanEF : '';
+  modalRecalc();
+}
+function showModal(){
+  restoreInputs();
+  el('sheet').style.transform = '';
+  el('app').classList.add('sheet-open');
+  document.querySelector('.sheet-body').scrollTop = 0;
+  buzz(8);
+}
+function hideModal(){
+  // Closing without pressing Update leaves saved figures untouched
+  el('sheet').style.transform = '';
+  el('app').classList.remove('sheet-open');
+  if(document.activeElement && document.activeElement.blur) document.activeElement.blur();
+}
+document.addEventListener('keydown', function(e){ if(e.key === 'Escape') hideModal(); });
+
+// Update button — saves loanEF as the NEW running total (old + this month's EF addition)
+el('update-btn').addEventListener('click', function(){
+  const s       = getState();
+  const hdfc    = parseInt(el('m-hdfc').value)    || 0;
+  const oneTime = parseInt(el('m-onetime').value) || 0;
+  const loanEF  = parseInt(el('m-loanef').value)  || 0;
+  const { efAdd, freeCash } = calcSplit(hdfc, oneTime);
+  s.hdfc    = hdfc;
+  s.oneTime = oneTime;
+  s.loanEF  = loanEF + efAdd;   // persist updated running total
+  saveState(s);
+  hideModal();
+  showView('dash');
+  el('view-dash').scrollTo({top:0, behavior:'smooth'});
+  buzz([10,40,14]);
+  toast('✓ Updated · Free cash ' + fmt(freeCash) + ' · EF +' + fmt(efAdd));
+});
+
+// Drag the sheet down to dismiss
+(function(){
+  const sheet = el('sheet'), grab = el('grab');
+  let y0 = null, dy = 0;
+  grab.addEventListener('pointerdown', function(e){
+    if(e.target.closest('button')) return;
+    y0 = e.clientY; dy = 0; sheet.classList.add('drag');
+    try{ grab.setPointerCapture(e.pointerId); }catch(_){}
+  });
+  grab.addEventListener('pointermove', function(e){
+    if(y0 === null) return;
+    dy = Math.max(0, e.clientY - y0);
+    sheet.style.transform = 'translateY(' + dy + 'px)';
+  });
+  function end(){
+    if(y0 === null) return;
+    y0 = null; sheet.classList.remove('drag');
+    if(dy > 110) hideModal(); else sheet.style.transform = '';
+  }
+  grab.addEventListener('pointerup', end);
+  grab.addEventListener('pointercancel', end);
+})();
+
+// ════════════════════════════════
+// EDIT SALARY IN PLACE (pencil on the income card)
+// ════════════════════════════════
+(function(){
+  const btn = el('h-income-edit'), inp = el('h-income-in'), num = el('h-income');
+  const PEN = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>';
+  const OK  = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+  let editing = false, closedAt = 0;
+  btn.innerHTML = PEN;
+  function open(){
+    editing = true;
+    inp.value = incomeAt(nowYM());
+    num.style.display = 'none'; inp.hidden = false; btn.innerHTML = OK;
+    inp.focus(); try{ inp.select(); }catch(e){}
+  }
+  function close(save){
+    if(!editing) return;
+    editing = false; closedAt = Date.now();
+    if(save){
+      const ym = nowYM(), sal = parseInt(inp.value) || 0;
+      if(sal <= 0){ setSalary(0); toast('Salary back to the plan figure'); }       // blank = plan
+      else if(sal !== incomeAt(ym)){ setSalary(sal, ym[0]); toast('✓ Salary set to ' + fmt(sal)); buzz(10); }
+      sipKey = ''; renderSIP();   // redraw everything that depends on salary
+    }
+    inp.hidden = true; num.style.display = ''; btn.innerHTML = PEN;
+  }
+  ['pointerdown','mousedown'].forEach(function(t){ btn.addEventListener(t, function(e){ if(editing) e.preventDefault(); }); });
+  btn.addEventListener('click', function(){
+    if(editing) close(true);
+    else if(Date.now() - closedAt > 400) open();
+  });
+  inp.addEventListener('keydown', function(e){
+    if(e.key === 'Enter') close(true);
+    if(e.key === 'Escape'){ e.stopPropagation(); close(false); }
+  });
+  inp.addEventListener('blur', function(){ setTimeout(function(){ close(true); }, 120); });
+})();
+
+// ════════════════════════════════
+// RESET BUTTONS (single tap)
+// ════════════════════════════════
+function armReset(id, run){
+  el(id).addEventListener('click', function(e){
+    e.stopPropagation();
+    run(); buzz([10,40,14]);
+  });
+}
+armReset('rst-cash', function(){
+  const s = getState(); s.hdfc = 0; s.oneTime = 0; saveState(s);
+  renderAll(); toast('Free cash reset to ₹0');
+});
+armReset('rst-ef', function(){
+  const s = getState(); s.loanEF = 0; saveState(s);
+  renderAll(); toast('Emergency fund reset to ₹0');
+});
+
+armReset('rst-loans', undoAllPaid);
+
+// ════════════════════════════════
+// CELEBRATION
+// ════════════════════════════════
+function confetti(){
+  if(REDUCED) return;
+  const app = el('app'), cols = ['#30D158','#6366F1','#FF9F0A','#FF453A','#FBBF24','#5EEAD4','#F9A8D4','#FFFFFF'];
+  for(let i = 0; i < 90; i++){
+    const p = document.createElement('i'), size = 6 + Math.random() * 7, dur = 1500 + Math.random() * 1500;
+    p.style.cssText = 'position:absolute;z-index:30;pointer-events:none;top:-14px;left:' + (Math.random()*100) + '%;width:' + size + 'px;height:' +
+      (size * (Math.random() > .5 ? 1 : .45)) + 'px;background:' + cols[i % cols.length] + ';border-radius:' + (Math.random() > .6 ? '50%' : '2px') + ';';
+    app.appendChild(p);
+    try{
+      p.animate([
+        {transform:'translate(0,0) rotate(0deg)', opacity:1},
+        {transform:'translate(' + ((Math.random()-.5)*180) + 'px,' + (app.clientHeight + 40) + 'px) rotate(' + (Math.random()*900-450) + 'deg)', opacity:.85}
+      ], {duration:dur, delay:Math.random()*400, easing:'cubic-bezier(.2,.6,.4,1)', fill:'both'});
+    }catch(e){}
+    setTimeout(function(){ p.remove(); }, dur + 900);
+  }
+}
+let cheerT;
+function cheer(emoji, title, sub){
+  const c = el('cheer');
+  c.querySelector('.em').textContent = emoji;
+  c.querySelector('b').textContent = title;
+  c.querySelector('small').textContent = sub || '';
+  c.classList.add('show');
+  clearTimeout(cheerT);
+  cheerT = setTimeout(function(){ c.classList.remove('show'); }, 2600);
+}
+
+let toastT;
+function toast(msg){
+  const t = el('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastT);
+  toastT = setTimeout(function(){ t.classList.remove('show'); }, 2600);
+}
+
+// ════════════════════════════════
+// CLOCK + GREETING
+// ════════════════════════════════
+function updateClock(){
+  const now = new Date();
+  const h = now.getHours(), m = now.getMinutes();
+  el('dash-time').textContent = h + ':' + (m<10?'0':'') + m;
+
+  const days=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  const months=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  el('dash-date').textContent = days[now.getDay()] + ', ' + String(now.getDate()).padStart(2,'0') + ' ' + months[now.getMonth()] + ' ' + now.getFullYear();
+  el('greet').textContent = (h<12?'Good morning':h<17?'Good afternoon':'Good evening') + ',';
+  renderSIP(); // picks up a new SIP step when the month changes
+}
+
+// ════════════════════════════════
+// INIT
+// ════════════════════════════════
+(function init(){
+  const s = getState();
+  applyTheme(s.theme);
+  restoreInputs();
+  updateClock();
+  setInterval(updateClock, 30000);
+  showView('dash');
+  requestAnimationFrame(function(){ requestAnimationFrame(function(){ movePill(currentView); }); });
+  window.addEventListener('load', function(){ movePill(currentView); });
+})();
+</script>
+<script>
+// Offline support: only when served over http(s), not when opened as a local file
+if('serviceWorker' in navigator && location.protocol.indexOf('http') === 0){
+  window.addEventListener('load', function(){ navigator.serviceWorker.register('sw.js').catch(function(){}); });
+}
+</script>
+</body>
+</html>
