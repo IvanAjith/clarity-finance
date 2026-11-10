@@ -27,7 +27,8 @@ clarity-finance/
 │
 ├── mobile-app/                       ← Installable mobile app (PWA)
 │   ├── model-1/                      ← First version (was app/mobile-layout)
-│   └── model-2-netlify/              ← Second version, deployed on Netlify — LATEST
+│   └── model-2-netlify/              ← Second version, live on Netlify — LATEST
+│                                       https://resonant-smakager-9da5a1.netlify.app/
 │
 ├── clarity-app/                      ← Product concept mockup (8 screens)
 │   └── clarity-app.html              ← Phone-shell UI mockup with Ajith's numbers

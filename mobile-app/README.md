@@ -20,6 +20,8 @@ mobile-app/
 └── README.md                ← This file
 ```
 
+**Live (model 2):** https://resonant-smakager-9da5a1.netlify.app/
+
 ## Model 1 vs Model 2
 | | Model 1 | Model 2 (Netlify) |
 |---|---|---|
@@ -30,9 +32,13 @@ mobile-app/
 | Status | kept for reference | latest, use this one |
 
 ## Deploy model 2 on Netlify
-1. Open Netlify, then Sites, then "Add new site", then "Deploy manually".
-2. Drag the whole `model-2-netlify/` folder in. It is a static site, with no build step.
-3. Open the site on your phone and use "Add to Home Screen".
+The Netlify site is connected to this GitHub repo. In Netlify, set:
+- **Publish directory:** `mobile-app/model-2-netlify`
+- **Build command:** none (static site)
+
+Open the site on your phone and use "Add to Home Screen".
+
+To deploy by hand instead, drag the `model-2-netlify/` folder into Netlify ("Add new site", then "Deploy manually").
 
 ## Updating model 2
 After changing `index.html`, bump the `CACHE` version in `sw.js` (for example `clarity-v1` to `clarity-v2`) so phones pick up the new copy instead of the cached one.
