@@ -25,6 +25,10 @@ clarity-finance/
 │   ├── apps-script-doGet.js          ← Deploy this to fix auto-load in dashboard
 │   └── SHEET_SETUP.md                ← How to use the Google Sheet
 │
+├── mobile-app/                       ← Installable mobile app (PWA)
+│   ├── model-1/                      ← First version (was app/mobile-layout)
+│   └── model-2-netlify/              ← Second version, deployed on Netlify — LATEST
+│
 ├── clarity-app/                      ← Product concept mockup (8 screens)
 │   └── clarity-app.html              ← Phone-shell UI mockup with Ajith's numbers
 │
