@@ -35,6 +35,9 @@ clarity-finance/
 ├── app/                              ← Future interactive web app (empty, reserved)
 │   └── PLACEHOLDER.md                ← What goes here when development starts
 │
+├── sip-plan/                         ← 25-year SIP plan: summary, yearly and by-age projections (before/after tax)
+├── SIP_Monthly_Schedule_Dashboard.csv  ← Month-by-month SIP plan (latest)
+│
 └── README.md                         ← This file
 ```
 
