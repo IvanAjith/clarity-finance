@@ -335,19 +335,19 @@ html,body{height:100%;margin:0;padding:0;overflow:hidden;background:var(--bg);fo
           <span class="dh-act-label primary-label">Update</span>
         </div>
         <div class="dh-action">
-          <button class="dh-act-btn">
+          <button class="dh-act-btn" onclick="showView('loans')">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.85)" stroke-width="2" stroke-linecap="round"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
           </button>
           <span class="dh-act-label">EMIs</span>
         </div>
         <div class="dh-action">
-          <button class="dh-act-btn">
+          <button class="dh-act-btn" onclick="showView('invest')">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.85)" stroke-width="2" stroke-linecap="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
           </button>
           <span class="dh-act-label">SIP</span>
         </div>
         <div class="dh-action">
-          <button class="dh-act-btn">
+          <button class="dh-act-btn" onclick="setTimeout(function(){ var g=document.getElementById('goals-section'); if(g) g.scrollIntoView({behavior:'smooth'}); },50)">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.85)" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
           </button>
           <span class="dh-act-label">Goals</span>
@@ -424,7 +424,7 @@ html,body{height:100%;margin:0;padding:0;overflow:hidden;background:var(--bg);fo
       <div class="divider" style="margin:20px 24px;"></div>
 
       <!-- WEALTH BUILDING -->
-      <div class="section-title" style="margin-bottom:16px;">Wealth Building</div>
+      <div class="section-title" id="goals-section" style="margin-bottom:16px;">Wealth Building</div>
 
       <div style="padding:0 24px;margin-bottom:12px;">
         <div class="toggle-wrap" id="d-rate-wrap">
