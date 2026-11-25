@@ -252,11 +252,11 @@ input:checked ~ .theme-track::after{transform:translateX(30px);background:#FF9F0
 
     <div class="dh-balance">
       <div class="dh-bal-label">HDFC Balance</div>
-      <div class="dh-bal-amt" id="dh-bal">₹—</div>
+      <div class="dh-bal-amt" id="dh-bal">₹0</div>
     </div>
 
     <div class="dh-chip">
-      <div class="dh-chip-inner">↑ <span id="dh-chip">₹—</span> free cash this month</div>
+      <div class="dh-chip-inner">↑ <span id="dh-chip">₹0</span> free cash this month</div>
     </div>
 
     <div class="dh-actions">
@@ -311,7 +311,7 @@ input:checked ~ .theme-track::after{transform:translateX(30px);background:#FF9F0
         </div>
         <div class="stat" style="margin-top:4px;text-align:right;align-items:flex-end;">
           <span class="stat-label">Free Cash</span>
-          <span class="stat-value" id="d-freecash" style="color:var(--green);font-size:18px;">₹—</span>
+          <span class="stat-value" id="d-freecash" style="color:var(--green);font-size:18px;">₹0</span>
           <span class="stat-sub">yours to spend</span>
         </div>
       </div>
@@ -933,13 +933,13 @@ function renderAll(){
 
   // Dash header
   const dhBal = el('dh-bal');
-  if(dhBal) dhBal.textContent = s.hdfc > 0 ? fmt(s.hdfc) : '₹—';
+  if(dhBal) dhBal.textContent = s.hdfc > 0 ? fmt(s.hdfc) : '₹0';
   const dhChip = el('dh-chip');
-  if(dhChip) dhChip.textContent = freeCash > 0 ? fmt(freeCash) : '₹—';
+  if(dhChip) dhChip.textContent = freeCash > 0 ? fmt(freeCash) : '₹0';
 
   // Dash body
   const dfc = el('d-freecash');
-  if(dfc) dfc.textContent = freeCash > 0 ? fmt(freeCash) : '₹—';
+  if(dfc) dfc.textContent = freeCash > 0 ? fmt(freeCash) : '₹0';
   const defAmt = el('d-ef-amt');
   if(defAmt) defAmt.textContent = fmt(s.loanEF);
   const defBar = el('d-ef-bar');
