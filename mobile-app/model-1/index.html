@@ -509,8 +509,8 @@ input:checked ~ .theme-track::after{transform:translateX(30px);background:#FF9F0
           <span class="loan-name">MF Pledge</span>
           <span class="loan-rate-pill" style="background:var(--surface2);color:var(--t2);">0%</span>
         </div>
-        <div class="loan-meta">Dec 2027 · ₹375/mo</div>
-        <div class="loan-amount" style="color:var(--t1);margin-top:8px;">₹35,000</div>
+        <div class="loan-meta">Dec 2027 · ₹500/mo</div>
+        <div class="loan-amount" style="color:var(--t1);margin-top:8px;">₹50,000</div>
         <div class="loan-amt-sub">remaining</div>
       </div>
     </div>
@@ -580,7 +580,7 @@ input:checked ~ .theme-track::after{transform:translateX(30px);background:#FF9F0
           <div class="phase-line-seg"></div>
         </div>
         <div>
-          <div class="phase-label">Base Phase <span class="now-badge">Now</span></div>
+          <div class="phase-label">Push Phase <span class="now-badge">Now</span></div>
           <div class="phase-amount" style="color:var(--blue);">₹15,750/mo</div>
           <div class="phase-period">Now – Mar 2027</div>
         </div>
@@ -592,9 +592,9 @@ input:checked ~ .theme-track::after{transform:translateX(30px);background:#FF9F0
           <div class="phase-line-seg"></div>
         </div>
         <div>
-          <div class="phase-label" style="color:var(--t2);">Push Phase</div>
+          <div class="phase-label" style="color:var(--t2);">Push Phase cont.</div>
           <div class="phase-amount" style="color:var(--purple);">₹18,900 → ₹27,216/mo</div>
-          <div class="phase-period">Apr 2027 – Dec 2028</div>
+          <div class="phase-period">Apr 2027 – Mar 2030</div>
         </div>
       </div>
 
@@ -626,7 +626,7 @@ input:checked ~ .theme-track::after{transform:translateX(30px);background:#FF9F0
     <div class="card">
       <div class="card-title">Long-term Corpus</div>
       <div style="font-size:10px;color:var(--t2);margin-bottom:4px;">@<span id="i-rate-lbl">14</span>% · Age 57 · Mar 2049</div>
-      <div id="i-corpus" style="font-size:42px;font-weight:800;color:var(--green);letter-spacing:-1.5px;line-height:1;">₹7.10 Cr</div>
+      <div id="i-corpus" style="font-size:42px;font-weight:800;color:var(--green);letter-spacing:-1.5px;line-height:1;">₹5.87 Cr</div>
       <div style="font-size:10px;color:var(--t3);margin-top:6px;margin-bottom:14px;">Journey is 2% complete · keep investing</div>
       <div class="prog-track"><div class="prog-fill" style="width:2%;background:var(--green);"></div></div>
       <div style="margin-top:16px;">
@@ -720,7 +720,10 @@ input:checked ~ .theme-track::after{transform:translateX(30px);background:#FF9F0
     </div>
 
     <div style="padding:4px 20px 0;">
-      <div style="font-size:10px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:12px;">50 / 50 Split</div>
+      <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:12px;">
+        <div style="font-size:10px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:0.06em;" id="m-split-label">50 / 50 Split</div>
+        <div style="font-size:10px;color:var(--t3);" id="m-split-note">this month's plan ratio</div>
+      </div>
 
       <div class="result-row">
         <div>
@@ -774,19 +777,32 @@ input:checked ~ .theme-track::after{transform:translateX(30px);background:#FF9F0
 // ════ CONSTANTS ════
 const BUFFER   = 20000;
 const CRED_BAL = 97768;
-const CORPUS   = {10:'₹2.41 Cr', 12:'₹4.21 Cr', 14:'₹7.10 Cr'};
+const CORPUS   = {10:'₹3.41 Cr', 12:'₹4.44 Cr', 14:'₹5.87 Cr'};
 
 function fmt(n){ return '₹' + Math.round(n).toLocaleString('en-IN'); }
 function el(id){ return document.getElementById(id); }
+
+// ════ SPLIT RATIO (time-aware per plan) ════
+// Oct–Dec 2026: 50/50 | Jan–Sep 2027: 65/35 | Oct 2027–Feb 2028: 70/30 | Mar 2028+: 80/20
+function getSplitRatio(){
+  const now = new Date();
+  const yr  = now.getFullYear();
+  const mo  = now.getMonth() + 1; // 1-12
+  if(yr < 2027 || (yr === 2026))                              return { loanPct:50, freePct:50, label:'50 / 50' };
+  if(yr === 2027 && mo <= 9)                                  return { loanPct:65, freePct:35, label:'65 / 35' };
+  if((yr === 2027 && mo >= 10) || (yr === 2028 && mo <= 2))   return { loanPct:70, freePct:30, label:'70 / 30' };
+  return                                                             { loanPct:80, freePct:20, label:'80 / 20' };
+}
 
 // ════ FREE CASH CALC ════
 function calcSplit(hdfc, oneTime){
   const afterOneTime = Math.max(0, hdfc - oneTime);
   const surplus      = Math.max(0, afterOneTime - BUFFER);
-  const freeCash     = Math.round(surplus / 2);
-  const efAdd        = Math.round(surplus / 2);
+  const { loanPct, freePct, label } = getSplitRatio();
+  const freeCash     = Math.round(surplus * freePct / 100);
+  const efAdd        = Math.round(surplus * loanPct / 100);
   const bufferActual = Math.min(afterOneTime, BUFFER);
-  return { afterOneTime, surplus, freeCash, efAdd, bufferActual };
+  return { afterOneTime, surplus, freeCash, efAdd, bufferActual, splitLabel: label, loanPct, freePct };
 }
 
 // ════ STATE ════
@@ -972,7 +988,7 @@ function modalRecalc(){
   const hdfc    = parseInt(el('m-hdfc').value)    || 0;
   const oneTime = parseInt(el('m-onetime').value) || 0;
   const loanEF  = parseInt(el('m-loanef').value)  || 0;
-  const { freeCash, efAdd, surplus, bufferActual } = calcSplit(hdfc, oneTime);
+  const { freeCash, efAdd, surplus, bufferActual, splitLabel, loanPct, freePct } = calcSplit(hdfc, oneTime);
   const newTotal = loanEF + efAdd;
   const efPct    = Math.min(100, (newTotal / 100000) * 100);
   const mHdfc = el('m-res-hdfc'); if(mHdfc) mHdfc.textContent = fmt(hdfc);
@@ -982,6 +998,8 @@ function modalRecalc(){
   const mfc   = el('m-res-freecash'); if(mfc) mfc.textContent = fmt(freeCash);
   const mlv   = el('m-loanef-val'); if(mlv) mlv.textContent = '+' + fmt(efAdd);
   const mls   = el('m-loanef-sub'); if(mls) mls.textContent = 'new total: ' + fmt(newTotal) + ' (' + efPct.toFixed(1) + '% of ₹1L)';
+  const msl   = el('m-split-label'); if(msl) msl.textContent = splitLabel + ' Split';
+  const msn   = el('m-split-note'); if(msn) msn.textContent = loanPct + '% → Loan EF · ' + freePct + '% → Free';
 }
 ['m-hdfc','m-onetime','m-loanef'].forEach(function(id){
   const inp = el(id); if(inp) inp.addEventListener('input', modalRecalc);
