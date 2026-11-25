@@ -6,13 +6,15 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Clarity">
-<meta name="theme-color" content="#0E1410">
+<meta name="theme-color" content="#0E1410" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#F0F4F1" media="(prefers-color-scheme: light)">
+<meta id="theme-color-meta" name="theme-color" content="#0E1410">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="manifest" href="manifest.json">
 <title>Clarity · Finance</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
-html{height:-webkit-fill-available;}
+html{height:-webkit-fill-available;background:var(--bg);}
 body{min-height:-webkit-fill-available;height:100%;overflow:hidden;background:var(--bg);font-family:-apple-system,'SF Pro Display',system-ui,sans-serif;}
 
 /* ── Design tokens ── */
@@ -883,6 +885,10 @@ document.querySelectorAll('#main-nav .nav-item[data-view]').forEach(function(b){
 function applyTheme(t){
   el('app').setAttribute('data-theme', t);
   syncThemeToggles(t);
+  var tc = document.getElementById('theme-color-meta');
+  if(tc) tc.setAttribute('content', t === 'light' ? '#F0F4F1' : '#0E1410');
+  document.documentElement.style.background = t === 'light' ? '#F0F4F1' : '#0E1410';
+  document.body.style.background = t === 'light' ? '#F0F4F1' : '#0E1410';
 }
 function toggleTheme(){
   const s = getState();
